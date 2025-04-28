@@ -1,0 +1,141 @@
+/* CSS for the New Button Guide */
+.new-button-guide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  padding: 1.5rem 1rem;
+  margin: 1rem 0;
+  border-radius: 8px;
+  background-color: rgba(0, 123, 255, 0.1);
+  position: relative;
+}
+
+.new-button-guide h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--primary-color, #007bff);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.new-button-guide p {
+  margin: 0;
+  color: #333;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.new-button-guide strong {
+  color: var(--primary-color, #007bff);
+  font-weight: 600;
+}
+
+.guide-arrow {
+  position: absolute;
+  top: -30px;
+  right: 30px; /* Position arrow more to the right */
+  color: var(--primary-color, #007bff);
+  animation: bounce 2s infinite;
+}
+
+.guide-arrow svg {
+  transform: rotate(180deg); /* Point arrow upward */
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Login prompt styling */
+.sidebar-login-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem 1rem;
+  margin: 1rem 0;
+  border-radius: 8px;
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.sidebar-login-prompt h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--primary-color, #007bff);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.sidebar-login-prompt p {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.login-button-sidebar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-color, #007bff);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-top: 0.5rem;
+  width: 100%;
+  max-width: 200px;
+}
+
+.login-button-sidebar:hover {
+  background-color: var(--primary-hover, #0069d9);
+}
+
+/* Dark mode support */
+:root[data-theme="dark"] .new-button-guide,
+:root[data-theme="dark"] .sidebar-login-prompt {
+  background-color: rgba(59, 130, 246, 0.15);
+}
+
+:root[data-theme="dark"] .new-button-guide p,
+:root[data-theme="dark"] .sidebar-login-prompt p {
+  color: #e5e7eb;
+}
+
+:root[data-theme="dark"] .new-button-guide h4,
+:root[data-theme="dark"] .sidebar-login-prompt h4 {
+  color: var(--primary-color, #3b82f6);
+}
+
+:root[data-theme="dark"] .guide-arrow {
+  color: var(--primary-color, #3b82f6);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .new-button-guide,
+  .sidebar-login-prompt {
+    padding: 1rem 0.75rem;
+  }
+  
+  .new-button-guide p,
+  .sidebar-login-prompt p {
+    font-size: 0.85rem;
+  }
+  
+  .new-button-guide h4,
+  .sidebar-login-prompt h4 {
+    font-size: 0.95rem;
+  }
+}

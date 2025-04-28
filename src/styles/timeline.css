@@ -1,0 +1,362 @@
+/* Timeline Specific Styles - Updated with improved color handling */
+.timeline-container {
+  flex-grow: 1;
+  position: relative;
+  min-height: 400px;
+  overflow: hidden;
+  cursor: default;
+  will-change: transform;
+  height: calc(100vh - 4rem);
+  background-color: inherit;
+  transition: background-color 0.3s ease;
+  
+  /* Define CSS variables for timeline colors that can be used by events */
+  --timeline-color: var(--primary-color, #007bff);
+  --timeline-color-dark: var(--primary-color-dark, #0062cc);
+  --timeline-thickness: 2px;
+}
+
+.timeline {
+  position: relative;
+  height: 100%;
+  min-height: 400px;
+  transform-origin: center;
+  will-change: transform;
+  background-color: transparent;
+}
+
+/* Timeline base layer */
+.timeline-line {
+  position: absolute;
+  background: var(--timeline-color);
+  z-index: 1;
+}
+
+.horizontal .timeline-line {
+  height: var(--timeline-thickness, 2px);
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.vertical .timeline-line {
+  width: var(--timeline-thickness, 2px);
+  height: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* SVG Connection Line */
+.event-connection-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  overflow: visible;
+}
+
+.event-connection-line line {
+  stroke-linecap: round;
+  transition: stroke 0.3s ease, stroke-width 0.2s ease;
+}
+
+/* Snapped line style - make it more prominent */
+.event-connection-line line.snapped {
+  stroke-width: calc(var(--timeline-thickness, 2px) + 1px);
+  stroke-dasharray: none;
+}
+
+/* Event Styles - Updated for color handling and dynamic colors */
+.event {
+  position: absolute;
+  background: white;
+  border: 3px solid var(--timeline-color);
+  border-radius: 4px;
+  padding: 0.25rem;
+  max-width: 200px;
+  cursor: move;
+  user-select: none;
+  transition: 
+    box-shadow 0.2s, 
+    border-color 0.3s ease, 
+    transform 0.1s ease;
+  box-shadow: var(--shadow);
+  transform-origin: center;
+  z-index: 10 !important;
+  transform: translate(-50%, -50%); /* Center the event box */
+}
+
+.event:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.event.last-clicked {
+  z-index: 30 !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.event.dragging {
+  box-shadow: var(--shadow-dragging);
+  z-index: 40 !important;
+  opacity: 0.9;
+}
+
+/* Default color mimics the timeline color using CSS variables */
+.event.default {
+  border: 3px solid var(--timeline-color, #007bff);
+}
+
+.event.default:hover,
+.event.default.last-clicked {
+  border: 3px solid var(--timeline-color-dark, #0062cc);
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+}
+
+/* Specific color classes with enhanced hover/active states */
+.event.blue {
+  border: 3px solid #007bff;
+}
+
+.event.blue:hover,
+.event.blue.last-clicked {
+  border: 3px solid #0062cc;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+}
+
+.event.green {
+  border: 3px solid #28a745;
+}
+
+.event.green:hover,
+.event.green.last-clicked {
+  border: 3px solid #1e7e34;
+  box-shadow: 0 0 8px rgba(40, 167, 69, 0.3);
+}
+
+.event.red {
+  border: 3px solid #dc3545;
+}
+
+.event.red:hover,
+.event.red.last-clicked {
+  border: 3px solid #bd2130;
+  box-shadow: 0 0 8px rgba(220, 53, 69, 0.3);
+}
+
+.event.orange {
+  border: 3px solid #fd7e14;
+}
+
+.event.orange:hover,
+.event.orange.last-clicked {
+  border: 3px solid #d63e00;
+  box-shadow: 0 0 8px rgba(253, 126, 20, 0.3);
+}
+
+.event.purple {
+  border: 3px solid #6f42c1;
+}
+
+.event.purple:hover,
+.event.purple.last-clicked {
+  border: 3px solid #5e35a1;
+  box-shadow: 0 0 8px rgba(111, 66, 193, 0.3);
+}
+
+.horizontal .snapping-guide {
+  width: 1px;
+  height: 100%;
+  top: 0;
+}
+
+.vertical .snapping-guide {
+  height: 1px;
+  width: 100%;
+  left: 0;
+}
+
+/* Animation for snap */
+@keyframes snapPulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.event.just-snapped {
+  animation: snapPulse 0.3s ease-in-out;
+}
+
+/* Event sizes */
+.event.small {
+  padding: 0.1rem;
+  max-width: 100px;
+  font-size: 0.75rem;
+}
+
+.event.medium {
+  padding: 0.25rem;
+  max-width: 200px;
+  font-size: 0.95rem;
+}
+
+.event.large {
+  padding: 0.4rem;
+  max-width: 300px;
+  font-size: 1.15rem;
+}
+
+/* Timeline Info */
+.timeline-info {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.5);
+  padding: 4px 8px;
+  border-radius: 4px;
+  z-index: 10;
+  pointer-events: none;
+  user-select: none;
+  text-align: center;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.timeline-info kbd {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-family: monospace;
+}
+
+/* Snapping tooltip/instruction */
+.snapping-tooltip {
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  pointer-events: none;
+  z-index: 1000;
+  max-width: 200px;
+  text-align: center;
+  transform: translate(-50%, -100%);
+  margin-top: -8px;
+}
+
+/* Event description indicator */
+.event-description-indicator {
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--primary-color);
+  opacity: 0.7;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.event:hover .event-description-indicator {
+  transform: scale(1.2);
+  opacity: 1;
+}
+
+/* Rich text content handling in events */
+.event {
+  overflow: auto;
+  word-wrap: break-word;
+}
+
+.event b, .event strong {
+  font-weight: bold;
+}
+
+.event i, .event em {
+  font-style: italic;
+}
+
+.event u {
+  text-decoration: underline;
+}
+
+.event a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* Animation for style changes */
+@keyframes styleChange {
+  0% { transform: scale(0.95); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.timeline-line.style-changed,
+.event-connection-line.style-changed line,
+.event.style-changed {
+  animation: styleChange 0.3s ease-out;
+}
+
+/* Interval Marker Base Styles */
+.interval-marker {
+  position: absolute;
+  z-index: 6; /* Above the timeline line (z-index: 1) but below events (z-index: 10) */
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Horizontal Timeline Interval Markers (vertical lines) */
+.interval-marker.horizontal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.interval-marker.horizontal .marker-line {
+  height: 26px; /* Increased to extend above and below the timeline */
+  width: 2px; /* Will be overridden by inline styles based on timeline thickness */
+  background-color: rgba(0, 123, 255, 0.6); /* Will be overridden by inline styles */
+  position: relative;
+  transform: translateY(-50%); /* Center the marker on the timeline */
+}
+
+.interval-marker.horizontal .marker-label {
+  text-align: center;
+  font-size: 0.7rem;
+  color: rgba(0, 0, 0, 0.7);
+  white-space: nowrap;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 18px; /* Increased for better spacing with longer markers */
+}
+
+/* Vertical Timeline Interval Markers (horizontal lines) */
+.interval-marker.vertical {
+  display: flex;
+  align-items: center;
+}
+
+.interval-marker.vertical .marker-line {
+  width: 26px; /* Increased to extend to left and right of the timeline */
+  height: 2px; /* Will be overridden by inline styles based on timeline thickness */
+  background-color: rgba(0, 123, 255, 0.6); /* Will be overridden by inline styles */
+  position: relative;
+  transform: translateX(-50%); /* Center the marker on the timeline */
+}
+
+.interval-marker.vertical .marker-label {
+  font-size: 0.7rem;
+  color: rgba(0, 0, 0, 0.7);
+  white-space: nowrap;
+  margin-left: 18px; /* Increased for better spacing with longer markers */
+}

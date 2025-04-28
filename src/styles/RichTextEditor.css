@@ -1,0 +1,70 @@
+/* Rich Text Editor with always active toolbar */
+
+.rich-text-editor {
+  position: relative;
+  width: 100%;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  overflow: visible;
+}
+
+/* Always visible toolbar - with reduced height */
+.editor-toolbar {
+  display: flex;
+  background-color: #f8f9fa;
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+  padding: 4px 8px; /* Reduced top/bottom padding from 8px to 4px */
+  border-radius: 4px 4px 0 0;
+  overflow: hidden;
+  align-items: center; /* Center items vertically */
+}
+
+/* Content border radius with always visible toolbar */
+.editor-content {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0 0 4px 4px; /* Always rounded only at bottom */
+  outline: none;
+  overflow-y: auto;
+  line-height: 1.5;
+  background-color: white;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.editor-content:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.editor-content[placeholder]:empty:before {
+  content: attr(placeholder);
+  color: #adb5bd;
+  font-style: italic;
+}
+
+/* Smaller button styles for the toolbar */
+.format-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px 6px; /* Reduced padding */
+  margin: 0 2px;
+  border-radius: 3px; /* Slightly smaller border radius */
+  color: #555;
+  transition: background-color 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: 24px; /* Fixed height */
+}
+
+.format-btn:hover {
+  background-color: #e9ecef;
+  color: #333;
+}

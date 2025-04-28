@@ -1,0 +1,301 @@
+/* Event Form Container */
+.event-form {
+  border-radius: 8px;
+  position: relative;
+  background-color: var(--section-background);
+  border: 1px solid var(--border-color);
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.event-form h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.compact-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 0.5rem;
+}
+
+/* Required field marker */
+.required-mark {
+  color: var(--delete-button-color);
+}
+
+/* Field labels */
+.form-group label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+/* Checkbox Options Row */
+.form-options {
+  display: flex;
+  justify-content: flex-start;
+  margin: 0.25rem 0;
+}
+
+.checkbox-option {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.875rem;
+  color: var(--text-color);
+}
+
+.option-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border: 1.5px solid var(--input-border);
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  background-color: var(--input-background);
+  transition: all 0.2s;
+}
+
+.option-checkbox:checked {
+  background-color: var(--button-primary);
+  border-color: var(--button-primary);
+}
+
+.option-checkbox:checked::after {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  top: 1px;
+  left: 5px;
+  transform: rotate(45deg);
+  display: block;
+}
+
+.option-checkbox:hover {
+  border-color: var(--button-primary);
+}
+
+/* Size Selection Container */
+.size-selection-container {
+  border-radius: 6px;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  animation: fadeIn 0.2s ease-out;
+  margin-bottom: 0.5rem;
+}
+
+/* Size Buttons */
+.size-buttons-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 0;
+  justify-content: flex-start;
+}
+
+.size-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 6px;
+  background-color: var(--size-button-background);
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.size-button:hover {
+  background-color: var(--size-button-hover);
+  border-color: var(--text-secondary);
+  transform: translateY(-2px);
+}
+
+.size-button.active {
+  border-color: var(--button-primary);
+  background-color: var(--size-button-active-bg);
+}
+
+.size-button svg {
+  transition: all 0.2s;
+  stroke: var(--text-secondary);
+}
+
+.size-button:hover svg {
+  stroke: var(--text-color);
+}
+
+.size-button.active svg {
+  stroke: var(--button-primary);
+}
+
+/* Description Container */
+.description-container {
+  padding: 0.5rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--border-color);
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Color buttons group */
+.color-buttons-group {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  justify-content: flex-start;
+}
+
+.color-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.color-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.color-button.active {
+  border: 2px solid var(--text-color);
+}
+
+/* Default color button specific styling */
+.color-button.default svg {
+  stroke: var(--text-secondary);
+}
+
+.color-button.default:hover svg {
+  stroke: var(--text-color);
+}
+
+.color-button.default.active svg {
+  stroke: var(--button-primary);
+}
+
+/* Error Message */
+.error {
+  color: var(--error-text);
+  font-size: 0.75rem;
+  margin-top: 0.3rem;
+  padding: 0.3rem;
+  background-color: var(--error-background);
+  border-radius: 4px;
+  border-left: 3px solid var(--delete-button-color);
+}
+
+/* Add Event Button */
+.add-event-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  width: 100%;
+  transition: all 0.2s;
+  color: white;
+  background-color: var(--button-primary);
+}
+
+.add-event-btn:not(:disabled):hover {
+  background-color: var(--button-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.add-event-btn:disabled {
+  background-color: var(--badge-background);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.add-event-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.add-event-btn svg {
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.add-event-btn span {
+  line-height: 1.2;
+}
+
+/* Animation for Fade-in - works for both light and dark modes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Expandable Group - Container for expandable menus */
+.expandable-group {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: none;
+  border: none;
+}
+
+/* The expandable menus inside the group should be styled as a cohesive unit */
+.expandable-group .expandable-menu {
+  border-radius: 6px;
+  margin-bottom: 0.25rem;
+  border: 1px solid var(--border-color);
+}
+
+.expandable-group .expandable-menu:first-child {
+  border-top: 1px solid var(--border-color);
+}
+
+.expandable-group .expandable-menu:last-child {
+  margin-bottom: 0;
+}
+
+/* Remove spacing between form groups */
+.form-group + .form-group,
+.form-group + .expandable-group,
+.expandable-group + .form-group {
+  margin-top: 0.25rem;
+}

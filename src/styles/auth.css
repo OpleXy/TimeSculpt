@@ -1,0 +1,815 @@
+/* Auth loading indicator */
+.auth-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  color: #555;
+  font-size: 0.95rem;
+  width: 100%;
+  max-width: 280px;
+  height: 48px;
+  text-align: center;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+body.dark-mode .auth-loading {
+  background-color: var(--dark-input-bg, #333);
+  color: var(--dark-text, #f0f0f0);
+}/* src/styles/auth.css */
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 450px;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: auto;
+  height: auto;
+  color: #666;
+  padding: 0;
+  margin: 0;
+}
+
+.modal-close:hover {
+  color: #000;
+  background-color: transparent;
+}
+
+/* Auth tabs */
+.auth-tabs {
+  display: flex;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color, #ddd);
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 0.75rem 0;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.auth-tab:hover {
+  color: var(--primary-color, #007bff);
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+.auth-tab.active {
+  color: var(--primary-color, #007bff);
+  border-bottom: 2px solid var(--primary-color, #007bff);
+}
+
+/* Auth form styles */
+.auth-form h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.auth-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 0.75rem;
+  margin-bottom: 1.25rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.auth-form .form-group {
+  margin-bottom: 1.25rem;
+}
+
+.auth-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.auth-form input:focus {
+  border-color: var(--primary-color, #007bff);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.auth-submit-btn {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  background-color: var(--primary-color, #007bff);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.auth-submit-btn:hover {
+  background-color: var(--primary-hover, #0069d9);
+}
+
+.auth-submit-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.auth-footer {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.auth-link {
+  background: none;
+  border: none;
+  color: var(--primary-color, #007bff);
+  cursor: pointer;
+  font-weight: 500;
+  padding: 0;
+  margin-left: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+  background-color: transparent;
+}
+
+/* OAuth Providers in Tab Bar */
+.oauth-providers {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  gap: 20px;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color, #ddd);
+}
+
+.oauth-provider-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 100px;
+  height: 40px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #444;
+}
+
+.oauth-provider-btn span {
+  display: inline-block;
+}
+
+.oauth-provider-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.oauth-provider-btn.active {
+  border-color: var(--primary-color, #007bff);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* OAuth Sign-In Styles */
+.oauth-signin-container,
+.google-signin-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-description {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.oauth-signin-button,
+.google-signin-button,
+.microsoft-signin-button,
+.apple-signin-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  color: #444;
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 280px;
+  cursor: pointer;
+}
+
+.oauth-signin-button:hover,
+.google-signin-button:hover {
+  background-color: #f8f8f8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.oauth-signin-button svg,
+.google-signin-button svg {
+  margin-right: 10px;
+}
+
+.oauth-signin-button:disabled,
+.google-signin-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Specific styles for Microsoft button */
+.microsoft-signin-button {
+  color: #000;
+  border-color: #d9d9d9;
+}
+
+.microsoft-signin-button:hover {
+  background-color: #f3f3f3;
+}
+
+/* Specific styles for Apple button */
+.apple-signin-button {
+  background-color: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+.apple-signin-button:hover {
+  background-color: #333;
+}
+
+/* User profile styles */
+.user-profile {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-color, #ddd);
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.user-avatar {
+  margin-bottom: 0.75rem;
+}
+
+.user-avatar img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-color, #007bff);
+}
+
+.user-info {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.user-name {
+  font-weight: 500;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+  color: #333;
+}
+
+.user-email {
+  font-size: 0.85rem;
+  color: #666;
+  word-break: break-all;
+}
+
+.login-button, .logout-button {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  color: #444;
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.login-button:hover {
+  background-color: #f8f8f8;
+}
+
+.logout-button {
+  background-color: #dc3545;
+  margin-top: 0.5rem;
+}
+
+.logout-button:hover {
+  background-color: #bd2130;
+}
+
+/* Dark mode adjustments */
+body.dark-mode .modal-content {
+  background: var(--dark-bg, #222);
+  color: var(--dark-text, #f0f0f0);
+}
+
+body.dark-mode .auth-form h2 {
+  color: var(--dark-text, #f0f0f0);
+}
+
+body.dark-mode .auth-tab {
+  color: var(--dark-text-secondary, #aaa);
+}
+
+body.dark-mode .auth-tab.active {
+  color: var(--primary-color, #007bff);
+}
+
+body.dark-mode .auth-form label {
+  color: var(--dark-text-secondary, #ccc);
+}
+
+body.dark-mode .auth-form input {
+  background-color: var(--dark-input-bg, #333);
+  border-color: var(--dark-border, #444);
+  color: var(--dark-text, #f0f0f0);
+}
+
+body.dark-mode .oauth-provider-btn {
+  background-color: var(--dark-input-bg, #333);
+  border-color: var(--dark-border, #444);
+}
+
+body.dark-mode .oauth-provider-btn:hover {
+  background-color: var(--dark-input-bg-hover, #3a3a3a);
+}
+
+body.dark-mode .oauth-signin-button,
+body.dark-mode .google-signin-button {
+  background-color: var(--dark-input-bg, #333);
+  color: var(--dark-text, #f0f0f0);
+  border-color: var(--dark-border, #444);
+}
+
+body.dark-mode .oauth-signin-button:hover,
+body.dark-mode .google-signin-button:hover {
+  background-color: var(--dark-input-bg-hover, #3a3a3a);
+}
+
+/* Dark mode for Microsoft button */
+body.dark-mode .microsoft-signin-button {
+  background-color: var(--dark-input-bg, #333);
+  color: var(--dark-text, #f0f0f0);
+  border-color: var(--dark-border, #444);
+}
+
+body.dark-mode .microsoft-signin-button:hover {
+  background-color: var(--dark-input-bg-hover, #3a3a3a);
+}
+
+/* Dark mode for Apple button */
+body.dark-mode .apple-signin-button {
+  background-color: #000;
+  color: #f0f0f0;
+  border-color: #444;
+}
+
+body.dark-mode .apple-signin-button:hover {
+  background-color: #222;
+}
+
+body.dark-mode .auth-description,
+body.dark-mode .auth-footer {
+  color: var(--dark-text-secondary, #aaa);
+}
+
+body.dark-mode .modal-close {
+  color: var(--dark-text-secondary, #aaa);
+}
+
+body.dark-mode .modal-close:hover {
+  color: var(--dark-text, #f0f0f0);
+}
+
+
+/* Add to auth.css */
+
+/* Verification styles */
+.verification-sent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 0;
+  text-align: center;
+}
+
+.verification-sent svg {
+  color: var(--primary-color, #007bff);
+  margin-bottom: 1.5rem;
+}
+
+.verification-message {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.verification-note {
+  font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
+  margin-bottom: 1.5rem;
+}
+
+.verification-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 280px;
+}
+
+.resend-btn {
+  padding: 0.5rem 1rem;
+  background-color: white;
+  color: var(--primary-color, #007bff);
+  border: 1px solid var(--primary-color, #007bff);
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.resend-btn:hover {
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+.resend-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.back-btn {
+  padding: 0.5rem 1rem;
+  background-color: #f2f2f2;
+  color: #555;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background-color: #e9e9e9;
+}
+
+.auth-success {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 0.75rem;
+  margin-bottom: 1.25rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+/* Dark mode styles */
+body.dark-mode .verification-message {
+  color: var(--dark-text, #f0f0f0);
+}
+
+body.dark-mode .verification-note {
+  color: var(--dark-text-secondary, #aaa);
+}
+
+body.dark-mode .verification-sent svg {
+  color: var(--primary-color, #007bff);
+}
+
+body.dark-mode .resend-btn {
+  background-color: var(--dark-input-bg, #333);
+  color: var(--primary-color, #007bff);
+  border-color: var(--primary-color, #007bff);
+}
+
+body.dark-mode .resend-btn:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+body.dark-mode .back-btn {
+  background-color: var(--dark-bg-hover, #2a2a2a);
+  color: var(--dark-text, #f0f0f0);
+  border-color: var(--dark-border, #444);
+}
+
+body.dark-mode .back-btn:hover {
+  background-color: var(--dark-input-bg-hover, #3a3a3a);
+}
+
+body.dark-mode .auth-success {
+  background-color: rgba(25, 135, 84, 0.2);
+  color: #75b798;
+}
+
+/* Facebook auth styling */
+.facebook-signin-button {
+  background-color: #1877F2;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+
+.facebook-signin-button:hover {
+  background-color: #166FE5;
+}
+
+/* Facebook icon in profile icons */
+.auth-provider-icon.facebook {
+  background-color: #1877F2;
+  color: white;
+}
+
+/* Add to your dark-mode styles if needed */
+body.dark-mode .auth-provider-icon.facebook {
+  background-color: #1877F2;
+  color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* OAuth provider button Facebook styling */
+.oauth-provider-btn svg {
+  flex-shrink: 0;
+}
+
+.oauth-provider-btn[title="Logg inn med Facebook"]:hover {
+  background-color: #f0f2f5;
+  color: #1877F2;
+}
+
+/* Forbedrede stilinger for OAuth-knapper */
+
+/* Generell forbedring av OAuth-provider-knapper */
+.oauth-provider-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 120px;
+  height: 44px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #444;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.oauth-provider-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Spesifikk styling for Google-knappen */
+.oauth-provider-btn[title="Logg inn med Google"] {
+  border-color: #eaeaea;
+}
+
+.oauth-provider-btn[title="Logg inn med Google"]:hover {
+  background-color: #f8f9fa;
+  border-color: #dadce0;
+  color: #202124;
+}
+
+/* Forbedret Google Sign-in knapp */
+.google-signin-button {
+  background-color: white;
+  color: #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: 6px;
+  border: 1px solid #dadce0;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  width: 100%;
+  max-width: 280px;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.google-signin-button:hover {
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  border-color: #dadce0;
+}
+
+/* Dark mode forbedringer */
+body.dark-mode .oauth-provider-btn {
+  background-color: #2a2a2a;
+  border-color: #444;
+  color: #e0e0e0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .oauth-provider-btn:hover {
+  background-color: #333;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+
+body.dark-mode .oauth-provider-btn[title="Logg inn med Google"] {
+  border-color: #444;
+  background-color: #2a2a2a;
+}
+
+body.dark-mode .oauth-provider-btn[title="Logg inn med Google"]:hover {
+  background-color: #333;
+  color: #e0e0e0;
+  border-color: #555;
+}
+
+body.dark-mode .google-signin-button {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+  border-color: #444;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .google-signin-button:hover {
+  background-color: #333;
+  border-color: #555;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Forbedret OAuth container */
+.oauth-providers {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  gap: 20px;
+  padding: 0.5rem 0 1.5rem 0;
+  border-bottom: 1px solid var(--border-color, #ddd);
+}
+
+/* Forbedret loading indikator */
+.auth-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  color: #555;
+  font-size: 0.95rem;
+  width: 100%;
+  max-width: 280px;
+  height: 48px;
+  text-align: center;
+  animation: pulse 1.5s infinite;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+body.dark-mode .auth-loading {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Forbedrede animasjoner for knappene */
+.oauth-provider-btn, 
+.google-signin-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.oauth-provider-btn:after, 
+.google-signin-button:after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.3);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%, -50%);
+  transform-origin: 50% 50%;
+}
+
+.oauth-provider-btn:focus:not(:active)::after,
+.google-signin-button:focus:not(:active)::after {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(15, 15);
+    opacity: 0;
+  }
+}

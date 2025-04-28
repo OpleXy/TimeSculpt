@@ -1,0 +1,148 @@
+/* Variables */
+:root {
+    --sidebar-width: 300px;
+    --primary-color: #007bff;
+    --primary-hover: #0056b3;
+    --bg-color: #f5f5f5;
+    --border-color: #ddd;
+    --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
+    --shadow-dragging: 0 8px 16px rgba(0, 0, 0, 0.2);
+    --save-button-color: #28a745;
+  }
+  
+  /* Reset and Base Styles */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  
+  body {
+    background-color: var(--bg-color);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  
+  /* Typography */
+  h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+  
+  h3 {
+    margin-bottom: 1rem;
+    color: #444;
+  }
+  
+  /* Layout Components */
+  .app-container {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+  
+  /* Form Elements */
+  .form-group {
+
+  }
+  
+
+  /* Main Content */
+  .main-content {
+    /*background: white;*/
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  
+  .main-content h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  /* Utility Classes 
+  .divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 1.5rem 0;
+  }*/
+  
+  .error {
+    color: #dc3545;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Animations */
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideUp {
+    from { 
+      opacity: 0;
+      transform: translateY(30px); 
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0); 
+    }
+  }
+  
+  @keyframes menuFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(0.8);
+      opacity: 0.8;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(0.8);
+      opacity: 0.8;
+    }
+  }
+  
+  @keyframes highlight {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  
+  @keyframes styleChange {
+    0% { transform: scale(0.95); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+  }

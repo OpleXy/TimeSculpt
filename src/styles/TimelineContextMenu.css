@@ -1,0 +1,466 @@
+/* Timeline Context Menu - Theme Compatible */
+
+.timeline-context-menu {
+    position: fixed;
+    z-index: 1000;
+    background-color: var(--card-background, white);
+    border-radius: 8px;
+    box-shadow: var(--dropdown-shadow, 0 3px 15px rgba(0, 0, 0, 0.15));
+    overflow: hidden;
+    border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+    width: 220px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    animation: menuFadeIn 0.2s ease-out;
+  }
+  
+  /* Menu Header */
+  .context-menu-header {
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--border-color, #eee);
+    font-weight: 500;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background-color: var(--header-background, white);
+    z-index: 10;
+    color: var(--text-color, #333);
+  }
+  
+  /* Center the header text when on the main menu */
+  .timeline-context-menu[data-view="main"] .context-menu-header {
+    justify-content: center;
+  }
+  
+  /* Back button */
+  .context-menu-back-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    color: var(--text-secondary, #555);
+    width: auto;
+    margin-right: 8px;
+  }
+  
+  .context-menu-back-btn:hover {
+    color: var(--text-color, #333);
+  }
+  
+  /* Menu Body */
+  .context-menu-body {
+    overflow-y: auto;
+    max-height: calc(80vh - 40px); /* Header height is roughly 40px */
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb, rgba(0, 123, 255, 0.3)) var(--scrollbar-track, transparent);
+  }
+  
+  .context-menu-body::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .context-menu-body::-webkit-scrollbar-track {
+    background: var(--scrollbar-track, transparent);
+  }
+  
+  .context-menu-body::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb, rgba(0, 123, 255, 0.3));
+    border-radius: 10px;
+  }
+  
+  /* Menu List */
+  .context-menu-list {
+    list-style: none;
+    margin: 0;
+    padding: 5px 0;
+  }
+  
+  /* Background Image List - Specific Styling */
+  .bg-image-list {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  /* Menu Items */
+  .context-menu-item {
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+    color: var(--text-color, #333);
+  }
+  
+  /* More compact padding for background image items */
+  .bg-image-list .context-menu-item {
+    padding: 8px 15px;
+  }
+  
+  .context-menu-item:hover {
+    background-color: var(--section-background, #f5f5f5);
+  }
+  
+  .context-menu-item.active {
+    background-color: var(--section-background, #f0f0f0);
+  }
+  
+  /* Color and Thickness Swatches */
+  .context-menu-color-swatch {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 3px;
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+  
+  .context-menu-thickness-swatch {
+    width: 30px;
+    height: 2px; /* Default, will be overridden inline */
+    background-color: currentColor;
+    margin-right: 10px;
+    border-radius: 1px;
+    flex-shrink: 0;
+  }
+  
+  /* Background Image Preview */
+  .bg-image-preview {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 3px;
+    margin-right: 10px;
+    background-color: var(--section-background, #eee);
+    flex-shrink: 0;
+  }
+  
+  /* Icons */
+  .context-menu-chevron {
+    margin-left: auto;
+    color: var(--text-secondary, #777);
+  }
+  
+  .context-menu-check {
+    margin-left: auto;
+    color: var(--button-primary, #007bff);
+  }
+  
+  /* Animation */
+  @keyframes menuFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  /* Dark Mode Specific Enhancements */
+  body.dark-mode .timeline-context-menu {
+    animation: menuFadeInDark 0.2s ease-out;
+  }
+  
+  @keyframes menuFadeInDark {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+      box-shadow: var(--dropdown-shadow);
+    }
+  }
+  
+  body.dark-mode .context-menu-item.active {
+    background-color: rgba(0, 123, 255, 0.15);
+    border-left: 2px solid var(--button-primary);
+    padding-left: 13px; /* Compensate for the border */
+  }
+  
+  body.dark-mode .context-menu-item:hover:not(.active) {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  /* Improve contrast for checkmark icons in dark mode */
+  body.dark-mode .context-menu-item.active .context-menu-check {
+    color: var(--button-primary);
+  }
+  
+  /* Color mapping for specific timeline colors in dark mode */
+  body.dark-mode .timeline-context-menu[data-color="#007bff"] .context-menu-thickness-swatch {
+    background-color: #3a97ff; /* Brighter blue for dark mode */
+  }
+  
+  body.dark-mode .timeline-context-menu[data-color="#dc3545"] .context-menu-thickness-swatch {
+    background-color: #e05561; /* Brighter red for dark mode */
+  }
+  
+  body.dark-mode .timeline-context-menu[data-color="#28a745"] .context-menu-thickness-swatch {
+    background-color: #34c653; /* Brighter green for dark mode */
+  }
+  
+  body.dark-mode .timeline-context-menu[data-color="#fd7e14"] .context-menu-thickness-swatch {
+    background-color: #ff9642; /* Brighter orange for dark mode */
+  }
+  
+  body.dark-mode .timeline-context-menu[data-color="#6f42c1"] .context-menu-thickness-swatch {
+    background-color: #8a5fdb; /* Brighter purple for dark mode */
+  }
+  
+  body.dark-mode .timeline-context-menu[data-color="#20c997"] .context-menu-thickness-swatch {
+    background-color: #2ee0ad; /* Brighter teal for dark mode */
+  }
+  
+  body.dark-mode .timeline-context-menu[data-color="#6c757d"] .context-menu-thickness-swatch {
+    background-color: #868e96; /* Brighter gray for dark mode */
+  }
+
+  /* Add these styles to TimelineContextMenu.css */
+
+/* Icon wrapper for menu items */
+.context-menu-icon-wrapper {
+  width: 16px;
+  height: 16px;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color, #333);
+  flex-shrink: 0;
+}
+
+/* Intervals submenu */
+.context-menu-intervals {
+  padding: 10px 15px;
+}
+
+.interval-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 5px 0;
+}
+
+.interval-toggle-row span {
+  font-size: 0.9rem;
+  color: var(--text-color, #333);
+}
+
+/* Switch styling */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .3s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--button-primary, #007bff);
+}
+
+input:checked + .slider:before {
+  transform: translateX(16px);
+}
+
+/* Interval count slider row */
+.interval-count-row {
+  margin-bottom: 15px;
+}
+
+.interval-count-row span {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-color, #333);
+  margin-bottom: 8px;
+}
+
+.interval-slider {
+  width: 100%;
+  height: 4px;
+  background: #e0e0e0;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 2px;
+}
+
+.interval-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--button-primary, #007bff);
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.interval-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--button-primary, #007bff);
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Interval info section */
+.interval-info {
+  display: flex;
+  align-items: flex-start;
+  background-color: rgba(0, 123, 255, 0.1);
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 0.8rem;
+  color: var(--text-secondary, #666);
+}
+
+.info-icon {
+  margin-right: 8px;
+  color: var(--button-primary, #007bff);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Apply button */
+.interval-apply-btn {
+  background-color: var(--button-primary, #007bff);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 0;
+  font-size: 0.9rem;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+.interval-apply-btn:hover {
+  background-color: var(--button-primary-hover, #0069d9);
+}
+
+/* Dark mode adjustments */
+body.dark-mode .interval-info {
+  background-color: rgba(0, 123, 255, 0.15);
+  color: var(--text-secondary, #aaa);
+}
+
+body.dark-mode .interval-slider {
+  background: #444;
+}
+
+body.dark-mode .interval-slider::-webkit-slider-thumb {
+  border-color: #333;
+}
+
+/* Back button fixes */
+.context-menu-back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  color: var(--text-secondary, #555);
+  width: auto;
+  margin-right: 8px;
+  transition: color 0.2s ease;
+}
+
+.context-menu-back-btn:hover {
+  color: var(--text-color, #333);
+}
+
+/* Fix for back button in dark mode */
+body.dark-mode .context-menu-back-btn {
+  color: var(--text-secondary, #aaa);
+}
+
+body.dark-mode .context-menu-back-btn:hover {
+  color: var(--text-color, #ddd);
+}
+
+.context-menu-back-btn:hover svg {
+  color: var(--text-secondary, #555);
+  stroke: currentColor;
+}
+
+.context-menu-back-btn:focus {
+  outline: none;
+  box-shadow: none;
+  color: var(--text-secondary, #555);
+}
+
+/* Add styles for the interval warning */
+.interval-warning {
+  display: flex;
+  align-items: flex-start;
+  background-color: rgba(255, 193, 7, 0.15);
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 0.8rem;
+  color: #856404;
+  border-left: 3px solid #ffc107;
+}
+
+.warning-icon {
+  margin-right: 8px;
+  color: #ffc107;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Dark mode adjustments */
+body.dark-mode .interval-warning {
+  background-color: rgba(255, 193, 7, 0.1);
+  color: #e0c271;
+}

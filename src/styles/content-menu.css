@@ -1,0 +1,146 @@
+/*
+.timeline-context-menu {
+    position: fixed;
+    z-index: 1000;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    width: 220px;
+    animation: menuFadeIn 0.2s ease-out;
+  }
+  
+  .context-menu-header {
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+    font-weight: 500;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f8f9fa;
+  }
+  
+  .context-menu-list {
+    list-style: none;
+    margin: 0;
+    padding: 5px 0;
+  }
+  
+  .context-menu-item {
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+  }
+  
+  .context-menu-item:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .context-menu-item.active {
+    background-color: #f0f0f0;
+  }
+  
+  .context-menu-icon {
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .context-menu-back-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    color: #555;
+    width: auto;
+    margin-right: 8px;
+  }
+  
+  .context-menu-back-btn:hover {
+    color: #333;
+  }
+  
+  .context-menu-chevron {
+    margin-left: auto;
+  }
+  
+  .context-menu-color-swatch {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+  }
+  
+  .context-menu-thickness-swatch {
+    width: 30px;
+    height: 4px;
+    background-color: #333;
+    border-radius: 1px;
+  }
+  
+
+  .thickness-1 {
+    height: 1px;
+  }
+  
+  .thickness-2 {
+    height: 2px;
+  }
+  
+  .thickness-3 {
+    height: 3px;
+  }
+  
+  .thickness-4 {
+    height: 4px;
+  }
+  
+
+  .timeline-context-menu[data-color="#007bff"] .context-menu-thickness-swatch {
+    background-color: #007bff;
+  }
+  
+  .timeline-context-menu[data-color="#dc3545"] .context-menu-thickness-swatch {
+    background-color: #dc3545;
+  }
+  
+  .timeline-context-menu[data-color="#28a745"] .context-menu-thickness-swatch {
+    background-color: #28a745;
+  }
+  
+  .timeline-context-menu[data-color="#fd7e14"] .context-menu-thickness-swatch {
+    background-color: #fd7e14;
+  }
+  
+  .timeline-context-menu[data-color="#6f42c1"] .context-menu-thickness-swatch {
+    background-color: #6f42c1;
+  }
+  
+  .timeline-context-menu[data-color="#20c997"] .context-menu-thickness-swatch {
+    background-color: #20c997;
+  }
+  
+  .timeline-context-menu[data-color="#6c757d"] .context-menu-thickness-swatch {
+    background-color: #6c757d;
+  }
+  
+
+  @keyframes menuFadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }*/

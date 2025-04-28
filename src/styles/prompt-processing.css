@@ -1,0 +1,77 @@
+/* Styles for the prompt processing overlay */
+
+.prompt-processing-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fade-in 0.3s ease-out;
+  }
+  
+  .prompt-processing-modal {
+    background-color: var(--bg-color, white);
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .prompt-processing-modal h3 {
+    margin: 15px 0 10px;
+    color: var(--text-color, #333);
+    font-size: 1.2rem;
+  }
+  
+  .prompt-processing-modal p {
+    color: var(--text-color-secondary, #666);
+    margin-bottom: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  
+  .prompt-processing-modal .loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid rgba(0, 123, 255, 0.2);
+    border-radius: 50%;
+    border-top-color: var(--primary-color, #007bff);
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Dark mode support */
+  [data-theme="dark"] .prompt-processing-modal {
+    background-color: var(--bg-color-dark, #343a40);
+  }
+  
+  [data-theme="dark"] .prompt-processing-modal h3 {
+    color: var(--text-color-dark, #f8f9fa);
+  }
+  
+  [data-theme="dark"] .prompt-processing-modal p {
+    color: var(--text-color-secondary-dark, #adb5bd);
+  }

@@ -1,0 +1,130 @@
+
+/* Expandable Menu Styles */
+.expandable-menu {
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+  
+/* Header button styling */
+.expandable-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--section-background);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-color);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+  
+.expandable-header:hover {
+  background-color: var(--header-background);
+}
+  
+.expandable-header.expanded {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  background-color: var(--header-background);
+  border-bottom: 1px solid var(--border-color);
+}
+  
+/* Icon container */
+.expandable-icon {
+  margin-right: 0.25rem;
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s ease;
+  color: var(--text-color);
+}
+  
+.expandable-icon.expanded {
+  transform: rotate(90deg);
+}
+  
+/* Content container */
+.expandable-content {
+  background-color: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-top: none;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  padding: 4px; /* Reduced from 0.75rem to 4px */
+  overflow: hidden;
+  animation: slideDown 0.3s ease-out;
+}
+  
+/* Animation for showing content */
+@keyframes slideDown {
+  from {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    max-height: 500px;
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+  
+/* Group container for multiple expandable menus */
+.expandable-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+  /* Making expandable-group not visible */
+  border: none;
+  box-shadow: none;
+}
+  
+/* Size buttons group styling */
+.size-buttons-group {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  justify-content: flex-start;
+}
+  
+.size-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--size-button-background);
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+}
+  
+.size-button:hover {
+  background-color: var(--size-button-hover);
+  border-color: var(--text-secondary);
+  transform: translateY(-1px);
+}
+  
+.size-button.active {
+  border-color: var(--button-primary, #007bff);
+  background-color: var(--size-button-active-bg);
+}
+  
+.size-button svg {
+  transition: all 0.2s;
+  stroke: var(--text-secondary);
+}
+  
+.size-button:hover svg {
+  stroke: var(--text-color);
+}
+  
+.size-button.active svg {
+  stroke: var(--button-primary, #007bff);
+}

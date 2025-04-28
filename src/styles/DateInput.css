@@ -1,0 +1,123 @@
+/* DateInput Component Styles */
+.date-input-container {
+  width: 100%;
+  position: relative;
+  margin-bottom: 0.75rem;
+}
+
+.date-input-container label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+  color: #444;
+  font-weight: 500;
+}
+
+.date-input-field {
+  display: flex;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border-color, #ddd);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  height: 36px;
+  position: relative;
+  background-color: white;
+}
+
+.date-input-field:focus-within {
+  border-color: var(--primary-color, #007bff);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
+}
+
+.date-input-field input[type="text"] {
+  flex-grow: 1;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+  background-color: white;
+  height: 100%; /* Fill the full height */
+  box-sizing: border-box; /* Include padding in height calculation */
+}
+
+.date-input-field input::placeholder {
+  color: #adb5bd;
+}
+
+.calendar-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+
+  padding: 0 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 32px;
+}
+
+.calendar-toggle-btn:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.calendar-toggle-btn svg {
+  width: 16px;
+  height: 16px;
+  color: #666;
+}
+
+/* Hide the native date input but keep it accessible */
+.native-date-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  opacity: 0;
+}
+
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.75rem;
+  margin-top: 3px;
+}
+
+/* For input field with error state */
+.date-input-field.error {
+  border-color: #dc3545;
+}
+
+.date-input-field.error:focus-within {
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25);
+}
+
+/* Required field marker */
+.required-mark {
+  color: #dc3545;
+  margin-left: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .format-hint {
+    font-size: 0.7rem;
+  }
+  
+  .error-message {
+    font-size: 0.7rem;
+  }
+  
+  .date-input-field {
+    height: 34px;
+  }
+  
+  .date-input-field input[type="text"] {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.6rem;
+  }
+}

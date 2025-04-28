@@ -1,0 +1,1757 @@
+/* Description Buttons - Fixed Styling */
+.add-description-btn,
+.hide-description-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0.75rem 0;
+  width: 100%;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  font-size: 0.95rem;
+  font-weight: 400;
+}
+
+/* Add description button style */
+.add-description-btn {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px dashed var(--primary-color);
+}
+
+.add-description-btn:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+/* Hide description button style */
+.hide-description-btn {
+  background-color: transparent;
+  color: #6c757d;
+  border: 1px solid #dee2e6;
+}
+
+.hide-description-btn:hover {
+  background-color: #f8f9fa;
+}
+
+/* Fix icon alignment in description buttons */
+.add-description-btn svg,
+.hide-description-btn svg {
+  margin-right: 8px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Ensure text alignment */
+.add-description-btn span,
+.hide-description-btn span {
+  line-height: 1.2;
+  display: inline-block;
+}
+  .detail-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: rgba(248, 249, 250, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    transition: background-color 0.3s, backdrop-filter 0.3s;
+  }
+  
+  .detail-panel-header h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .panel-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .panel-header-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #777;
+    transition: color 0.2s, background-color 0.2s;
+    border-radius: 4px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+  }
+  
+  .panel-header-actions button:hover {
+    color: #333;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  .detail-panel-content {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    transition: opacity 0.2s ease;
+  }
+  
+  /* Removed the entire .detail-panel-actions section */
+  
+  .event-description h5 {
+    display: none; /* Hide the "Beskrivelse" heading */
+  }
+  .description-content {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #444;
+    background-color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f3f5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .description-content a {
+    color: var(--primary-color);
+    text-decoration: underline;
+    word-break: break-all;
+    transition: color 0.2s;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+  
+  .description-content a:hover {
+    text-decoration: none;
+    color: var(--primary-hover);
+  }
+  
+  .description-content b, 
+  .description-content strong {
+    font-weight: bold;
+  }
+  
+  .description-content i, 
+  .description-content em {
+    font-style: italic;
+  }
+  
+  .description-content u {
+    text-decoration: underline;
+  }
+  
+  .description-content ol,
+  .description-content ul {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+  
+  .description-content li {
+    margin-bottom: 0.5rem;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+  
+  .description-content pre,
+  .description-content code {
+    max-width: 100%;
+    overflow-x: auto;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+  }
+  
+  .no-description {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 1.25rem;
+    border: 1px solid #e9ecef;
+  }
+  .description-content {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #444;
+    background-color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f3f5;
+  }
+  
+  .description-content a {
+    color: var(--primary-color);
+    text-decoration: underline;
+    word-break: break-all;
+    transition: color 0.2s;
+  }
+  
+  .description-content a:hover {
+    text-decoration: none;
+    color: var(--primary-hover);
+  }
+  
+  .description-content b, 
+  .description-content strong {
+    font-weight: bold;
+  }
+  
+  .description-content i, 
+  .description-content em {
+    font-style: italic;
+  }
+  
+  .description-content u {
+    text-decoration: underline;
+  }
+  
+  .description-content ol,
+  .description-content ul {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .description-content li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .no-description {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 1.25rem;
+    border: 1px solid #e9ecef;
+  }
+  .detail-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: rgba(248, 249, 250, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    transition: background-color 0.3s, backdrop-filter 0.3s;
+  }
+  
+  .detail-panel-header h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .panel-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .panel-header-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #777;
+    transition: color 0.2s, background-color 0.2s;
+    border-radius: 4px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .panel-header-actions button:hover {
+    color: #333;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  .close-panel-btn {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .expand-btn {
+    width: 30px;
+    height: 30px;
+  }
+  .panel-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .expand-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #777;
+    transition: color 0.2s;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .expand-btn:hover {
+    color: #333;
+    background-color: transparent;
+  }
+  
+  .detail-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #eee;
+    background-color: #f8f9fa;
+  }
+  
+  .detail-panel-header h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .panel-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  /* Ensure the event detail panel handles interactions correctly */
+  .event-detail-panel, 
+  .event-detail-panel * {
+    pointer-events: auto;
+  }
+  
+  .event-detail-panel {
+    z-index: 100; /* Ensure it's above the timeline */
+    pointer-events: auto; 
+  }
+  
+  /* Expanded mode specific styles */
+  .event-detail-panel.expanded {
+    width: 550px;
+  }
+  
+  .event-detail-panel.expanded .event-title h4 {
+    font-size: 1.4rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .event-detail-panel.expanded .event-date {
+    font-size: 1rem;
+    padding: 0.3rem 0.8rem;
+  }
+  
+  .event-detail-panel.expanded .event-description h5 {
+    font-size: 1.15rem;
+    margin: 1.2rem 0 0.8rem 0;
+  }
+  
+  .event-detail-panel.expanded .description-content {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .event-detail-panel.expanded {
+      width: 400px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .event-detail-panel.expanded {
+      width: 100%;
+    }
+  }
+  
+  .timeline-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem;
+    margin-bottom: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: all 0.2s;
+  }
+  
+  .timeline-item:hover {
+    background: #f0f0f0;
+    border-color: rgba(0, 123, 255, 0.2);
+  }
+  
+  .timeline-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .timeline-item button {
+    /*padding: 0.25rem 0.75rem;
+    width: auto;*/
+    font-size: 0.875rem;
+  }
+  
+  .timeline-item button:hover {
+    opacity: 0.9;
+  }
+  
+  /* Special Buttons */
+  .new-timeline-button {
+    transition: background-color 0.2s, margin-bottom 0.2s;
+    margin-bottom: 0;
+  }
+  
+  .new-timeline-button:hover {
+    background-color: rgba(0, 123, 255, 0.1) !important;
+  }/* Override the existing save button styles in ui-components.css */
+/* Add these styles to your project to ensure consistent save button styling */
+
+/* Save Button Base Styles */
+.save-timeline-btn {
+  background-color: transparent !important; /* Override existing styles */
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.3s, opacity 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  color: white;
+}
+
+/* Active state - when there are unsaved changes */
+.save-timeline-btn:not(:disabled) {
+  background-color: var(--save-button-color) !important;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* Inactive state - when there are no unsaved changes */
+.save-timeline-btn:disabled {
+  background-color: #6c757d !important;
+  opacity: 0.7;
+  cursor: default;
+}
+
+/* Hover state - only for enabled buttons */
+.save-timeline-btn:hover:not(:disabled) {
+  background-color: #218838 !important;
+}
+
+/* Topbar save button - has fixed width */
+.topbar-save-btn {
+  width: auto;
+  padding: 0 16px;
+  height: 36px;
+  margin-right: 10px;
+}
+
+/* Consistent icon and text styling */
+.save-timeline-btn svg {
+  margin-right: 8px;
+}
+
+/* Unsaved changes indicator (if needed) */
+.unsaved-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #f8f9fa;
+  margin-right: 8px;
+  animation: pulse 1.5s infinite;
+}
+
+
+/* Add Event Button Styling - Matches Save Button Style */
+.add-event-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  border-radius: 4px;
+  border: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin: 0.5rem 0;
+  width: 100%;
+  transition: background-color 0.3s, opacity 0.3s;
+  position: relative;
+  overflow: hidden;
+  color: white;
+}
+
+/* Active state - when adding event is possible */
+.add-event-btn:not(:disabled) {
+  background-color: var(--primary-color) !important;
+  opacity: 1;
+  cursor: pointer;
+}
+
+/* Inactive state - when adding event isn't possible */
+.add-event-btn:disabled {
+  background-color: #6c757d !important;
+  opacity: 0.7;
+  cursor: default;
+}
+
+/* Hover state - only for enabled buttons */
+.add-event-btn:hover:not(:disabled) {
+  background-color: var(--primary-hover) !important;
+}
+
+/* Fix icon alignment */
+.add-event-btn svg {
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.add-event-btn span {
+  line-height: 1.2;
+}
+
+/* Keep the existing styles for add-description-btn */
+.add-description-btn {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px dashed var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 0.75rem;
+  width: 100%;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  font-size: 0.9rem;
+}
+
+.add-description-btn:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.add-description-btn svg {
+  margin-right: 8px;
+}
+
+/* Make form validation messages more visible */
+.error {
+  color: #dc3545;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  padding: 0.5rem;
+  background-color: rgba(220, 53, 69, 0.1);
+  border-radius: 4px;
+  border-left: 3px solid #dc3545;
+}
+
+
+
+
+
+
+  .event-detail-panel {
+    position: fixed;
+    top: 60px;
+    right: 0;
+    height: calc(100vh - 60px);
+    width: 350px;
+    background: rgba(240, 240, 240, 0.7);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    box-shadow: -3px 0 15px rgba(0, 0, 0, 0.1);
+    z-index: 90;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--border-color);
+    transition: transform 0.3s ease-out;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+  
+  .event-detail-panel.hidden {
+    transform: translateX(100%);
+  }
+  
+  .event-detail-panel.expanded {
+    width: 550px;
+  }
+  
+  .detail-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #eee;
+    background-color: #f8f9fa;
+  }
+  
+  .detail-panel-header h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .close-panel-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #777;
+    transition: color 0.2s;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .close-panel-btn:hover {
+    color: #333;
+    background-color: transparent;
+  }
+  
+  .detail-panel-content {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    transition: opacity 0.2s ease;
+  }
+  
+  .detail-panel-content.loading {
+    opacity: 0.5;
+  }
+  
+  .detail-panel-content::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .detail-panel-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  .detail-panel-content::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+  
+  .detail-panel-content::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+  
+  .event-title {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+  }
+  
+  .event-title h4 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+  
+  .event-date {
+    display: inline-block;
+    font-size: 0.95rem;
+    color: #666;
+    background-color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #f1f3f5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 0.75rem;
+  }
+  
+  
+  .event-description h5 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1rem;
+    color: #444;
+    font-weight: 500;
+  }
+  
+  .description-content {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #444;
+  }
+  
+  .description-content a {
+    color: var(--primary-color);
+    text-decoration: underline;
+    word-break: break-all;
+  }
+  
+  .description-content a:hover {
+    text-decoration: none;
+  }
+  
+  .no-description {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 1.25rem;
+  }
+  
+  .detail-panel-actions {
+    display: flex;
+    padding: 1rem 1.5rem;
+    gap: 1rem;
+    border-top: 1px solid #eee;
+  }
+  
+  .detail-panel-actions button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+  
+  .detail-panel-actions .edit-btn {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  
+  .detail-panel-actions .edit-btn:hover {
+    background-color: var(--primary-hover);
+  }
+  
+  .detail-panel-actions .delete-btn {
+    background-color: white;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+  }
+  
+  .detail-panel-actions .delete-btn:hover {
+    background-color: rgba(220, 53, 69, 0.1);
+  }
+  
+  /* Event Edit Modal Styles */
+  .event-edit-modal form {
+    padding: 20px;
+  }
+  
+  .event-edit-modal {
+    margin-bottom: 1.5rem;
+  }
+  
+  .event-edit-modal label {
+    display: block;
+    margin-bottom: 0.6rem;
+    font-size: 0.95rem;
+    color: #444;
+    font-weight: 500;
+  }
+  
+  .event-edit-modal input,
+  .event-edit-modal textarea {
+    width: 100%;
+    padding: 0.85rem;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  
+  .event-edit-modal input:focus,
+  .event-edit-modal textarea:focus {
+    outline: none;
+    border-color: var(--primary-color, #007bff);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  }
+  
+  .event-edit-modal textarea {
+    resize: vertical;
+    min-height: 120px;
+    font-family: inherit;
+    line-height: 1.5;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 1.75rem;
+  }
+  
+  .cancel-btn, .save-btn {
+    padding: 0.7rem 1.4rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+  }
+  
+  .cancel-btn {
+    background-color: #f8f9fa;
+    color: #212529;
+    border: 1px solid #dee2e6;
+  }
+  
+  .cancel-btn:hover {
+    background-color: #e2e6ea;
+  }
+  
+  .save-btn {
+    background-color: var(--primary-color, #007bff);
+    color: white;
+    border: none;
+  }
+  
+  .save-btn:hover {
+    background-color: var(--primary-hover, #0069d9);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Delete section in edit modal */
+  .delete-section {
+    margin: 1.5rem 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eee;
+  }
+  
+  .delete-btn {
+    background-color: #f8f9fa;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.7rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  
+  .delete-btn:hover {
+    background-color: rgba(220, 53, 69, 0.1);
+  }
+  
+  .delete-btn svg {
+    margin-right: 8px;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .event-detail-panel {
+      width: 280px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .event-detail-panel {
+      width: 100%;
+    }
+    
+    .timeline-container.with-detail-panel {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+  }
+  
+  /* Expanded mode styles */
+  .event-detail-panel.expanded {
+    width: 550px;
+  }
+  
+  .event-detail-panel.expanded .event-title h4 {
+    font-size: 1.4rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .event-detail-panel.expanded .event-date {
+    font-size: 1rem;
+    padding: 0.3rem 0.8rem;
+  }
+  
+  .event-detail-panel.expanded .event-description h5 {
+    font-size: 1.15rem;
+    margin: 1.2rem 0 0.8rem 0;
+  }
+  
+  .event-detail-panel.expanded .description-content {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  
+  /* Responsive layout adjustments */
+  @media (max-width: 768px) {
+    .event-detail-panel.expanded {
+      width: 400px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .event-detail-panel.expanded {
+      width: 100%;
+    }
+  }
+ 
+  
+  
+  /* Event Detail Panel */
+  .event-detail-panel {
+    position: fixed;
+    top: 60px;
+    right: 0;
+    height: calc(100vh - 60px);
+    width: 350px;
+    background: rgba(240, 240, 240, 0.7);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    box-shadow: -3px 0 15px rgba(0, 0, 0, 0.1);
+    z-index: 90;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--border-color);
+    transition: transform 0.3s ease-out;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+  
+  .event-detail-panel.hidden {
+    transform: translateX(100%);
+  }
+  
+  .event-detail-panel.expanded {
+    width: 550px;
+  }
+  
+  /* Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.25);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+    backdrop-filter: blur(2px);
+    padding-top: 80px;
+  }
+  
+  .event-edit-modal {
+    background: white;
+    width: 600px;
+    max-width: 90vw;
+    border-radius: 10px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+    padding: 0;
+    position: relative;
+    max-height: calc(90vh - 80px);
+    overflow-y: auto;
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    /*border-bottom: 1px solid #eee;
+    background-color: white;*/
+  }
+  
+  .modal-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .modal-header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  /* Modal Header Buttons */
+  .modal-header-buttons .delete-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 38px;
+    margin: 0;
+    width: auto;
+  }
+  
+  .modal-header-buttons .delete-btn:hover {
+    background-color: rgba(220, 53, 69, 0.1);
+  }
+  
+  .modal-header-buttons .delete-btn svg {
+    margin-right: 8px;
+  }
+  
+  .modal-header-buttons .save-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 38px;
+    margin: 0;
+    width: auto;
+  }
+  
+  .modal-header-buttons .save-btn:hover {
+    background-color: #0069d9;
+  }
+  
+  .modal-header-buttons .save-btn svg {
+    margin-right: 8px;
+  }
+  
+  /* Rich Text Editor Styles */
+  .rich-text-editor {
+    position: relative;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .editor-toolbar {
+    display: flex;
+    background-color: #f8f9fa;
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    padding: 8px;
+    border-radius: 4px 4px 0 0;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  
+  .editor-toolbar.active {
+    max-height: 30px;
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .format-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px 8px;
+    margin: 0 2px;
+    border-radius: 4px;
+    color: #555;
+    transition: background-color 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+  }
+  
+  .format-btn:hover {
+    background-color: #e9ecef;
+    color: #333;
+  }
+  
+  .toggle-toolbar-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    color: #007bff;
+    transition: background-color 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+    width: auto;
+  }
+  
+  .toggle-toolbar-btn svg {
+    margin-right: 5px;
+  }
+  
+  .toggle-toolbar-btn:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+  }
+  
+  .color-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .color-palette {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    display: none;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 5px;
+    width: 120px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+  }
+  
+  .color-dropdown:hover .color-palette {
+    display: grid;
+  }
+  
+  .color-swatch {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    transition: transform 0.2s;
+  }
+  
+  .color-swatch:hover {
+    transform: scale(1.1);
+  }
+  
+  .editor-content {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0 0 4px 4px;
+    outline: none;
+    overflow-y: auto;
+    line-height: 1.5;
+    background-color: white;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  
+  .editor-toolbar:not(.active) + .toggle-toolbar-btn + .editor-content {
+    border-radius: 4px;
+  }
+  
+  .editor-content:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  }
+  
+  .editor-content[placeholder]:empty:before {
+    content: attr(placeholder);
+    color: #adb5bd;
+  }
+  
+  /* Size and Orientation Toggles */
+  .orientation-toggle {
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+  
+  .toggle-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #444;
+  }
+  
+  .toggle-labels {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .toggle-labels span {
+    font-size: 0.9rem;
+    color: #666;
+    transition: color 0.2s;
+  }
+  
+  .toggle-labels span.active {
+    color: var(--primary-color);
+    font-weight: 500;
+  }
+  
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+  }
+  
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+  }
+  
+  input:checked + .slider {
+    background-color: var(--primary-color);
+  }
+  
+  input:focus + .slider {
+    box-shadow: 0 0 1px var(--primary-color);
+  }
+  
+  input:checked + .slider:before {
+    transform: translateX(26px);
+  }
+  
+  .slider.round {
+    border-radius: 24px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }
+  
+  /* Size Buttons */
+  .size-buttons-group {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1rem;
+  }
+  
+  .size-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    background-color: #f5f5f5;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+  
+  .size-button:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    border-color: #888;
+  }
+  
+  .size-button.active {
+    border-color: var(--primary-color);
+    border-width: 2px;
+    background-color: rgba(0, 123, 255, 0.15);
+  }
+  
+  .size-button svg {
+    transition: all 0.2s ease;
+    stroke: #555;
+    stroke-width: 2.5;
+  }
+  
+  .size-button:hover svg {
+    transform: scale(1.1);
+    stroke: #333;
+  }
+  
+  .size-button.active svg {
+    stroke: var(--primary-color);
+    stroke-width: 3;
+    fill: rgba(0, 123, 255, 0.1);
+  }
+  
+  .size-button.small svg {
+    transform: scale(0.85);
+  }
+  
+  .size-button.small:hover svg {
+    transform: scale(0.95);
+  }
+  
+  .size-button.large svg {
+    transform: scale(1.2);
+  }
+  
+  .size-button.large:hover svg {
+    transform: scale(1.3);
+  }
+  
+  .size-button svg, 
+  .size-button {
+    transition: all 0.2s ease-in-out;
+  }
+  
+  /* Mobile Responsiveness */
+  @media (max-width: 576px) {
+    .modal-header {
+      padding: 12px 15px;
+    }
+    
+    .modal-header h3 {
+      font-size: 1.1rem;
+    }
+    
+    .modal-header-buttons {
+      gap: 6px;
+    }
+    
+    .modal-header-buttons .delete-btn,
+    .modal-header-buttons .save-btn {
+      padding: 6px 12px;
+      font-size: 0.85rem;
+    }
+  }
+
+  
+  /* Delete confirmation modal styles */
+.delete-confirmation-modal {
+  background: white;
+  width: 400px;
+  max-width: 90vw;
+  border-radius: 10px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+}
+
+.delete-confirmation-modal h3 {
+  margin: 0 0 15px 0;
+  font-size: 1.2rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.delete-confirmation-modal p {
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #555;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Make sure we have the animation defined */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Improved Timeline Item Design - Compatible with both light and dark mode */
+
+
+/* Timeline Item - Simplified Design */
+.timeline-item {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  margin-bottom: 8px;
+  background-color: var(--card-background, white);
+  border: 1px solid var(--border-color, #eee);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.timeline-item:hover {
+  border-color: var(--primary-color, #007bff);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+  padding-right: 20px;
+}
+
+.timeline-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-color, #333);
+  line-height: 1.3;
+  margin: 0;
+  white-space: nowrap;
+  /*overflow: hidden;*/
+  text-overflow: ellipsis;
+  max-width: calc(100% - 40px);
+}
+
+.timeline-date {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #6c757d);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.timeline-date svg {
+  opacity: 0.7;
+  color: var(--text-secondary, #6c757d);
+}
+
+/* Delete button */
+.delete-btn-subtle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  color: var(--text-secondary, #888);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.8;
+  z-index: 5;
+}
+
+.timeline-item:hover .delete-btn-subtle {
+  opacity: 0.8;
+}
+
+.delete-btn-subtle:hover {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: var(--delete-button-color, #dc3545);
+  opacity: 1;
+}
+
+/* Timeline limit indicator */
+.timeline-limit-indicator {
+  padding: 10px;
+  background-color: var(--section-background, #f8f9fa);
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #6c757d);
+  text-align: center;
+  transition: background-color 0.3s, color 0.3s;
+  border: 1px solid var(--border-color, #eee);
+}
+
+.timeline-limit-count {
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.timeline-limit-progress {
+  height: 6px;
+  background-color: var(--border-color, #e9ecef);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.timeline-limit-bar {
+  height: 100%;
+  background-color: var(--primary-color, #007bff);
+  border-radius: 3px;
+  transition: width 0.3s, background-color 0.3s;
+}
+
+.timeline-limit-bar.limit-reached {
+  background-color: var(--delete-button-color, #dc3545);
+}
+
+/* Empty state */
+.timeline-empty {
+  padding: 1rem;
+  text-align: center;
+  color: var(--text-secondary, #6c757d);
+  background-color: var(--section-background, #f8f9fa);
+  border-radius: 6px;
+  border: 1px dashed var(--border-color, #ddd);
+  font-size: 0.9rem;
+}
+
+.h3 {
+  color: var(--text-color, #333);
+
+}
+
+.event.small {
+  min-width: 100px;
+  max-width: 100px;
+}
+
+.event.medium {
+  min-width: 200px;
+  max-width: 200px;
+}
+
+.event.large {
+  min-width: 300px;
+  max-width: 300px;
+}
+
+
+/* Interval Type Selection Styles */
+.interval-type-container {
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.interval-type-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.interval-type-header span {
+  font-size: 0.85rem;
+  color: var(--text-color, #555);
+  margin-left: 6px;
+}
+
+.interval-type-select-wrapper {
+  position: relative;
+}
+
+.interval-type-select {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 0.9rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  background-color: var(--card-background, white);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  color: var(--text-color, #444);
+}
+
+.interval-type-select-wrapper::after {
+  content: '⌄';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 1rem;
+  color: var(--text-secondary, #666);
+}
+
+.interval-type-select:focus {
+  outline: none;
+  border-color: var(--button-primary, #007bff);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+/* Dark mode adjustments */
+body.dark-mode .interval-type-select {
+  background-color: var(--card-background, #333);
+  border-color: var(--border-color, #555);
+  color: var(--text-color, #ddd);
+}
+
+body.dark-mode .interval-type-select-wrapper::after {
+  color: var(--text-secondary, #aaa);
+}
+/* Timeline Intervals Styling */
+
+/* Interval marker base styles */
+.interval-marker {
+  position: absolute;
+  pointer-events: none; /* Allow click-through */
+  z-index: 6; /* Above timeline line but below events */
+}
+
+/* Marker line styles */
+.interval-marker .marker-line {
+  position: absolute;
+  background-color: rgba(0, 123, 255, 0.6); /* Default color with opacity */
+  transition: height 0.2s, width 0.2s;
+}
+
+/* Label styles for better visibility inside the timeline */
+.interval-marker .marker-label {
+  font-size: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 2px;
+  padding: 2px 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+  z-index: 7;
+  text-align: center;
+  font-weight: 500;
+  color: #444;
+}
+
+/* Horizontal timeline specific styles */
+.interval-marker.horizontal .marker-line {
+  width: 1px; /* Will be calculated based on timeline thickness */
+  height: 16px;
+}
+
+.interval-marker.horizontal .marker-label {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Vertical timeline specific styles */
+.interval-marker.vertical .marker-line {
+  height: 1px; /* Will be calculated based on timeline thickness */
+  width: 16px;
+}
+
+.interval-marker.vertical .marker-label {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Hover effect for better visibility */
+.timeline-container:hover .interval-marker .marker-label {
+  opacity: 1;
+}
+
+/* Dark mode support */
+body.dark-mode .interval-marker .marker-label {
+  background-color: rgba(30, 30, 30, 0.85);
+  color: #e0e0e0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Different interval types may have different styling if needed */
+.interval-marker.interval-type-yearly .marker-line,
+.interval-marker.interval-type-decade .marker-line,
+.interval-marker.interval-type-century .marker-line {
+  /* Make important markers more visible */
+  opacity: 0.8;
+}
+
+/* For smaller viewports, adjust the label size */
+@media (max-width: 768px) {
+  .interval-marker .marker-label {
+    font-size: 0.7rem;
+    max-width: 70px;
+    padding: 1px 3px;
+  }
+}

@@ -1,0 +1,982 @@
+/* src/topbar.css */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background: rgba(240, 240, 240, 0.9);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  height: 60px;
+  z-index: 100; /* Increased z-index to ensure it stays above sidebar */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+}
+
+.topbar-left,
+.topbar-center,
+.topbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.topbar-left {
+  flex: 1;
+}
+
+.topbar-center {
+  flex: 2;
+  justify-content: center;
+  text-align: center;
+}
+
+.topbar-right {
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.app-brand:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.timesculpt-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.5rem;
+  color: var(--primary-color);
+}
+
+.brand-name {
+  letter-spacing: 0.5px;
+}
+
+.timeline-title-display {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.timeline-period {
+  font-size: 0.8rem;
+  color: #666;
+  margin-left: 0.5rem;
+  font-weight: normal;
+}
+
+.topbar-user {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.topbar-user:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.topbar-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.topbar-username {
+  font-size: 0.85rem;
+  color: #555;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-arrow {
+  margin-left: 0.25rem;
+  transition: transform 0.2s;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 180px;
+  z-index: 200;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  margin-top: 5px;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #555;
+  transition: background-color 0.2s, color 0.2s;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f5f5;
+  color: var(--primary-color);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 0.5rem 0;
+}
+
+.dropdown-item svg {
+  margin-right: 0.5rem;
+}
+
+.logout-btn {
+  color: #dc3545;
+}
+
+.logout-btn:hover {
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.topbar-login-btn {
+  display: flex;
+  align-items: center;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 0.85rem;
+  font-weight: 500;
+  width: auto;
+  margin: 0;
+}
+
+.topbar-login-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+.topbar-login-btn svg {
+  margin-right: 0.5rem;
+}
+
+/* Adjustments for sidebar to avoid overlapping with topbar */
+.z-sidebar.with-topbar {
+  top: 60px !important;
+  height: calc(100vh - 60px) !important;
+}
+
+.z-sidebar.with-topbar .sidebar-toggle {
+  top: 20px !important; /* Reset the toggle button position relative to the sidebar */
+}
+
+/* Fix for collapsed sidebar with toggle button */
+.z-sidebar.with-topbar.collapsed .sidebar-toggle {
+  top: 20px !important;
+}
+
+/* Add these styles to your topbar.css file */
+
+.topbar-left {
+display: flex;
+align-items: center;
+gap: 10px; /* Add spacing between brand and timeline form button */
+}
+
+.topbar-timeline-form {
+position: relative;
+height: 36px;
+margin-left: 10px;
+}
+
+
+.topbar-form-dropdown::before {
+content: '';
+position: absolute;
+top: -6px;
+left: 20px;
+width: 12px;
+height: 12px;
+background: white;
+transform: rotate(45deg);
+border-left: 1px solid var(--border-color);
+border-top: 1px solid var(--border-color);
+}
+
+.form-row {
+display: flex;
+gap: 8px;
+margin-bottom: 1rem;
+}
+
+.form-group.half {
+flex: 1;
+margin-bottom: 0;
+}
+
+.form-footer {
+display: flex;
+justify-content: flex-end;
+margin-top: 0.5rem;
+border-top: 1px solid var(--border-color);
+padding-top: 1rem;
+}
+
+.create-btn {
+background-color: var(--primary-color);
+color: white;
+width: 100%;
+padding: 0.5rem;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+}
+
+@keyframes fadeIn {
+from {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+to {
+  opacity: 1;
+  transform: translateY(0);
+}
+}
+
+/* Adjust topbar for small screens */
+@media (max-width: 768px) {
+.topbar-timeline-form {
+  margin-left: 5px;
+}
+
+.topbar-form-dropdown {
+  width: 280px;
+}
+
+.form-row {
+  flex-direction: column;
+  gap: 10px;
+}
+}
+
+/* Add these styles to your topbar.css file */
+
+/* Timeline title edit styles */
+.timeline-title-display {
+position: relative;
+display: inline-flex;
+align-items: center;
+transition: background-color 0.2s;
+padding: 5px 8px;
+border-radius: 4px;
+}
+
+.timeline-title-display:hover {
+background-color: rgba(0, 123, 255, 0.1);
+}
+
+.timeline-title-display svg {
+opacity: 0.6;
+transition: opacity 0.2s;
+}
+
+.timeline-title-display:hover svg {
+opacity: 1;
+}
+
+.title-editor-container {
+position: absolute;
+top: 100%;
+left: 50%;
+transform: translateX(-50%);
+margin-top: 10px;
+background: white;
+border-radius: 8px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+padding: 1.5rem;
+z-index: 200;
+width: 400px;
+max-width: 90vw;
+}
+
+.title-editor-container::before {
+content: '';
+position: absolute;
+top: -8px;
+left: 50%;
+transform: translateX(-50%);
+width: 16px;
+height: 16px;
+background: white;
+transform: rotate(45deg);
+box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.title-editor-form h3 {
+margin-top: 0;
+margin-bottom: 1rem;
+font-size: 1.2rem;
+color: #333;
+}
+
+.title-editor-form label {
+display: block;
+margin-bottom: 0.25rem;
+font-size: 0.9rem;
+color: #555;
+}
+
+.title-editor-form input {
+width: 100%;
+padding: 0.5rem;
+border: 1px solid var(--border-color);
+border-radius: 4px;
+font-size: 1rem;
+}
+
+.form-row {
+display: flex;
+gap: 10px;
+margin-bottom: 1rem;
+}
+
+.form-group.half {
+flex: 1;
+}
+
+.warning-message {
+background-color: #fff3cd;
+color: #856404;
+padding: 0.75rem;
+border-radius: 4px;
+margin-bottom: 1rem;
+font-size: 0.9rem;
+border-left: 4px solid #ffeeba;
+}
+
+.form-buttons {
+display: flex;
+justify-content: flex-end;
+gap: 10px;
+margin-top: 1rem;
+}
+
+.cancel-btn {
+background-color: #6c757d;
+color: white;
+border: none;
+padding: 0.5rem 1rem;
+border-radius: 4px;
+cursor: pointer;
+transition: background-color 0.2s;
+font-weight: 500;
+width: auto;
+}
+
+.cancel-btn:hover {
+background-color: #5a6268;
+}
+
+.save-btn {
+background-color: var(--primary-color);
+color: white;
+border: none;
+padding: 0.5rem 1rem;
+border-radius: 4px;
+cursor: pointer;
+transition: background-color 0.2s;
+font-weight: 500;
+width: auto;
+}
+
+.save-btn:hover {
+background-color: var(--primary-hover);
+}
+
+/* Enhanced styles for Support and Feedback buttons */
+
+/* Base button style - common properties */
+.topbar-action-btn {
+display: flex;
+align-items: center;
+justify-content: center;
+border: none;
+border-radius: 4px;
+padding: 0.5rem 1rem;
+cursor: pointer;
+font-size: 0.85rem;
+font-weight: 500;
+height: 36px;
+width: auto;
+max-width: 160px;
+transition: all 0.2s ease;
+margin-right: 10px;
+}
+
+/* Support button specific styles */
+.support-btn {
+background-color: #17a2b8; /* Info blue color */
+color: white;
+}
+
+.support-btn:hover {
+background-color: #138496; /* Darker shade on hover */
+transform: translateY(-2px);
+box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.support-btn:active {
+transform: translateY(0);
+box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Support button icon */
+.support-btn::before {
+content: '';
+display: inline-block;
+width: 16px;
+height: 16px;
+margin-right: 8px;
+background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cpath d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3'%3E%3C/path%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'%3E%3C/line%3E%3C/svg%3E");
+background-size: contain;
+background-repeat: no-repeat;
+background-position: center;
+}
+
+/* Feedback button specific styles */
+.feedback-btn {
+background-color: #6c757d; /* Gray color */
+color: white;
+}
+
+.feedback-btn:hover {
+background-color: #5a6268; /* Darker shade on hover */
+transform: translateY(-2px);
+box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.feedback-btn:active {
+transform: translateY(0);
+box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.feedback-btn svg {
+margin-right: 8px;
+}
+
+/* Responsive styles for small screens */
+@media (max-width: 768px) {
+.topbar-action-btn span {
+  display: none; /* Hide text on small screens */
+}
+
+.topbar-action-btn {
+  padding: 0.5rem;
+  width: 36px; /* Square button when only showing icon */
+  border-radius: 50%; /* Make it circular */
+}
+
+.support-btn::before,
+.feedback-btn svg {
+  margin-right: 0; /* Remove margin when text is hidden */
+}
+
+.topbar-right {
+  gap: 8px; /* Add some space between buttons on mobile */
+}
+}
+
+
+
+
+
+/* Enhanced topbar user styles with improved dark mode support */
+
+/* Topbar user container */
+.topbar-user {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.topbar-user:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+body.dark-mode .topbar-user {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .topbar-user:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Avatar styling */
+.topbar-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  border: 1px solid #e0e0e0;
+  object-fit: cover;
+}
+
+body.dark-mode .topbar-avatar {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Topbar username */
+.topbar-username {
+  font-size: 0.9rem;
+  color: #333;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0 0.5rem 0 0.25rem;
+  font-weight: 500;
+}
+
+body.dark-mode .topbar-username {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Dropdown arrow */
+.dropdown-arrow {
+  transition: transform 0.2s ease;
+  color: #666;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+body.dark-mode .dropdown-arrow {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* User dropdown */
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  z-index: 200;
+  overflow: hidden;
+  border: 1px solid #eaeaea;
+  margin-top: 8px;
+  animation: dropdownFadeIn 0.2s ease;
+}
+
+body.dark-mode .user-dropdown {
+  background-color: #2d2d2d;
+  border-color: #444;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dropdown items */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  font-weight: 400;
+  margin: 0;
+}
+
+.dropdown-item svg {
+  margin-right: 10px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdown-item:hover svg {
+  opacity: 1;
+}
+
+body.dark-mode .dropdown-item {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+/* Divider */
+.dropdown-divider {
+  height: 1px;
+  background-color: #eee;
+  margin: 0.25rem 0;
+}
+
+body.dark-mode .dropdown-divider {
+  background-color: #444;
+}
+
+/* Logout button */
+.logout-btn {
+  color: #dc3545 !important;
+}
+
+.logout-btn:hover {
+  background-color: rgba(220, 53, 69, 0.1) !important;
+  color: #dc3545 !important;
+}
+
+body.dark-mode .logout-btn {
+  color: #ff6b6b !important;
+}
+
+body.dark-mode .logout-btn:hover {
+  background-color: rgba(255, 107, 107, 0.15) !important;
+  color: #ff6b6b !important;
+}
+
+/* Avatar initials (when no photo) */
+.avatar-initials {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e9ecef;
+  color: #495057;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-right: 0.5rem;
+  border: 1px solid #dee2e6;
+}
+
+body.dark-mode .avatar-initials {
+  background-color: #444;
+  color: #f0f0f0;
+  border-color: #555;
+}
+
+/* Enhanced dropdown form styling with better organization and dark mode support */
+
+/* Timeline form container */
+.topbar-timeline-form {
+  position: relative;
+  height: 36px;
+  margin-left: 10px;
+}
+
+/* New timeline button */
+.new-timeline-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  padding: 0 12px;
+  border-radius: 4px;
+  border: 1px dashed var(--button-primary);
+  background-color: transparent;
+  color: var(--button-primary);
+  height: 36px;
+  width: auto;
+  margin: 0;
+}
+
+.new-timeline-button:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.new-timeline-button.active {
+  background-color: var(--size-button-active-bg);
+}
+
+.new-timeline-button svg {
+  margin-right: 6px;
+}
+
+body.dark-mode .new-timeline-button {
+  border-color: var(--button-primary);
+  color: var(--button-primary);
+}
+
+body.dark-mode .new-timeline-button:hover {
+  background-color: rgba(0, 123, 255, 0.2);
+}
+
+/* Dropdown form container */
+.topbar-form-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--card-background);
+  border-radius: 8px;
+  box-shadow: var(--dropdown-shadow);
+  width: 480px;
+  padding: 1.25rem;
+  margin-top: 8px;
+  z-index: 200;
+  border: 1px solid var(--border-color);
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Arrow pointer for dropdown */
+.topbar-form-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 20px;
+  width: 12px;
+  height: 12px;
+  background-color: var(--card-background);
+  transform: rotate(45deg);
+  border-left: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-color);
+}
+
+/* Timeline limit info */
+.timeline-limit-info {
+  margin-bottom: 15px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  background-color: var(--section-background);
+  padding: 10px 12px;
+  border-radius: 6px;
+  text-align: center;
+  border: 1px solid var(--border-color);
+}
+
+.timeline-limit-info.warning {
+  color: var(--warning-text);
+  background-color: var(--warning-background);
+  border-color: var(--warning-border);
+}
+
+.timeline-limit-info strong {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+/* Form inputs styling */
+.topbar-form-dropdown .form-group {
+  margin-bottom: 12px;
+}
+
+.topbar-form-dropdown input[type="text"] {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  background-color: var(--input-background);
+  color: var(--text-color);
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+}
+
+.topbar-form-dropdown input[type="text"]:focus {
+  border-color: var(--button-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.topbar-form-dropdown input[type="text"]::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+/* Form row layout */
+.form-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.form-group.half {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* Footer with create button */
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+/* Create button */
+.create-btn {
+  background-color: var(--button-primary);
+  color: white;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.create-btn:hover:not(:disabled) {
+  background-color: var(--button-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.create-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background-color: var(--badge-background);
+}
+
+body.dark-mode .create-btn:disabled {
+  background-color: var(--badge-background);
+}
+
+body.dark-mode .create-btn:hover:not(:disabled) {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Animation for dropdown */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Toggle switch integration */
+.topbar-form-dropdown .toggle-switch-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+
+.topbar-form-dropdown .toggle-switch-label {
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+/* Date input integration */
+.topbar-form-dropdown .date-input-container {
+  width: 100%;
+}
+
+.topbar-form-dropdown .date-input-field {
+  width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .topbar-timeline-form {
+    margin-left: 5px;
+  }
+
+  .topbar-form-dropdown {
+    width: 280px;
+    padding: 1rem;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .timeline-limit-info {
+    font-size: 0.8rem;
+    padding: 8px;
+  }
+}
+
+.creation-mode-selector button {
+  flex: 1;
+  padding: 10px 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-color-secondary, #6c757d);
+  transition: all 0.2s;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0; /* Allow buttons to shrink */
+}

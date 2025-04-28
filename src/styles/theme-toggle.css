@@ -1,0 +1,91 @@
+/* src/styles/theme-toggle.css */
+
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .theme-toggle-btn {
+    background-color: var(--card-background, white);
+    border: 1px solid var(--border-color, #ddd);
+    color: var(--text-color, #333);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  body.dark-mode .theme-toggle-btn {
+    background-color: var(--card-background, #2d2d2d);
+    border-color: var(--border-color, #444);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  }
+  
+  .theme-toggle-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  body.dark-mode .theme-toggle-btn:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  }
+  
+  .theme-sync-indicator {
+    font-size: 12px;
+    color: var(--text-secondary, #6c757d);
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+  }
+  
+  .theme-sync-indicator:hover {
+    opacity: 1;
+  }
+  
+  /* Theme toggle for user profile */
+  .theme-toggle-profile-btn {
+    background-color: var(--button-secondary, #e9ecef);
+    border: 1px solid var(--input-border, #ced4da);
+    color: var(--button-text, #495057);
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: 8px;
+  }
+  
+  .theme-toggle-profile-btn:hover {
+    background-color: var(--button-secondary-hover, #dee2e6);
+  }
+  
+  body.dark-mode .theme-toggle-profile-btn {
+    background-color: var(--button-secondary, #444);
+    border-color: var(--input-border, #555);
+    color: var(--button-text, #e0e0e0);
+  }
+  
+  body.dark-mode .theme-toggle-profile-btn:hover {
+    background-color: var(--button-secondary-hover, #555);
+  }
+  
+  /* Animation for theme change */
+  @keyframes themeTransition {
+    0% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.2) rotate(180deg); }
+    100% { transform: scale(1) rotate(360deg); }
+  }
+  
+  .theme-toggle-btn:active {
+    animation: themeTransition 0.5s ease;
+  }
+  
+  /* For topbar placement */
+  .theme-toggle-container {
+    margin-left: 16px;
+  }

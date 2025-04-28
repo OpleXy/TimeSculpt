@@ -1,0 +1,54 @@
+/* Glidende overgang for beskrivelsesfeltet */
+.description-container {
+  opacity: 1;
+  max-height: 500px; /* Sett til en verdi som er høyere enn den faktiske høyden */
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.description-container.animating {
+  animation: fadeSlideDown 0.3s ease-in-out forwards;
+}
+
+@keyframes fadeSlideDown {
+  0% {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    max-height: 500px;
+    transform: translateY(0);
+  }
+}
+
+/* Stiler for å styre overgangen mellom knappene */
+.add-description-btn, 
+.hide-description-btn {
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Forbedret hover-effekter for beskrivelsesknappene - fjernet translateY */
+.add-description-btn:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.hide-description-btn:hover {
+  background-color: rgba(108, 117, 125, 0.1);
+}
+
+/* Animasjon for selve ikonet i knappen - fjernet rotasjonseffekt */
+.add-description-btn svg,
+.hide-description-btn svg {
+  transition: transform 0.2s ease;
+}
+
+/* Fjernet rotasjonseffekt for add-description-btn */
+.add-description-btn:hover svg {
+  transform: scale(1.2);
+}
+
+.hide-description-btn:hover svg {
+  transform: scale(1.2);
+}
