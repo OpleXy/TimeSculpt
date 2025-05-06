@@ -1,7 +1,7 @@
+import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import EventForm from './EventForm';
 import TimelineList from './TimelineList';
-import TimelineCommandInput from './TimelineCommandInput';
+import EventCreationSelector from './EventCreationSelector';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/sidebar.css';
 import '../styles/timeline-command-input.css';
@@ -16,7 +16,6 @@ function Sidebar({
   onLoadTimeline, 
   onCreateTimeline,
   hasUnsavedChanges,
-  showWelcomeContent,
   timelineListRefreshTrigger
 }) {
   const [showEventInput, setShowEventInput] = useState(false);
@@ -42,14 +41,16 @@ function Sidebar({
   const sidebarRef = useRef(null);
   const resizerRef = useRef(null);
   
-  // Show event form if timeline has title, start and end dates
+  // Check if the timeline has the required fields to show event creation tools
+  const hasBasicTimelineData = timelineData && 
+                              timelineData.title && 
+                              timelineData.start && 
+                              timelineData.end;
+  
+  // Show event form immediately when timeline has title, start and end dates
   useEffect(() => {
-    if (timelineData.title && timelineData.start && timelineData.end) {
-      setShowEventInput(true);
-    } else {
-      setShowEventInput(false);
-    }
-  }, [timelineData]);
+    setShowEventInput(hasBasicTimelineData);
+  }, [hasBasicTimelineData, timelineData]);
 
   // Define handlers with useCallback to maintain reference stability
   const handleMouseMove = useCallback((e) => {
@@ -245,7 +246,7 @@ function Sidebar({
     >
       <div className="sidebar-content" style={{ overflowY: 'auto', overflowX: 'hidden', height: '100%' }}>
         {/* SECTION 1: New Timeline Guide (Empty State) */}
-        {!showEventInput && !isAuthenticated && (
+        {!hasBasicTimelineData && !isAuthenticated && (
           <div className="new-button-guide">
             <div className="guide-arrow">
               <ArrowDownIcon />
@@ -255,20 +256,15 @@ function Sidebar({
           </div>
         )}
         
-        {/* SECTION 2: Timeline Creation Tools - Always show when timeline exists */}
-        {showEventInput && (
+        {/* SECTION 2: Timeline Creation Tools - Always show when timeline exists with basic data */}
+        {hasBasicTimelineData && (
           <>
-            {/* Timeline Command Input - Always at the top when a timeline exists */}
-            <TimelineCommandInput 
-              timelineData={timelineData}
-              addEvent={addEvent}
-            />
-          
-            {/* Always show Event Form */}
-            <EventForm 
+            {/* Use EventCreationSelector with integrated TimelineCommandInput */}
+            <EventCreationSelector 
               onAddEvent={handleEventAdd} 
               timelineStart={timelineData.start} 
-              timelineEnd={timelineData.end} 
+              timelineEnd={timelineData.end}
+              timelineData={timelineData}
             />
               
             {/* Save button */}
@@ -294,7 +290,7 @@ function Sidebar({
         )}
         
         {/* SECTION 4: Login Prompt */}
-        {!isAuthenticated && !showEventInput && (
+        {!isAuthenticated && !hasBasicTimelineData && (
           <div className="sidebar-login-prompt">
             <h4>🔐 Tilgang til dine tidslinjer</h4>
             <p><strong>Logg inn</strong> for å lagre, redigere og komme tilbake til tidslinjene dine når som helst.</p>
@@ -308,7 +304,7 @@ function Sidebar({
           </div>
         )}
       </div>
-      
+
       {/* Sidebar resizer */}
       <div 
         ref={resizerRef}

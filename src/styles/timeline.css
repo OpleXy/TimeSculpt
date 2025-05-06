@@ -360,3 +360,343 @@
   white-space: nowrap;
   margin-left: 18px; /* Increased for better spacing with longer markers */
 }
+
+/* Legg til disse stilene i timeline.css filen */
+
+/* Gjør tidslinjen klikkbar med visuell indikasjon */
+.timeline-line {
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+.timeline-line:hover {
+  filter: brightness(1.2);
+}
+
+/* Stiler for Create Event Modal */
+.create-event-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.create-event-modal {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  width: 300px;
+  animation: scaleIn 0.2s ease-out;
+
+}
+
+.create-event-modal h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.create-event-modal .date-display {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.create-event-modal .form-group {
+  margin-bottom: 1rem;
+}
+
+.create-event-modal label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+}
+
+.create-event-modal input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.create-event-modal .modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.create-event-modal button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.create-event-modal button:hover {
+  transform: translateY(-1px);
+}
+
+.create-event-modal .cancel-btn {
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+.create-event-modal .cancel-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.create-event-modal .save-btn {
+  background-color: var(--timeline-color, #007bff);
+  color: white;
+}
+
+.create-event-modal .save-btn:hover {
+  filter: brightness(1.1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+  to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+/* Minimalistisk stil for CreateEventModal */
+
+/* Bakgrunnsoverlegg med transparent effekt */
+.create-event-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Minimalistisk stil for CreateEventModal - kompatibel med dark mode */
+
+/* Bakgrunnsoverlegg med transparent effekt */
+.create-event-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Modal boks med minimalistisk stil - dark mode kompatibel */
+.create-event-modal {
+  background-color: var(--modal-bg, white);
+  color: var(--modal-text, #333);
+  padding: 1.2rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
+  width: 280px;
+  animation: scaleIn 0.2s ease-out;
+  /* Fjernet blå border */
+}
+
+/* Dark mode støtte */
+.dark-mode .create-event-modal {
+  --modal-bg: #1e1e1e;
+  --modal-text: #e1e1e1;
+  --input-bg: #2c2c2c;
+  --input-border: #444;
+  --input-text: #e1e1e1;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.25);
+}
+
+:root {
+  --modal-bg: white;
+  --modal-text: #333;
+  --input-bg: white;
+  --input-border: #eaeaea;
+  --input-text: #333;
+}
+
+/* Tittel med minimalistisk stil */
+.create-event-modal h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--modal-text, #333);
+}
+
+/* Dato-visning */
+.create-event-modal .date-display {
+  font-size: 0.85rem;
+  color: var(--date-color, #666);
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color, #f0f0f0);
+  padding-bottom: 0.75rem;
+}
+
+.dark-mode .create-event-modal .date-display {
+  --date-color: #aaa;
+  --border-color: #444;
+}
+
+/* Formgruppering */
+.create-event-modal .form-group {
+  margin-bottom: 1rem;
+}
+
+/* Etikett for input */
+.create-event-modal label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--label-color, #555);
+}
+
+.dark-mode .create-event-modal label {
+  --label-color: #bbb;
+}
+
+/* Input-felt */
+.create-event-modal input {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid var(--input-border, #eaeaea);
+  border-radius: 4px;
+  font-size: 0.95rem;
+  background-color: var(--input-bg, white);
+  color: var(--input-text, #333);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.create-event-modal input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.dark-mode .create-event-modal input:focus {
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+/* Knapperad */
+.create-event-modal .modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.2rem;
+}
+
+/* Base knappstil */
+.create-event-modal button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+/* Hover-effekt for knapper */
+.create-event-modal button:hover {
+  transform: translateY(-1px);
+}
+
+/* Avbryt-knapp */
+.create-event-modal .cancel-btn {
+  background-color: transparent;
+  color: var(--cancel-btn-color, #666);
+}
+
+.create-event-modal .cancel-btn:hover {
+  background-color: var(--cancel-btn-hover, #f5f5f5);
+  color: var(--cancel-btn-hover-text, #333);
+}
+
+.dark-mode .create-event-modal .cancel-btn {
+  --cancel-btn-color: #aaa;
+  --cancel-btn-hover: #333;
+  --cancel-btn-hover-text: #eee;
+}
+
+/* Legg til-knapp (tidligere Lagre-knapp) */
+.create-event-modal .save-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.create-event-modal .save-btn:hover {
+  filter: brightness(1.05);
+}
+
+/* Innfadingsanimasjon */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Skaleringanimasjon */
+@keyframes scaleIn {
+  from { transform: translate(-50%, -50%) scale(0.95); opacity: 0; }
+  to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+/* Tidslinje-markør stil */
+.timeline-line {
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+/* Plus-cursor ved hover */
+.timeline-line:hover {
+  cursor: crosshair;
+  filter: brightness(1.2);
+}
+
+/* Hoverdato-stil - minimalistisk og subtil, dark mode-kompatibel */
+.timeline-hover-date {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: white;
+  padding: 3px 7px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  pointer-events: none;
+  z-index: 50;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.15s ease-out;
+  transform: translateY(-5px);
+}
+
+.dark-mode .timeline-hover-date {
+  background-color: rgba(30, 30, 30, 0.9);
+  color: #e1e1e1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}

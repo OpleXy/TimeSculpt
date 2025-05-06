@@ -1,0 +1,319 @@
+/* src/styles/timeline-cards.css */
+
+/* Enhanced timeline cards with privacy features */
+.timeline-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .timeline-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .timeline-card-header {
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  
+  .timeline-card-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    max-width: 70%;
+  }
+  
+  .timeline-card .privacy-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .timeline-card .privacy-badge.public {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.2);
+  }
+  
+  .timeline-card .privacy-badge.private {
+    background-color: rgba(108, 117, 125, 0.1);
+    color: #6c757d;
+    border: 1px solid rgba(108, 117, 125, 0.2);
+  }
+  
+  .timeline-card-body {
+    padding: 16px;
+    flex-grow: 1;
+  }
+  
+  .timeline-card-body .timeline-dates {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+  }
+  
+  .timeline-card-footer {
+    padding: 16px;
+    border-top: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .timeline-card-actions {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .timeline-card-actions.primary-actions {
+    justify-content: space-between;
+  }
+  
+  .timeline-card-actions.privacy-actions {
+    justify-content: flex-start;
+  }
+  
+  .timeline-card-footer button {
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+  
+  .timeline-card-footer .edit-btn {
+    background-color: #fff;
+    border: 1px solid #007bff;
+    color: #007bff;
+    flex: 1;
+  }
+  
+  .timeline-card-footer .edit-btn:hover {
+    background-color: #f0f7ff;
+  }
+  
+  .timeline-card-footer .delete-btn {
+    background-color: #fff;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    flex: 1;
+  }
+  
+  .timeline-card-footer .delete-btn:hover {
+    background-color: #fff8f8;
+  }
+  
+  .timeline-card-footer .privacy-toggle-btn {
+    background-color: #fff;
+    border: 1px solid #6c757d;
+    color: #6c757d;
+  }
+  
+  .timeline-card-footer .privacy-toggle-btn:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .timeline-card-footer .privacy-toggle-btn.public {
+    border-color: #28a745;
+    color: #28a745;
+  }
+  
+  .timeline-card-footer .privacy-toggle-btn.public:hover {
+    background-color: rgba(40, 167, 69, 0.05);
+  }
+  
+  .timeline-card-footer .share-btn {
+    background-color: #28a745;
+    border: 1px solid #28a745;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .timeline-card-footer .share-btn:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+  }
+  
+  .timeline-card-footer .copy-success {
+    color: #28a745;
+    font-size: 12px;
+    margin-top: 4px;
+    text-align: right;
+  }
+  
+  /* Timeline grid layout */
+  .timelines-full-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+  }
+  
+  /* Dark mode styles */
+  .dark-mode .timeline-card {
+    background-color: #343a40;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  .dark-mode .timeline-card-header {
+    border-bottom-color: #495057;
+  }
+  
+  .dark-mode .timeline-card-footer {
+    border-top-color: #495057;
+  }
+  
+  .dark-mode .timeline-card-header h3 {
+    color: #f8f9fa;
+  }
+  
+  .dark-mode .timeline-card-body .timeline-dates {
+    color: #adb5bd;
+  }
+  
+  .dark-mode .timeline-card-footer .edit-btn {
+    background-color: transparent;
+    border-color: #0d6efd;
+    color: #0d6efd;
+  }
+  
+  .dark-mode .timeline-card-footer .edit-btn:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+  }
+  
+  .dark-mode .timeline-card-footer .delete-btn {
+    background-color: transparent;
+    border-color: #dc3545;
+    color: #dc3545;
+  }
+  
+  .dark-mode .timeline-card-footer .delete-btn:hover {
+    background-color: rgba(220, 53, 69, 0.1);
+  }
+  
+  .dark-mode .timeline-card-footer .privacy-toggle-btn {
+    background-color: transparent;
+    border-color: #6c757d;
+    color: #adb5bd;
+  }
+  
+  .dark-mode .timeline-card-footer .privacy-toggle-btn:hover {
+    background-color: rgba(108, 117, 125, 0.1);
+  }
+  
+  .dark-mode .timeline-card-footer .privacy-toggle-btn.public {
+    border-color: #28a745;
+    color: #28a745;
+  }
+  
+  .dark-mode .timeline-card-footer .share-btn {
+    background-color: #218838;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .timelines-full-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .timeline-card-footer {
+      flex-direction: column;
+    }
+    
+    .timeline-card-actions {
+      width: 100%;
+    }
+  }
+  
+  /* Enhanced privacy badge in timeline list */
+  .timeline-item .privacy-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    margin-right: 8px;
+  }
+  
+  .timeline-item-details {
+    display: flex;
+    align-items: center;
+    margin-top: 4px;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  .timeline-item-title {
+    font-weight: 500;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+  
+  .timeline-item .timeline-dates {
+    font-size: 11px;
+    color: #6c757d;
+  }
+  
+  /* Fix for timeline list in sidebar */
+  .timeline-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .timeline-item {
+    margin-bottom: 8px;
+  }
+  
+  .load-timeline-btn {
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+    background-color: transparent;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: block;
+  }
+  
+  .load-timeline-btn:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+    border-color: rgba(0, 123, 255, 0.3);
+  }
+  
+  .dark-mode .load-timeline-btn {
+    border-color: #495057;
+    color: #f8f9fa;
+  }
+  
+  .dark-mode .load-timeline-btn:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+    border-color: rgba(13, 110, 253, 0.3);
+  }
+  
+  .dark-mode .timeline-item .timeline-dates {
+    color: #adb5bd;
+  }

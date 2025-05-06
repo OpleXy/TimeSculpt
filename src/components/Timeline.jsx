@@ -5,22 +5,22 @@ import TimelineContextMenu from './TimelineContextMenu';
 import EventDetailPanel from './EventDetailPanel';
 import BackgroundManager from './BackgroundManager';
 import TimelineIntervals from './TimelineIntervals';
+import CreateEventModal from './CreateEventModal'; // Ny import
 import { setDocumentTitle } from '../services/documentTitleService';
 
 function Timeline({ 
   timelineData, 
   setTimelineData,
-  // Added props for interval markers
   showIntervals = true,
   intervalCount = 5,
-  intervalType = 'even', // Add default interval type
+  intervalType = 'even',
   onUpdateIntervalSettings
 }) {
   const timelineRef = useRef(null);
   const containerRef = useRef(null);
   const [isPanning, setIsPanning] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-  const [translatePos, setTranslatePos] = useState({ x: 280, y: 125 }); // Set default values directly here
+  const [translatePos, setTranslatePos] = useState({ x: 280, y: 125 });
   const [zoom, setZoom] = useState(0.7);
   const [editingEvent, setEditingEvent] = useState(null);
   const [editingEventIndex, setEditingEventIndex] = useState(null);
@@ -28,6 +28,16 @@ function Timeline({
   const [eventToDelete, setEventToDelete] = useState(null);
   const [detailEvent, setDetailEvent] = useState(null);
   const [showDetailPanel, setShowDetailPanel] = useState(false);
+  
+  // States for handling click-to-create events
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createModalPosition, setCreateModalPosition] = useState({ x: 0, y: 0 });
+  const [createEventDate, setCreateEventDate] = useState(null);
+  
+  // States for hover date display
+  const [showHoverDate, setShowHoverDate] = useState(false);
+  const [hoverDate, setHoverDate] = useState(null);
+  const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     if (timelineData && timelineData.title) {
@@ -62,6 +72,175 @@ function Timeline({
     setLocalIntervalCount(intervalCount);
     setLocalIntervalType(intervalType);
   }, [showIntervals, intervalCount, intervalType]);
+  
+  // Funksjon for å formatere dato
+  const formatDate = (date) => {
+    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+      return '';
+    }
+    
+    try {
+      return date.toLocaleDateString('no-NO', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    } catch (error) {
+      // Manuell formatering som fallback
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}.${month}.${year}`;
+    }
+  };
+  
+  // Håndter hover over tidslinjen for å vise dato
+  const handleTimelineMouseMove = (e) => {
+    // Bare vis hoverdate når musen er over selve tidslinjelinjen
+    if (e.target.classList.contains('timeline-line')) {
+      // Sikre at tidslinjen har start og slutt dato
+      if (!timelineData.start || !timelineData.end) {
+        return;
+      }
+      
+      // Sikre at start og slutt er gyldige datoobjekter
+      const startDate = timelineData.start instanceof Date ? 
+        timelineData.start : 
+        new Date(timelineData.start);
+        
+      const endDate = timelineData.end instanceof Date ?
+        timelineData.end :
+        new Date(timelineData.end);
+      
+      // Sjekk om datoene er gyldige
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        return;
+      }
+      
+      // Beregn dato basert på museposisjon
+      const rect = e.target.getBoundingClientRect();
+      let hoverPos = { x: e.clientX, y: e.clientY };
+      let hoverDt;
+      
+      if (timelineData.orientation === 'horizontal') {
+        // For horisontal tidslinje, bruk x-koordinaten
+        const hoverX = e.clientX - rect.left;
+        const hoverPercentage = hoverX / rect.width;
+        
+        // Beregn dato basert på prosentandel
+        const timeRange = endDate.getTime() - startDate.getTime();
+        const timestamp = startDate.getTime() + (timeRange * hoverPercentage);
+        hoverDt = new Date(timestamp);
+        
+      } else {
+        // For vertikal tidslinje, bruk y-koordinaten
+        const hoverY = e.clientY - rect.top;
+        const hoverPercentage = hoverY / rect.height;
+        
+        // Beregn dato basert på prosentandel
+        const timeRange = endDate.getTime() - startDate.getTime();
+        const timestamp = startDate.getTime() + (timeRange * hoverPercentage);
+        hoverDt = new Date(timestamp);
+      }
+      
+      // Ekstra validering av den beregnede datoen
+      if (!hoverDt || isNaN(hoverDt.getTime())) {
+        return;
+      }
+      
+      setHoverDate(hoverDt);
+      setHoverPosition(hoverPos);
+      setShowHoverDate(true);
+    } else {
+      setShowHoverDate(false);
+    }
+  };
+  
+  // Skjul hover-datoen når musen forlater tidslinjen
+  const handleTimelineMouseLeave = () => {
+    setShowHoverDate(false);
+  };
+  
+  // Håndter klikk på tidslinjen for å opprette ny hendelse
+  const handleTimelineLineClick = (e) => {
+    // Bare utløs på direkte klikk på tidslinje-linjen
+    if (e.target.classList.contains('timeline-line')) {
+      e.stopPropagation();
+      
+      // Sjekk om tidslinjen har start og slutt dato
+      if (!timelineData.start || !timelineData.end) {
+        // Ikke gjør noe hvis tidslinjen ikke er initialisert
+        return;
+      }
+      
+      // Sikre at start og slutt er gyldige datoobjekter
+      const startDate = timelineData.start instanceof Date ? 
+        timelineData.start : 
+        new Date(timelineData.start);
+        
+      const endDate = timelineData.end instanceof Date ?
+        timelineData.end :
+        new Date(timelineData.end);
+      
+      // Sjekk om datoene er gyldige
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        console.error('Ugyldige tidslinje-datoer:', { start: timelineData.start, end: timelineData.end });
+        return; // Ikke fortsett hvis datoene er ugyldige
+      }
+      
+      // Beregn posisjon for modalen
+      const rect = e.target.getBoundingClientRect();
+      let clickPosition;
+      let clickDate;
+      
+      if (timelineData.orientation === 'horizontal') {
+        // For horisontal tidslinje, bruk x-koordinaten
+        const clickX = e.clientX - rect.left;
+        const clickPercentage = clickX / rect.width;
+        clickPosition = { x: e.clientX, y: e.clientY };
+        
+        // Beregn dato basert på prosentandel
+        const timeRange = endDate.getTime() - startDate.getTime();
+        const timestamp = startDate.getTime() + (timeRange * clickPercentage);
+        clickDate = new Date(timestamp);
+        
+      } else {
+        // For vertikal tidslinje, bruk y-koordinaten
+        const clickY = e.clientY - rect.top;
+        const clickPercentage = clickY / rect.height;
+        clickPosition = { x: e.clientX, y: e.clientY };
+        
+        // Beregn dato basert på prosentandel
+        const timeRange = endDate.getTime() - startDate.getTime();
+        const timestamp = startDate.getTime() + (timeRange * clickPercentage);
+        clickDate = new Date(timestamp);
+      }
+      
+      // Ekstra validering av den beregnede datoen
+      if (!clickDate || isNaN(clickDate.getTime())) {
+        console.error('Kunne ikke beregne gyldig dato fra klikk');
+        clickDate = new Date(); // Bruk nåværende dato som fallback
+      }
+      
+      console.log('Beregnet dato fra klikk:', clickDate.toISOString());
+      
+      setCreateEventDate(clickDate);
+      setCreateModalPosition(clickPosition);
+      setShowCreateModal(true);
+    }
+  };
+  
+  // Funksjon for å legge til en ny hendelse fra modalen
+  const addNewEvent = (newEvent) => {
+    // Legg til den nye hendelsen i tidslinjens events-array
+    const updatedEvents = [...timelineData.events, newEvent];
+    
+    // Oppdater tidslinje-dataen
+    setTimelineData({
+      ...timelineData,
+      events: updatedEvents
+    });
+  };
   
   // Callback for when a background image is loaded
   const handleBackgroundLoaded = useCallback((imageUrl) => {
@@ -322,7 +501,8 @@ function Timeline({
       setLastClickedEvent(lastClickedEvent - 1);
     }
   };
-    // Handle right click to show context menu
+  
+  // Handle right click to show context menu
   const handleContextMenu = (e) => {
     e.preventDefault();
     
@@ -373,6 +553,14 @@ function Timeline({
       setTimelineData({
         ...timelineData,
         timelineThickness: style.thickness
+      });
+    }
+    
+    // Add this block to handle orientation
+    if (style.orientation !== undefined) {
+      setTimelineData({
+        ...timelineData,
+        orientation: style.orientation
       });
     }
   };
@@ -582,22 +770,24 @@ function Timeline({
           
           {showContextMenu && (
             <TimelineContextMenu
-              position={menuPosition}
-              onColorSelect={handleColorSelect}
-              onStyleSelect={handleStyleSelect}
-              onBackgroundImageSelect={handleBackgroundImageSelect}
-              onClose={closeContextMenu}
-              currentColor={timelineColor}
-              currentThickness={timelineThickness}
-              currentBackgroundColor={backgroundColor}
-              currentBackgroundImage={backgroundImage}
-              showIntervals={localShowIntervals}
-              intervalCount={localIntervalCount}
-              intervalType={localIntervalType}
-              onIntervalToggle={handleIntervalToggle}
-              onIntervalCountChange={handleIntervalCountChange}
-              onIntervalTypeChange={handleIntervalTypeChange}
-              timelineData={timelineData}
+            position={menuPosition}
+            onColorSelect={handleColorSelect}
+            onStyleSelect={handleStyleSelect}
+            onBackgroundImageSelect={handleBackgroundImageSelect}
+            onClose={closeContextMenu}
+            currentColor={timelineColor}
+            currentThickness={timelineThickness}
+            currentBackgroundColor={backgroundColor}
+            currentBackgroundImage={backgroundImage}
+            showIntervals={localShowIntervals}
+            intervalCount={localIntervalCount}
+            intervalType={localIntervalType}
+            onIntervalToggle={handleIntervalToggle}
+            onIntervalCountChange={handleIntervalCountChange}
+            onIntervalTypeChange={handleIntervalTypeChange}
+            timelineData={timelineData}
+            isVertical={timelineData.orientation === 'vertical'} // Add this
+          
             />
           )}
         </div>
@@ -625,7 +815,14 @@ function Timeline({
           className={`timeline ${timelineData.orientation}`} 
           ref={timelineRef}
         >
-          <div className="timeline-line" style={getTimelineLineStyle()}></div>
+          {/* Tidslinjeelement med klikk og hover-funksjonalitet */}
+          <div 
+            className="timeline-line" 
+            style={getTimelineLineStyle()} 
+            onClick={handleTimelineLineClick}
+            onMouseMove={handleTimelineMouseMove}
+            onMouseLeave={handleTimelineMouseLeave}
+          ></div>
 
           <TimelineIntervals 
             timelineData={timelineData}
@@ -659,6 +856,18 @@ function Timeline({
             );
           })}
         </div>
+        
+        {/* Vis hoverdato når musen er over tidslinjen */}
+        {showHoverDate && (
+          <div className="timeline-hover-date" style={{
+            position: 'absolute',
+            top: hoverPosition.y - 35,
+            left: hoverPosition.x,
+            transform: 'translateX(-50%)'
+          }}>
+            {formatDate(hoverDate)}
+          </div>
+        )}
         
         {showContextMenu && (
           <TimelineContextMenu
@@ -726,6 +935,16 @@ function Timeline({
             </div>
           </div>
         )}
+        
+        {/* CreateEventModal for hendelsesopprettelse ved klikk */}
+        <CreateEventModal
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          onSave={addNewEvent}
+          position={createModalPosition}
+          date={createEventDate}
+          timelineColor={timelineColor}
+        />
       </div>
     </>
   );

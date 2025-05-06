@@ -1,0 +1,295 @@
+This is the current filestructure of TimeSculpt, react vite@latest:
+
+.
+..
+.env
+.eslintignore
+.git
+.gitignore
+.vscode
+README.md
+dist
+eslint.config.js
+index.html
+node_modules
+package-lock.json
+package.json
+public
+src
+structure_full.txt
+vite.config.js
+watch-structure.sh
+
+public
+├── backgrounds
+│   ├── cctv.png
+│   ├── cia.png
+│   ├── dino.png
+│   ├── eldrekrig.png
+│   ├── eventyr.png
+│   ├── hacker.png
+│   ├── huleboer.png
+│   ├── industri.png
+│   ├── kina.png
+│   ├── melkeveien.png
+│   ├── modernekrig.png
+│   ├── overgrodd.png
+│   ├── patent.png
+│   ├── pyramide.png
+│   ├── ridder.png
+│   └── timesculpt.png
+├── timesculpt_logo_page.svg
+├── timesculpt_logo_w_text.svg
+└── vite.svg
+src
+├── App.jsx
+├── Header.jsx
+├── api.js
+├── assets
+│   ├── logo-timesculpt.png
+│   ├── timesculpt_logo_page.svg
+│   └── timesculpt_logo_w_text.svg
+├── components
+│   ├── ActiveLink.jsx
+│   ├── BackgroundManager.jsx
+│   ├── CreateEventModal.jsx
+│   ├── DateInput.jsx
+│   ├── EventCreationSelector.jsx
+│   ├── EventDetailPanel.jsx
+│   ├── EventEditModal.jsx
+│   ├── EventForm.jsx
+│   ├── ExpandableMenu.jsx
+│   ├── IntervalSettings.jsx
+│   ├── Layout.jsx
+│   ├── LayoutManager.jsx
+│   ├── MobileWarning.jsx
+│   ├── PrivacyToggle.jsx
+│   ├── RichTextEditor.jsx
+│   ├── Sidebar.jsx
+│   ├── TextToTimelineForm.jsx
+│   ├── TextUploadTimelineGenerator.jsx
+│   ├── ThemeToggle.jsx
+│   ├── Timeline.jsx
+│   ├── TimelineCommandInput.jsx
+│   ├── TimelineContextMenu.jsx
+│   ├── TimelineEvent.jsx
+│   ├── TimelineForm.jsx
+│   ├── TimelineIntervals.jsx
+│   ├── TimelineList.jsx
+│   ├── TimelineShareModal.jsx
+│   ├── TimelineStyleMenu.jsx
+│   ├── ToggleSwitch.jsx
+│   ├── Topbar.jsx
+│   ├── TopbarTimelineForm.jsx
+│   ├── WelcomePopup.jsx
+│   ├── WelcomeScreen.jsx
+│   └── auth
+│       ├── AppleSignIn.jsx
+│       ├── AuthCompletion.jsx
+│       ├── AuthModal.jsx
+│       ├── FacebookSignIn.jsx
+│       ├── GoogleSignIn.jsx
+│       ├── Login.jsx
+│       ├── MicrosoftSignIn.jsx
+│       ├── Register.jsx
+│       └── UserProfile.jsx
+├── contexts
+│   ├── AuthContext.jsx
+│   └── ThemeContext.jsx
+├── firebase.js
+├── main.jsx
+├── pages
+│   ├── Innstillinger.jsx
+│   ├── MinProfil.jsx
+│   ├── MineTidslinjer.jsx
+│   ├── NotFound.jsx
+│   └── PublicTimelines.jsx
+├── routes
+│   └── AppRoutes.jsx
+├── services
+│   ├── aiTimelineService.js
+│   ├── documentTitleService.js
+│   ├── historicalEvents.js
+│   ├── openAiService.js
+│   ├── promptTimelineService.js
+│   └── timelineCommandProcessor.js
+├── styles
+│   ├── DateInput.css
+│   ├── EventEditModal.css
+│   ├── EventFormStyles.css
+│   ├── EventFormTransition.css
+│   ├── RichTextEditor.css
+│   ├── TimelineContextMenu.css
+│   ├── auth.css
+│   ├── background-images.css
+│   ├── base.css
+│   ├── content-menu.css
+│   ├── darkMode.css
+│   ├── event-colors.css
+│   ├── event-creation-selector.css
+│   ├── event-form.css
+│   ├── expandable-menu.css
+│   ├── layout-manager.css
+│   ├── mobile-warning.css
+│   ├── pages
+│   │   ├── Innstillinger.css
+│   │   ├── MinProfil.css
+│   │   ├── MineTidslinjer.css
+│   │   ├── NotFound.css
+│   │   ├── PublicTimelines.css
+│   │   └── layout.css
+│   ├── privacy-toggle.css
+│   ├── prompt-processing.css
+│   ├── public-timelines.css
+│   ├── sidebar.css
+│   ├── sidebarinfo.css
+│   ├── text-to-timeline.css
+│   ├── text-upload-timeline-generator.css
+│   ├── theme-toggle.css
+│   ├── timeline-cards.css
+│   ├── timeline-command-input.css
+│   ├── timeline-share-modal.css
+│   ├── timeline.css
+│   ├── topbar-privacy.css
+│   ├── topbar-timeline-form.css
+│   ├── topbar.css
+│   ├── ui-components.css
+│   ├── welcome-popup.css
+│   └── welcome-screen.css
+├── themeManager.js
+├── userAPI.js
+└── utils
+    └── dateUtils.js
+
+10 directories, 108 files
+
+Line Counts Per File:
+12839 public/backgrounds/dino.png
+12344 public/backgrounds/patent.png
+11738 public/backgrounds/eventyr.png
+11623 public/backgrounds/overgrodd.png
+11544 public/backgrounds/industri.png
+11475 public/backgrounds/pyramide.png
+11459 public/backgrounds/cia.png
+10718 public/backgrounds/hacker.png
+10597 public/backgrounds/huleboer.png
+10586 public/backgrounds/melkeveien.png
+10347 public/backgrounds/eldrekrig.png
+10285 public/backgrounds/ridder.png
+10098 public/backgrounds/modernekrig.png
+9714 public/backgrounds/kina.png
+2588 public/backgrounds/cctv.png
+2301 public/backgrounds/timesculpt.png
+1698 src/styles/darkMode.css
+1296 src/styles/topbar.css
+1193 src/styles/timeline-share-modal.css
+1048 src/styles/ui-components.css
+1046 src/api.js
+993 src/services/timelineCommandProcessor.js
+952 src/components/Timeline.jsx
+852 src/styles/pages/MineTidslinjer.css
+814 src/styles/auth.css
+809 src/components/TopbarTimelineForm.jsx
+796 src/components/Topbar.jsx
+792 src/components/TimelineStyleMenu.jsx
+701 src/styles/timeline.css
+695 src/App.jsx
+619 src/styles/pages/MinProfil.css
+553 src/components/TimelineContextMenu.jsx
+526 src/styles/TimelineContextMenu.css
+477 src/components/TimelineIntervals.jsx
+458 src/components/IntervalSettings.jsx
+449 src/pages/MineTidslinjer.jsx
+427 src/components/TimelineEvent.jsx
+388 src/services/aiTimelineService.js
+370 src/components/TimelineShareModal.jsx
+339 src/components/TextUploadTimelineGenerator.jsx
+339 src/components/EventEditModal.jsx
+325 src/styles/event-form.css
+318 src/styles/timeline-cards.css
+314 src/styles/sidebar.css
+312 src/components/Sidebar.jsx
+307 src/components/EventForm.jsx
+291 src/styles/pages/Innstillinger.css
+281 src/services/historicalEvents.js
+276 src/styles/timeline-command-input.css
+271 src/styles/EventEditModal.css
+264 src/components/TimelineCommandInput.jsx
+260 src/pages/MinProfil.jsx
+257 src/firebase.js
+238 src/services/promptTimelineService.js
+235 src/components/TimelineList.jsx
+228 src/styles/welcome-popup.css
+222 src/styles/pages/PublicTimelines.css
+209 src/styles/text-upload-timeline-generator.css
+209 src/styles/pages/NotFound.css
+207 src/styles/EventFormStyles.css
+204 src/components/EventDetailPanel.jsx
+202 src/styles/pages/layout.css
+188 src/components/DateInput.jsx
+186 src/styles/text-to-timeline.css
+167 src/pages/Innstillinger.jsx
+167 src/components/RichTextEditor.jsx
+154 src/components/TextToTimelineForm.jsx
+153 src/styles/background-images.css
+152 src/styles/topbar-privacy.css
+151 src/components/auth/Register.jsx
+150 src/components/CreateEventModal.jsx
+148 src/styles/base.css
+145 src/styles/content-menu.css
+144 src/components/auth/Login.jsx
+141 src/styles/welcome-screen.css
+140 src/styles/sidebarinfo.css
+136 src/pages/PublicTimelines.jsx
+131 src/styles/public-timelines.css
+130 src/styles/expandable-menu.css
+130 src/services/openAiService.js
+129 src/components/PrivacyToggle.jsx
+126 src/userAPI.js
+122 src/styles/DateInput.css
+122 src/contexts/ThemeContext.jsx
+114 src/styles/layout-manager.css
+109 src/assets/logo-timesculpt.png
+108 src/styles/mobile-warning.css
+103 src/components/TimelineForm.jsx
+94 src/styles/event-creation-selector.css
+92 src/components/auth/AuthCompletion.jsx
+90 src/styles/theme-toggle.css
+80 src/pages/NotFound.jsx
+80 src/components/WelcomePopup.jsx
+79 src/components/auth/AuthModal.jsx
+76 src/styles/prompt-processing.css
+75 src/components/BackgroundManager.jsx
+71 src/themeManager.js
+69 src/styles/RichTextEditor.css
+68 src/utils/dateUtils.js
+67 src/components/WelcomeScreen.jsx
+67 src/components/LayoutManager.jsx
+65 src/components/auth/GoogleSignIn.jsx
+64 src/components/auth/MicrosoftSignIn.jsx
+62 src/components/auth/FacebookSignIn.jsx
+60 src/components/auth/UserProfile.jsx
+60 src/components/auth/AppleSignIn.jsx
+57 src/components/Layout.jsx
+56 src/components/EventCreationSelector.jsx
+53 src/styles/EventFormTransition.css
+52 src/components/MobileWarning.jsx
+44 src/components/ExpandableMenu.jsx
+43 src/contexts/AuthContext.jsx
+37 src/routes/AppRoutes.jsx
+33 src/components/ThemeToggle.jsx
+30 src/services/documentTitleService.js
+24 src/components/ActiveLink.jsx
+23 src/components/ToggleSwitch.jsx
+19 src/main.jsx
+18 src/styles/privacy-toggle.css
+8 src/Header.jsx
+7 public/.htaccess
+0 src/styles/topbar-timeline-form.css
+0 src/styles/event-colors.css
+0 src/assets/timesculpt_logo_w_text.svg
+0 src/assets/timesculpt_logo_page.svg
+0 public/vite.svg
+0 public/timesculpt_logo_w_text.svg
+0 public/timesculpt_logo_page.svg
+

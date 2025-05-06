@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
-import { setDocumentTitle } from '../services/documentTitleService'; // Import the service
+import { setDocumentTitle } from '../services/documentTitleService';
+import '../styles/pages/NotFound.css'; // New CSS import
 
 function NotFound() {
   const navigate = useNavigate();

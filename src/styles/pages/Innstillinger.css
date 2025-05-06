@@ -1,0 +1,292 @@
+/* Innstillinger.css - Styles for the settings page */
+
+/* Settings container */
+.settings-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    max-width: 800px;
+    margin: 0 auto;
+    border: 1px solid #eee;
+    overflow: hidden;
+  }
+  
+  .settings-form {
+    padding: 2rem;
+    max-width: 700px;
+  }
+  
+  /* Section styling */
+  .settings-section {
+    margin-bottom: 2.5rem;
+    position: relative;
+  }
+  
+  .settings-section h2 {
+    font-size: 1.25rem;
+    color: #333;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f0f0f0;
+  }
+  
+  /* Setting item styling */
+  .setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.25rem;
+    margin-bottom: 0.5rem;
+    transition: background-color 0.2s;
+    border-radius: 8px;
+  }
+  
+  .setting-item:hover {
+    background-color: #f8f9fa;
+  }
+  
+  /* Label styling */
+  .setting-label {
+    flex: 1;
+    padding-right: 2rem;
+  }
+  
+  .setting-label label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-size: 1rem;
+  }
+  
+  .setting-description {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin: 0;
+    line-height: 1.5;
+  }
+  
+  /* Control styling */
+  .setting-control {
+    min-width: 120px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: 6px;
+  }
+  
+  /* Toggle switch styling */
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 26px;
+  }
+  
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .toggle-switch label {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ddd;
+    transition: .4s;
+    border-radius: 34px;
+  }
+  
+  .toggle-switch label:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  .toggle-switch input:checked + label {
+    background-color: #007bff;
+  }
+  
+  .toggle-switch input:checked + label:before {
+    transform: translateX(26px);
+  }
+  
+  /* Language select styling */
+  .language-select {
+    padding: 0.6rem 1rem;
+    font-size: 0.95rem;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    color: #495057;
+    background-color: #fff;
+    min-width: 150px;
+    font-weight: 500;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    padding-right: 35px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  
+  .language-select:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  }
+  
+  /* Auth notification message */
+  .auth-notification-message {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 4px;
+    color: #856404;
+  }
+  
+  .auth-notification-message a {
+    color: #0056b3;
+    text-decoration: underline;
+    font-weight: 500;
+  }
+  
+  /* Floating message */
+  .floating-message {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 100;
+    animation: messageSlideUp 0.3s ease;
+  }
+  
+  .save-message {
+    display: inline-block;
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 500;
+  }
+  
+  .save-message.success {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  @keyframes messageSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Dark mode adjustments */
+  body.dark-mode .settings-container {
+    background-color: var(--card-background);
+    border-color: var(--border-color);
+    box-shadow: var(--card-shadow);
+  }
+  
+  body.dark-mode .settings-section h2 {
+    color: var(--text-color);
+    border-bottom-color: var(--border-color);
+  }
+  
+  body.dark-mode .setting-item:hover {
+    background-color: var(--section-background);
+  }
+  
+  body.dark-mode .setting-label label {
+    color: var(--text-color);
+  }
+  
+  body.dark-mode .setting-description {
+    color: var(--text-secondary);
+  }
+  
+  body.dark-mode .toggle-switch label {
+    background-color: #555;
+  }
+  
+  body.dark-mode .toggle-switch input:checked + label {
+    background-color: #3a97ff;
+  }
+  
+  body.dark-mode .language-select {
+    background-color: var(--input-background);
+    color: var(--text-color);
+    border-color: var(--input-border);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ddd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  }
+  
+  body.dark-mode .language-select:focus {
+    border-color: #3a97ff;
+    box-shadow: 0 0 0 3px rgba(58, 151, 255, 0.25);
+  }
+  
+  body.dark-mode .language-select option {
+    background-color: var(--card-background);
+    color: var(--text-color);
+  }
+  
+  body.dark-mode .auth-notification-message {
+    background-color: #332b00;
+    border-left-color: #b38600;
+    color: #ffd970;
+  }
+  
+  body.dark-mode .auth-notification-message a {
+    color: #5aabff;
+  }
+  
+  body.dark-mode .save-message.success {
+    background-color: var(--success-background);
+    color: var(--success-text);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .settings-form {
+      padding: 1.5rem;
+    }
+    
+    .setting-item {
+      flex-direction: column;
+      padding: 1rem;
+    }
+    
+    .setting-label {
+      padding-right: 0;
+      margin-bottom: 1rem;
+      width: 100%;
+    }
+    
+    .setting-control {
+      width: 100%;
+      justify-content: flex-start;
+    }
+    
+    .floating-message {
+      bottom: 1rem;
+      right: 1rem;
+      left: 1rem;
+      text-align: center;
+    }
+  }

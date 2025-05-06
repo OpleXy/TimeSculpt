@@ -1,10 +1,12 @@
+// src/routes/AppRoutes.jsx
 import { Routes, Route, Navigate } from 'react-router-dom';
 import App from '../App';
 import MineTidslinjer from '../pages/MineTidslinjer';
 import Innstillinger from '../pages/Innstillinger';
 import MinProfil from '../pages/MinProfil';
 import NotFound from '../pages/NotFound';
-import AuthCompletion from '../components/auth/AuthCompletion'; // Import the AuthCompletion component
+import PublicTimelines from '../pages/PublicTimelines'; // Import PublicTimelines component
+import AuthCompletion from '../components/auth/AuthCompletion';
 import { AuthProvider } from '../contexts/AuthContext';
 import { ThemeProvider } from '../contexts/ThemeContext';
 
@@ -17,6 +19,7 @@ function AppRoutes() {
           <Route path="/tidslinjer" element={<MineTidslinjer />} />
           <Route path="/innstillinger" element={<Innstillinger />} />
           <Route path="/profil" element={<MinProfil />} />
+          <Route path="/utforsk" element={<PublicTimelines />} /> {/* Add route for public timelines */}
           
           {/* Add the auth-complete route to handle email verification links */}
           <Route path="/auth-complete" element={<AuthCompletion />} />

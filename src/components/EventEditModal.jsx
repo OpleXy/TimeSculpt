@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import RichTextEditor from './RichTextEditor';
 import DateInput from './DateInput';
+import '../styles/EventEditModal.css';
 
 function EventEditModal({ event, onSave, onClose, onDelete }) {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
   const [size, setSize] = useState('medium');
-  const [color, setColor] = useState('default'); // Default color matches timeline color
+  const [color, setColor] = useState('default');
   const [error, setError] = useState('');
   const modalRef = useRef(null);
 
@@ -47,7 +48,6 @@ function EventEditModal({ event, onSave, onClose, onDelete }) {
     if (!modalElement) return;
     
     const handleWheel = (e) => {
-      // Stop the event from propagating to the timeline underneath
       e.stopPropagation();
     };
     
@@ -72,12 +72,12 @@ function EventEditModal({ event, onSave, onClose, onDelete }) {
     // Create updated event object
     const updatedEvent = {
       ...event,
-      title, // Rich HTML content
-      plainTitle: stripHtml(title), // Plain text version
+      title,
+      plainTitle: stripHtml(title),
       date: new Date(date),
-      description, // Rich HTML content
-      size, // Add the size property
-      color // Add the color property
+      description,
+      size,
+      color
     };
 
     onSave(updatedEvent);
@@ -115,38 +115,14 @@ function EventEditModal({ event, onSave, onClose, onDelete }) {
           
           <div className="modal-header-buttons">
             <button 
-              type="button" 
-              className="delete-btn" 
-              onClick={() => onDelete && onDelete(event, event.index)}
-            >
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="16" 
-                height="16" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
-                <polyline points="3 6 5 6 21 6" />
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                <line x1="10" y1="11" x2="10" y2="17" />
-                <line x1="14" y1="11" x2="14" y2="17" />
-              </svg>
-              Slett
-            </button>
-            
-            <button 
               form="event-edit-form"
               type="submit" 
               className="save-btn"
             >
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 
-                width="16" 
-                height="16" 
+                width="14" 
+                height="14" 
                 viewBox="0 0 24 24" 
                 fill="none" 
                 stroke="currentColor" 
@@ -163,30 +139,98 @@ function EventEditModal({ event, onSave, onClose, onDelete }) {
         </div>
 
         <form id="event-edit-form" onSubmit={handleSubmit}>
-          <div className="form-row" style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
-            <div className="form-group" style={{ flex: '2' }}>
-              <label htmlFor="eventTitle">Tittel<span className="required-mark"> *</span></label>
-              
-              <RichTextEditor 
-                value={title}
-                onChange={setTitle}
-                placeholder="Gi hendelsen en beskrivende tittel"
-                minHeight="40px"
-              />
-            </div>
+          <div className="form-group" style={{ marginBottom: '12px' }}>
+            <label htmlFor="eventTitle">Tittel<span className="required-mark"> *</span></label>
             
-            <div className="form-group" style={{ flex: '1' }}>
-              <DateInput 
-                value={date}
-                onChange={handleDateChange}
-                label="Dato"
-                required={true}
-              />
-            </div>
+            <RichTextEditor 
+              value={title}
+              onChange={setTitle}
+              placeholder="Gi hendelsen en beskrivende tittel"
+              minHeight="36px"
+            />
           </div>
           
-          <div className="form-row" style={{ marginBottom: '20px' }}>
-            <div className="form-group">
+          <div className="form-group" style={{ marginBottom: '12px' }}>
+            <DateInput 
+              value={date}
+              onChange={handleDateChange}
+              label="Dato"
+              required={true}
+            />
+          </div>
+          <div className="form-group" style={{ marginBottom: '16px' }}>
+            <label htmlFor="eventDescription">Beskrivelse</label>
+            <RichTextEditor 
+              value={description}
+              onChange={setDescription}
+              placeholder="Beskrivelse"
+              minHeight="100px"
+            />
+          </div>
+          <div className="form-row property-row">
+
+            
+            <div className="form-group color-group">
+              <label>Farge</label>
+              <div className="color-buttons-group">
+                <button
+                  type="button"
+                  className={`color-button default ${color === 'default' ? 'active' : ''}`}
+                  onClick={() => handleColorSelect('default')}
+                  title="Standard (Tidslinjefarge)"
+                >
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width="12" 
+                    height="12" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                  >
+                    <path d="M7 21L12 17L17 21V3H7V21Z" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  className={`color-button blue ${color === 'blue' ? 'active' : ''}`}
+                  onClick={() => handleColorSelect('blue')}
+                  title="Blå"
+                  style={{ backgroundColor: '#007bff' }}
+                ></button>
+                <button
+                  type="button"
+                  className={`color-button green ${color === 'green' ? 'active' : ''}`}
+                  onClick={() => handleColorSelect('green')}
+                  title="Grønn"
+                  style={{ backgroundColor: '#28a745' }}
+                ></button>
+                <button
+                  type="button"
+                  className={`color-button red ${color === 'red' ? 'active' : ''}`}
+                  onClick={() => handleColorSelect('red')}
+                  title="Rød"
+                  style={{ backgroundColor: '#dc3545' }}
+                ></button>
+                <button
+                  type="button"
+                  className={`color-button orange ${color === 'orange' ? 'active' : ''}`}
+                  onClick={() => handleColorSelect('orange')}
+                  title="Oransje"
+                  style={{ backgroundColor: '#fd7e14' }}
+                ></button>
+                <button
+                  type="button"
+                  className={`color-button purple ${color === 'purple' ? 'active' : ''}`}
+                  onClick={() => handleColorSelect('purple')}
+                  title="Lilla"
+                  style={{ backgroundColor: '#6f42c1' }}
+                ></button>
+              </div>
+            </div>
+            <div className="form-group size-group">
               <label>Størrelse</label>
               <div className="size-buttons-group">
                 <button 
@@ -197,8 +241,8 @@ function EventEditModal({ event, onSave, onClose, onDelete }) {
                 >
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
-                    width="16" 
-                    height="16" 
+                    width="12" 
+                    height="12" 
                     viewBox="0 0 24 24" 
                     fill="none" 
                     stroke="currentColor" 
@@ -218,8 +262,8 @@ function EventEditModal({ event, onSave, onClose, onDelete }) {
                 >
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
-                    width="18" 
-                    height="18" 
+                    width="14" 
+                    height="14" 
                     viewBox="0 0 24 24" 
                     fill="none" 
                     stroke="currentColor" 
@@ -239,8 +283,8 @@ function EventEditModal({ event, onSave, onClose, onDelete }) {
                 >
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
-                    width="20" 
-                    height="20" 
+                    width="16" 
+                    height="16" 
                     viewBox="0 0 24 24" 
                     fill="none" 
                     stroke="currentColor" 
@@ -256,77 +300,34 @@ function EventEditModal({ event, onSave, onClose, onDelete }) {
             </div>
           </div>
 
-<div className="form-row" style={{ marginBottom: '20px' }}>
-  <div className="form-group">
-    <label>Farge</label>
-    <div className="color-buttons-group">
-      <button
-        type="button"
-        className={`color-button default ${color === 'default' ? 'active' : ''}`}
-        onClick={() => handleColorSelect('default')}
-        title="Standard (Tidslinjefarge)"
-      >
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          width="14" 
-          height="14" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="2" 
-          strokeLinecap="round" 
-          strokeLinejoin="round"
-        >
-          <path d="M7 21L12 17L17 21V3H7V21Z" />
-        </svg>
-      </button>
-      <button
-        type="button"
-        className={`color-button blue ${color === 'blue' ? 'active' : ''}`}
-        onClick={() => handleColorSelect('blue')}
-        title="Blå"
-        style={{ backgroundColor: '#007bff' }}
-      ></button>
-      <button
-        type="button"
-        className={`color-button green ${color === 'green' ? 'active' : ''}`}
-        onClick={() => handleColorSelect('green')}
-        title="Grønn"
-        style={{ backgroundColor: '#28a745' }}
-      ></button>
-      <button
-        type="button"
-        className={`color-button red ${color === 'red' ? 'active' : ''}`}
-        onClick={() => handleColorSelect('red')}
-        title="Rød"
-        style={{ backgroundColor: '#dc3545' }}
-      ></button>
-      <button
-        type="button"
-        className={`color-button orange ${color === 'orange' ? 'active' : ''}`}
-        onClick={() => handleColorSelect('orange')}
-        title="Oransje"
-        style={{ backgroundColor: '#fd7e14' }}
-      ></button>
-      <button
-        type="button"
-        className={`color-button purple ${color === 'purple' ? 'active' : ''}`}
-        onClick={() => handleColorSelect('purple')}
-        title="Lilla"
-        style={{ backgroundColor: '#6f42c1' }}
-      ></button>
-    </div>
-  </div>
-</div>
           
-          <div className="form-group" style={{ marginBottom: '25px' }}>
-            <label htmlFor="eventDescription">Beskrivelse</label>
-            <RichTextEditor 
-              value={description}
-              onChange={setDescription}
-              placeholder="Beskrivelse"
-              minHeight="120px"
-            />
+          
+         
+          
+          <div className="delete-button-container">
+            <button 
+              type="button" 
+              className="delete-btn" 
+              onClick={() => onDelete && onDelete(event, event.index)}
+            >
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="14" 
+                height="14" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                <line x1="10" y1="11" x2="10" y2="17" />
+                <line x1="14" y1="11" x2="14" y2="17" />
+              </svg>
+              Slett
+            </button>
           </div>
           
           {error && <div className="error">{error}</div>}

@@ -1,9 +1,15 @@
 import { useLocation, Link } from 'react-router-dom';
 
 // This component wraps React Router's Link and adds active class when the current path matches
-function ActiveLink({ to, children, className, ...props }) {
+function ActiveLink({ to, children, className, exact = false, ...props }) {
   const location = useLocation();
-  const isActive = location.pathname === to;
+  
+  // Determine if the link is active
+  const isActive = exact 
+
+  
+    ? location.pathname === to 
+    : location.pathname === to || (to !== '/' && location.pathname.startsWith(to));
   
   return (
     <Link 

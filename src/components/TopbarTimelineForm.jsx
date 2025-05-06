@@ -133,8 +133,8 @@ De allierte vant krigen.`);
     e.preventDefault();
     
     // Check if the user has reached the timeline limit
-    if (timelineCount >= 3 && isAuthenticated) {
-      alert('Du har nådd grensen på 3 tidslinjer. Vennligst slett en eksisterende tidslinje før du oppretter en ny.');
+    if (timelineCount >= 10 && isAuthenticated) {
+      alert('Du har nådd grensen på 10 tidslinjer. Vennligst slett en eksisterende tidslinje før du oppretter en ny.');
       return;
     }
 
@@ -354,8 +354,8 @@ De allierte vant krigen.`);
               <div className="timeline-limit-info" style={{
                 marginBottom: '15px',
                 fontSize: '0.85rem',
-                color: timelineCount >= 3 ? '#dc3545' : '#6c757d',
-                backgroundColor: timelineCount >= 3 ? 'rgba(220, 53, 69, 0.1)' : 'rgba(108, 117, 125, 0.1)',
+                color: timelineCount >=10? '#dc3545' : '#6c757d',
+                backgroundColor: timelineCount >= 10 ? 'rgba(220, 53, 69, 0.1)' : 'rgba(108, 117, 125, 0.1)',
                 padding: '8px 12px',
                 borderRadius: '4px',
                 textAlign: 'center'
@@ -364,8 +364,8 @@ De allierte vant krigen.`);
                   <span>Laster tidslinjeinformasjon...</span>
                 ) : (
                   <span>
-                    Du har <strong>{timelineCount} av 3</strong> tillatte tidslinjer
-                    {timelineCount >= 3 && (
+                    Du har <strong>{timelineCount} av 10</strong> tillatte tidslinjer
+                    {timelineCount >= 10 && (
                       <span style={{ display: 'block', marginTop: '4px' }}>
                         Slett en eksisterende tidslinje for å opprette en ny
                       </span>
@@ -632,10 +632,10 @@ De allierte vant krigen.`);
               <button 
                 type="submit" 
                 className="create-btn"
-                disabled={(isAuthenticated && timelineCount >= 3) || isGenerating}
+                disabled={(isAuthenticated && timelineCount >= 10) || isGenerating}
                 style={{
-                  opacity: (isAuthenticated && timelineCount >= 3) || isGenerating ? 0.7 : 1,
-                  cursor: (isAuthenticated && timelineCount >= 3) || isGenerating ? 'not-allowed' : 'pointer',
+                  opacity: (isAuthenticated && timelineCount >= 10) || isGenerating ? 0.7 : 1,
+                  cursor: (isAuthenticated && timelineCount >= 10) || isGenerating ? 'not-allowed' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center'

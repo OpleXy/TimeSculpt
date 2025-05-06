@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import '../styles/TimelineContextMenu.css';
 import IntervalSettings from './IntervalSettings';
+import ToggleSwitch from './ToggleSwitch'; // Import the existing ToggleSwitch component
 
 function TimelineContextMenu({ 
   position, 
@@ -12,22 +13,29 @@ function TimelineContextMenu({
   currentBackgroundColor, 
   onBackgroundImageSelect, 
   currentBackgroundImage,
-  // Interval marker props with 'even' as default
+  // Interval marker props
   showIntervals = true,
   intervalCount = 5,
   onIntervalToggle,
   onIntervalCountChange,
-  // Set 'even' as the default interval type
   intervalType = 'even',
   onIntervalTypeChange,
-  // Add timeline data prop for validation
-  timelineData = {}
+  timelineData = {},
+  // Direction props
+  isVertical = false,
+  onDirectionChange
 }) {
   const menuRef = useRef(null);
   const bgImageListRef = useRef(null);
-  const [currentView, setCurrentView] = useState('main'); // 'main', 'background', 'thickness', 'color', 'backgroundImage', 'intervals'
+  const [currentView, setCurrentView] = useState('main');
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [localIsVertical, setLocalIsVertical] = useState(isVertical);
   
+  // Update local direction when prop changes
+  useEffect(() => {
+    setLocalIsVertical(isVertical);
+  }, [isVertical]);
+
   // Background color options
   const backgroundColors = [
     { name: 'Default', value: 'white' },
@@ -39,7 +47,7 @@ function TimelineContextMenu({
     { name: 'Light Purple', value: '#f3e5f5' }
   ];
   
-  // Background image options with the correct filenames
+  // Background image options
   const backgroundImages = [
     { name: 'Cctv', value: 'cctv.png' },
     { name: 'Cia', value: 'cia.png' },
@@ -78,34 +86,29 @@ function TimelineContextMenu({
     { name: 'Extra Thick', value: 4 }
   ];
   
-  // Store scroll position when changing views
+  // Standard event handlers and effects
   useEffect(() => {
     if (menuRef.current) {
       menuRef.current.scrollTop = scrollPosition;
     }
   }, [currentView, scrollPosition]);
   
-  // Prevent zooming when scrolling in the menu
   useEffect(() => {
     const handleWheel = (e) => {
-      // Prevent the wheel event from propagating to the timeline container
       e.stopPropagation();
     };
     
-    // Add wheel event listener to the menu
     const menuElement = menuRef.current;
     if (menuElement) {
       menuElement.addEventListener('wheel', handleWheel, { passive: false });
     }
     
-    // Add specific wheel event listener to the background image list for smoother scrolling
     const bgImageList = bgImageListRef.current;
     if (bgImageList) {
       bgImageList.addEventListener('wheel', handleWheel, { passive: false });
     }
     
     return () => {
-      // Clean up event listeners
       if (menuElement) {
         menuElement.removeEventListener('wheel', handleWheel);
       }
@@ -114,9 +117,8 @@ function TimelineContextMenu({
         bgImageList.removeEventListener('wheel', handleWheel);
       }
     };
-  }, [currentView]); // Re-add listeners when view changes
+  }, [currentView]);
   
-  // Close the menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -128,83 +130,81 @@ function TimelineContextMenu({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onClose]);
   
-  // Handle right-click to go back
   useEffect(() => {
     const handleRightClick = (e) => {
-      // Prevent the default context menu from showing
       e.preventDefault();
       
-      // Only handle right-clicks inside the menu
       if (menuRef.current && menuRef.current.contains(e.target)) {
-        // If we're in a submenu, go back to main menu
         if (currentView !== 'main') {
           handleBackClick();
         }
       }
     };
     
-    // Add context menu (right-click) event listener to the menu
     const menuElement = menuRef.current;
     if (menuElement) {
       menuElement.addEventListener('contextmenu', handleRightClick);
     }
     
     return () => {
-      // Clean up event listener
       if (menuElement) {
         menuElement.removeEventListener('contextmenu', handleRightClick);
       }
     };
-  }, [currentView]); // Re-add listener when view changes
+  }, [currentView]);
   
-  // Handle background color selection
   const handleBackgroundColorClick = (color) => {
     onColorSelect(color);
   };
   
-  // Handle background image selection
   const handleBackgroundImageClick = (imageName) => {
     if (onBackgroundImageSelect) {
       onBackgroundImageSelect(imageName);
     }
   };
   
-  // Handle timeline color selection
   const handleTimelineColorClick = (color) => {
     onStyleSelect({ color });
   };
   
-  // Handle thickness selection
   const handleThicknessClick = (thickness) => {
     onStyleSelect({ thickness });
   };
   
-  // Go back to main menu
+  // Handle direction toggle - UPDATED for direct style modification
+  const handleDirectionToggle = (e) => {
+    const newIsVertical = e.target.checked;
+    setLocalIsVertical(newIsVertical);
+    
+    if (onDirectionChange) {
+      onDirectionChange(newIsVertical);
+    } else if (onStyleSelect) {
+      // If no specific orientation handler, use the style handler
+      onStyleSelect({ orientation: newIsVertical ? 'vertical' : 'horizontal' });
+    }
+  };
+  
   const handleBackClick = () => {
-    // Save the current scroll position before going back
     if (menuRef.current) {
       setScrollPosition(menuRef.current.scrollTop);
     }
     setCurrentView('main');
   };
   
-  // Set the menu position style
   const menuPositionStyle = {
     top: `${position.y}px`,
     left: `${position.x}px`,
   };
   
-  // Set data attributes to help with styling and theming
   const dataProps = {
     'data-color': currentColor || '#007bff',
     'data-thickness': currentThickness || 2,
     'data-view': currentView
   };
   
-  // For highlighting the active menu item
   const isActive = (itemValue, currentValue) => itemValue === currentValue;
 
-  // Render BackIcon component
+  // Icon components
   const BackIcon = () => (
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
@@ -221,7 +221,6 @@ function TimelineContextMenu({
     </svg>
   );
 
-  // Render ChevronIcon component
   const ChevronIcon = () => (
     <svg 
       className="context-menu-chevron"
@@ -239,7 +238,6 @@ function TimelineContextMenu({
     </svg>
   );
 
-  // Render CheckIcon component
   const CheckIcon = () => (
     <svg 
       className="context-menu-check"
@@ -257,7 +255,6 @@ function TimelineContextMenu({
     </svg>
   );
 
-  // Render the interval marker icon - now using a more appropriate ruler/measurement icon
   const IntervalIcon = () => (
     <svg 
       className="context-menu-icon"
@@ -279,6 +276,24 @@ function TimelineContextMenu({
     </svg>
   );
 
+  const DirectionIcon = () => (
+    <svg 
+      className="context-menu-icon"
+      xmlns="http://www.w3.org/2000/svg" 
+      width="16" 
+      height="16" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <line x1="17" y1="7" x2="7" y2="17"></line>
+      <polyline points="17 17 7 17 7 7"></polyline>
+    </svg>
+  );
+
   return (
     <div 
       ref={menuRef} 
@@ -286,7 +301,6 @@ function TimelineContextMenu({
       className="timeline-context-menu"
       {...dataProps}
     >
-      {/* Menu Header */}
       <div className="context-menu-header">
         {currentView !== 'main' && (
           <button 
@@ -304,6 +318,7 @@ function TimelineContextMenu({
           {currentView === 'color' && 'Timeline Color'}
           {currentView === 'backgroundImage' && 'Background Image'}
           {currentView === 'intervals' && 'Intervallmarkører'}
+          {currentView === 'direction' && 'Retning'}
         </span>
       </div>
       
@@ -365,7 +380,19 @@ function TimelineContextMenu({
               <ChevronIcon />
             </li>
             
-            {/* New interval markers item */}
+            {/* Direction menu item */}
+            <li 
+              className="context-menu-item"
+              onClick={() => setCurrentView('direction')}
+            >
+              <div className="context-menu-icon-wrapper">
+                <DirectionIcon />
+              </div>
+              Retning
+              <ChevronIcon />
+            </li>
+            
+            {/* Interval markers item */}
             <li 
               className="context-menu-item"
               onClick={() => setCurrentView('intervals')}
@@ -468,7 +495,46 @@ function TimelineContextMenu({
           </ul>
         )}
         
-        {/* Interval Markers Submenu - Using the IntervalSettings component */}
+        {/* Direction Submenu - IMPROVED */}
+        {currentView === 'direction' && (
+          <div className="context-menu-direction">
+            <div className="direction-toggle-container">
+              {/* Using the imported ToggleSwitch component */}
+              <ToggleSwitch
+                isVertical={localIsVertical}
+                onChange={handleDirectionToggle}
+                id="direction-toggle"
+                label="Velg retning for tidslinjen"
+              />
+            </div>
+            
+            <div className="direction-info">
+              <svg 
+                className="info-icon"
+                xmlns="http://www.w3.org/2000/svg" 
+                width="14" 
+                height="14" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>
+                {localIsVertical 
+                  ? 'Vertikal visning viser tidslinjen fra topp til bunn.'
+                  : 'Horisontal visning viser tidslinjen fra venstre til høyre.'}
+              </span>
+            </div>
+          </div>
+        )}
+        
+        {/* Interval Markers Submenu */}
         {currentView === 'intervals' && (
           <IntervalSettings
             showIntervals={showIntervals}

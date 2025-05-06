@@ -1,0 +1,210 @@
+/* NotFound.css - Styles for the 404 page */
+
+.not-found-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 160px);
+    padding: 2rem;
+  }
+  
+  .not-found-content {
+    text-align: center;
+    max-width: 600px;
+    background-color: white;
+    padding: 3rem;
+    border-radius: 16px;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 0.5s ease;
+  }
+  
+  .not-found-content h1 {
+    font-size: 6rem;
+    margin: 0;
+    line-height: 1;
+    color: #007bff;
+    font-weight: 800;
+    margin-bottom: 0.25rem;
+  }
+  
+  .not-found-content h2 {
+    font-size: 2.2rem;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #343a40;
+    font-weight: 700;
+  }
+  
+  .not-found-content p {
+    margin-bottom: 1rem;
+    color: #495057;
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+  
+  .not-found-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 2rem;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .go-home-btn {
+    padding: 0.85rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.25s ease;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+  }
+  
+  .go-home-btn:hover {
+    background-color: #0069d9;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+  }
+  
+  .find-page-btn {
+    padding: 0.85rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.25s ease;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: #f8f9fa;
+    color: #495057;
+    border: 1px solid #dee2e6;
+  }
+  
+  .find-page-btn:hover {
+    background-color: #e9ecef;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  .loading-redirect {
+    margin-top: 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #007bff;
+    animation: pulse 1.2s infinite;
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes pulse {
+    0% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.6;
+    }
+  }
+  
+  /* Dark mode styles */
+  body.dark-mode .not-found-content {
+    background-color: #1e1e1e;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.3);
+  }
+  
+  body.dark-mode .not-found-content h1 {
+    color: #3a97ff;
+  }
+  
+  body.dark-mode .not-found-content h2 {
+    color: #f1f1f1;
+  }
+  
+  body.dark-mode .not-found-content p {
+    color: #adb5bd;
+  }
+  
+  body.dark-mode .go-home-btn {
+    background-color: #0d6efd;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+  }
+  
+  body.dark-mode .go-home-btn:hover {
+    background-color: #0b5ed7;
+    box-shadow: 0 6px 15px rgba(13, 110, 253, 0.4);
+  }
+  
+  body.dark-mode .find-page-btn {
+    background-color: #212529;
+    color: #e9ecef;
+    border-color: #343a40;
+  }
+  
+  body.dark-mode .find-page-btn:hover {
+    background-color: #2b3035;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  body.dark-mode .loading-redirect {
+    color: #3a97ff;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .not-found-content {
+      padding: 2.5rem 2rem;
+    }
+    
+    .not-found-content h1 {
+      font-size: 5rem;
+    }
+    
+    .not-found-content h2 {
+      font-size: 1.8rem;
+    }
+    
+    .not-found-content p {
+      font-size: 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .not-found-content {
+      padding: 2rem 1.5rem;
+    }
+    
+    .not-found-content h1 {
+      font-size: 4rem;
+    }
+    
+    .not-found-content h2 {
+      font-size: 1.5rem;
+    }
+    
+    .go-home-btn, .find-page-btn {
+      padding: 0.75rem 1.25rem;
+      font-size: 0.95rem;
+    }
+  }

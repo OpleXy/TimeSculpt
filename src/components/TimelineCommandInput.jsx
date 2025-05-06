@@ -256,12 +256,6 @@ function TimelineCommandInput({ timelineData, addEvent }) {
 >
   Fortell om slaget ved Stalingrad
 </button>
-<button 
-  onClick={() => setCommandText('Gi en funfact om noe innenfor denne tidslinjen')}
-  className="example-button"
->
-Gi en funfact
-</button>
 
       </div>
     </div>

@@ -3,30 +3,36 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
 import Timeline from './components/Timeline';
+import LayoutManager from './components/LayoutManager';
 import { useAuth } from './contexts/AuthContext.jsx';
 import { useTheme } from './contexts/ThemeContext.jsx';
 import AuthModal from './components/auth/AuthModal';
 import MobileWarning from './components/MobileWarning';
-import WelcomePopup from './components/WelcomePopup';
+
+
 import { generateTimelineEvents } from './services/aiTimelineService';
 
+// Import styles
 import './styles/base.css';
 import './styles/timeline.css';
 import './styles/ui-components.css';
 import './styles/auth.css';
 import './styles/topbar.css';
-import './styles/pages.css';
 import './styles/mobile-warning.css';
 import './styles/theme-toggle.css';
-import './styles/welcome-popup.css';
+
 import './styles/sidebarinfo.css';
 import './styles/event-colors.css';
 import './styles/text-to-timeline.css';
 import './styles/topbar-timeline-form.css';
 import './styles/prompt-processing.css';
+import './styles/privacy-toggle.css';
+import './styles/topbar-privacy.css';
+import './styles/layout-manager.css';
+import './styles/welcome-screen.css';
 
 function App() {
-  const { isAuthenticated, authChanged } = useAuth();
+  const { isAuthenticated, authChanged, currentUser, logOut } = useAuth();
   const { darkMode } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
@@ -35,29 +41,31 @@ function App() {
   // Add state for interval markers
   const [showIntervals, setShowIntervals] = useState(true);
   const [intervalCount, setIntervalCount] = useState(5);
-  // Add state for interval type
   const [intervalType, setIntervalType] = useState('even');
   
   // Add state for processing prompt-generated timelines
   const [isProcessingPrompt, setIsProcessingPrompt] = useState(false);
   
-  useEffect(() => {
-    // Check for timelineId in URL parameters when component mounts
-    const searchParams = new URLSearchParams(location.search);
-    const timelineId = searchParams.get('timelineId');
-    
-    if (timelineId) {
-      loadSpecificTimeline(timelineId);
-    }
-  }, [location.search]);
-
+  // Add state for privacy setting
+  const [isPublic, setIsPublic] = useState(false);
   
   // Add state for tracking unsaved changes
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  
   // Add state for tracking save errors (like reaching limit)
   const [saveError, setSaveError] = useState('');
+  
   // Add state for shortcut notification
   const [shortcutNotification, setShortcutNotification] = useState(null);
+  
+  // State for copied URL notification
+  const [showCopiedNotification, setShowCopiedNotification] = useState(false);
+  
+  // Set this to false to disable the welcome popup
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  
+  // State for timeline list refresh trigger
+  const [timelineListRefreshTrigger, setTimelineListRefreshTrigger] = useState(0);
   
   const [timelineData, setTimelineData] = useState({
     start: null,
@@ -66,9 +74,8 @@ function App() {
     events: [],
     orientation: 'horizontal',
     backgroundColor: 'white',
-    timelineColor: '#007bff',   // Default timeline color
-    timelineThickness: 2,       // Default timeline thickness
-    // Add interval settings to timeline data
+    timelineColor: '#007bff',
+    timelineThickness: 2,
     showIntervals: true,
     intervalCount: 5,
     intervalType: 'even',
@@ -76,13 +83,21 @@ function App() {
       show: true,
       count: 5,
       type: 'even'
-    }
+    },
+    isPublic: false
   });
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [showWelcomeContent, setShowWelcomeContent] = useState(true);
-  const [showWelcomePopup, setShowWelcomePopup] = useState(true); // New state for popup
-  const [timelineListRefreshTrigger, setTimelineListRefreshTrigger] = useState(0);
+
+  // Check for timelineId in URL parameters when component mounts
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const timelineId = searchParams.get('timelineId');
+    
+    if (timelineId) {
+      loadSpecificTimeline(timelineId);
+    }
+  }, [location.search]);
 
   // Open and close auth modal
   const openAuthModal = () => setIsAuthModalOpen(true);
@@ -91,6 +106,23 @@ function App() {
   // Close welcome popup
   const closeWelcomePopup = () => {
     setShowWelcomePopup(false);
+  };
+
+  // Handle logout
+  const handleLogout = async () => {
+    if (hasUnsavedChanges) {
+      const confirm = window.confirm('Du har ulagrede endringer. Er du sikker på at du vil logge ut? Ulagrede endringer vil gå tapt.');
+      if (!confirm) {
+        return;
+      }
+    }
+    
+    try {
+      await logOut();
+      navigate('/');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
 
   // Load a specific timeline by ID
@@ -114,13 +146,20 @@ function App() {
           if (timeline.intervalType !== undefined) setIntervalType(timeline.intervalType);
         }
         
-        setShowWelcomeContent(false);
-        setShowWelcomePopup(false); // Also hide popup
+        // Set privacy setting
+        setIsPublic(timeline.isPublic || false);
+        
+        // Ensure welcome popup is hidden when timeline is loaded
+        setShowWelcomePopup(false);
         setHasUnsavedChanges(false);
       }
     } catch (error) {
       console.error('Error loading timeline:', error);
       alert(`Kunne ikke laste tidslinjen: ${error.message}`);
+      // If error is about private timeline, navigate to home
+      if (error.message.includes('privat')) {
+        navigate('/');
+      }
     }
   };
 
@@ -135,8 +174,8 @@ function App() {
         events: [],
         orientation: 'horizontal',
         backgroundColor: 'white',
-        timelineColor: '#007bff',   // Default timeline color
-        timelineThickness: 2,       // Default timeline thickness
+        timelineColor: '#007bff',
+        timelineThickness: 2,
         showIntervals: true,
         intervalCount: 5,
         intervalType: 'even',
@@ -144,7 +183,8 @@ function App() {
           show: true,
           count: 5,
           type: 'even'
-        }
+        },
+        isPublic: false
       });
       
       // Reset interval settings
@@ -152,28 +192,57 @@ function App() {
       setIntervalCount(5);
       setIntervalType('even');
       
+      // Reset privacy setting
+      setIsPublic(false);
+      
       // Also reset unsaved changes
       setHasUnsavedChanges(false);
       
-      // Set showWelcomeContent to true when logged out
-      setShowWelcomeContent(true);
-      setShowWelcomePopup(true); // Also show popup
+      // Keep welcome popup hidden even when logged out
+      // setShowWelcomePopup(false);
     }
   }, [isAuthenticated, authChanged]);
 
-  // Update welcome content and popup based on authentication status and timeline data
+  // Update welcome popup based on authentication status and timeline data
   useEffect(() => {
-    if (isAuthenticated) {
-      setShowWelcomeContent(false); // Never show welcome content when logged in
-      setShowWelcomePopup(false); // Never show popup when logged in
-    } else if (timelineData.title && timelineData.start && timelineData.end) {
-      setShowWelcomeContent(false); // Hide welcome content if there's an active timeline
-      setShowWelcomePopup(false); // Hide popup if there's an active timeline
-    } else {
-      setShowWelcomeContent(true); // Show welcome content when not logged in and no timeline
-      // Keep popup state as is (don't set to true here to prevent it from reappearing)
-    }
+    // Keep welcome popup hidden regardless of state changes
+    setShowWelcomePopup(false);
   }, [isAuthenticated, timelineData]);
+
+  // Handle privacy toggle
+  const handlePrivacyChange = (isPublicValue) => {
+    setIsPublic(isPublicValue);
+    setTimelineData(prev => ({
+      ...prev,
+      isPublic: isPublicValue
+    }));
+    
+    // Mark as having unsaved changes
+    setHasUnsavedChanges(true);
+    
+    // Show notification about the privacy change
+    if (isPublicValue) {
+      showShortcutNotification('Tidslinjen er nå offentlig og kan deles');
+    } else {
+      showShortcutNotification('Tidslinjen er nå privat');
+    }
+  };
+
+  // Copy share URL to clipboard
+  const handleCopyShareUrl = () => {
+    if (!timelineData.id) return;
+    
+    const shareUrl = `${window.location.origin}/?timelineId=${timelineData.id}`;
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => {
+        setShowCopiedNotification(true);
+        setTimeout(() => setShowCopiedNotification(false), 2000);
+        showShortcutNotification('Lenke kopiert til utklippstavle!');
+      })
+      .catch(err => {
+        console.error('Could not copy text: ', err);
+      });
+  };
 
   // Add keyboard shortcut for saving (s key)
   useEffect(() => {
@@ -220,8 +289,11 @@ function App() {
     setIsSidebarCollapsed(!isSidebarCollapsed);
   };
 
-  // Update interval settings - updated to handle type parameter
-  const updateIntervalSettings = (show, count, type) => {
+  // Update interval settings
+  const updateIntervalSettings = (settings) => {
+    // Extract settings from parameter object
+    const { showIntervals: show, intervalCount: count, intervalType: type } = settings;
+    
     // Update the state
     if (show !== undefined) setShowIntervals(show);
     if (count !== undefined) setIntervalCount(count);
@@ -262,6 +334,12 @@ function App() {
       }
     }
     
+    // Reset privacy setting for new timeline (always private by default)
+    setIsPublic(false);
+    
+    // Ensure sidebar is shown by default for new timelines
+    setIsSidebarCollapsed(false);
+    
     // Check if this timeline was generated from a prompt and needs events
     if (data.generatedFromPrompt && data.promptText) {
       try {
@@ -277,11 +355,11 @@ function App() {
             show: showIntervals,
             count: intervalCount,
             type: intervalType
-          }
+          },
+          isPublic: false // Default to private
         };
         
         setTimelineData(newTimelineData);
-        setShowWelcomeContent(false);
         setShowWelcomePopup(false);
         
         // Now generate events based on the prompt
@@ -311,11 +389,11 @@ function App() {
             show: showIntervals,
             count: intervalCount,
             type: intervalType
-          }
+          },
+          isPublic: false // Default to private
         };
         
         setTimelineData(newTimelineData);
-        setShowWelcomeContent(false);
         setShowWelcomePopup(false);
         setHasUnsavedChanges(false);
         
@@ -323,7 +401,7 @@ function App() {
         setIsProcessingPrompt(false);
       }
     } else {
-      // Regular timeline creation (original code)
+      // Regular timeline creation
       const newTimelineData = {
         ...data,
         showIntervals: showIntervals,
@@ -333,12 +411,12 @@ function App() {
           show: showIntervals,
           count: intervalCount,
           type: intervalType
-        }
+        },
+        isPublic: false // Default to private
       };
       
       setTimelineData(newTimelineData);
-      setHasUnsavedChanges(false);
-      setShowWelcomeContent(false);
+      setHasUnsavedChanges(true); // Mark as having unsaved changes
       setShowWelcomePopup(false);
       setSaveError('');
     }
@@ -390,7 +468,9 @@ function App() {
         intervalCount: intervalSettings.count,
         intervalType: intervalSettings.type,
         // Store settings in a single object
-        intervalSettings: intervalSettings
+        intervalSettings: intervalSettings,
+        // Include privacy setting
+        isPublic: isPublic
       };
       
       // Import API functions dynamically to avoid circular dependencies
@@ -404,6 +484,9 @@ function App() {
         if (result.success) {
           setHasUnsavedChanges(false); // Reset unsaved changes flag
           setSaveError(''); // Clear any save errors
+          
+          // Show success notification
+          showShortcutNotification('Tidslinjen ble lagret');
           
           // Trigger the timeline list to refresh
           setTimelineListRefreshTrigger(prev => prev + 1);
@@ -420,6 +503,9 @@ function App() {
           setHasUnsavedChanges(false); // Reset unsaved changes flag
           setSaveError(''); // Clear any save errors
           
+          // Show success notification
+          showShortcutNotification('Tidslinjen ble opprettet');
+          
           // Update URL with the new timeline ID
           navigate(`/?timelineId=${result.timelineId}`, { replace: true });
           
@@ -432,13 +518,13 @@ function App() {
       setSaveError(error.message); // Store the error message
 
       // Check if error is about timeline limit
-      if (error.message.includes('grensen på 3 tidslinjer')) {
+      if (error.message.includes('grensen på 10 tidslinjer')) {
         alert(`${error.message} Vennligst gå til 'Mine tidslinjer' og slett en tidslinje før du prøver igjen.`);
       } else {
         alert(`Kunne ikke lagre tidslinjen: ${error.message}`);
       }
     }
-  };    
+  };
 
   // Load timeline from Firebase with unsaved changes check
   const handleLoadTimeline = (timeline) => {
@@ -475,7 +561,9 @@ function App() {
         if (timeline.intervalType !== undefined) setIntervalType(timeline.intervalType);
       }
       
-      setShowWelcomeContent(false); // Hide welcome content when a timeline is loaded
+      // Set privacy setting
+      setIsPublic(timeline.isPublic || false);
+      
       setShowWelcomePopup(false); // Hide welcome popup when a timeline is loaded
       
       // Update URL with the timeline ID
@@ -496,8 +584,8 @@ function App() {
   };
 
   return (
-    <div className="app-container">
-      {/* Display welcome popup */}
+    <div className={`app-container ${darkMode ? 'dark-mode' : ''}`}>
+      {/* Welcome popup is disabled because showWelcomePopup is set to false */}
       {showWelcomePopup && !isAuthenticated && (
         <WelcomePopup onClose={closeWelcomePopup} onLogin={openAuthModal} />
       )}
@@ -508,67 +596,76 @@ function App() {
       <Topbar 
         timelineData={timelineData} 
         onLogin={openAuthModal}
-        onLoadTimeline={handleLoadTimeline} // Use the function that checks for unsaved changes
+        onLogout={handleLogout}
+        onLoadTimeline={handleLoadTimeline}
         onCreateTimeline={createTimeline}
         onSaveTimeline={saveTimeline}
         onUpdateTimeline={updateTimelineData}
         hasUnsavedChanges={hasUnsavedChanges}
-        saveError={saveError} // Pass save error to show in UI if needed
+        saveError={saveError}
+        isPublic={isPublic}
+        onPrivacyChange={handlePrivacyChange}
+        currentUser={currentUser}
+        isAuthenticated={isAuthenticated}
       />
       
-      <main className="main-content main-content-with-topbar">
-        <Timeline 
-          timelineData={timelineData}
-          setTimelineData={setTimelineDataWithTracking} // Use function that tracks changes
-          showIntervals={showIntervals}
-          intervalCount={intervalCount}
-          intervalType={intervalType}
-          onUpdateIntervalSettings={updateIntervalSettings}
-        />
-      </main>
-
-      <Sidebar 
-        isCollapsed={isSidebarCollapsed}
-        toggleSidebar={toggleSidebar}
-        createTimeline={createTimeline}
-        addEvent={addEvent}
-        saveTimeline={saveTimeline}
+      {/* Use the LayoutManager to handle conditional rendering */}
+      <LayoutManager
         timelineData={timelineData}
         onLogin={openAuthModal}
-        onLoadTimeline={handleLoadTimeline}
-        hasUnsavedChanges={hasUnsavedChanges} // Pass unsaved changes flag
-        showWelcomeContent={false} // Always set to false since we're using popup instead
-        saveError={saveError} // Pass save error to display in sidebar
-        timelineListRefreshTrigger={timelineListRefreshTrigger}
-        // Pass interval settings to sidebar
-        showIntervals={showIntervals}
-        intervalCount={intervalCount}
-        intervalType={intervalType}
-        onUpdateIntervalSettings={updateIntervalSettings}
-      />
-
-      <AuthModal 
-        isOpen={isAuthModalOpen} 
-        onClose={closeAuthModal} 
-      />
-      
-      {/* Prompt processing overlay */}
-      {isProcessingPrompt && (
-        <div className="prompt-processing-overlay">
-          <div className="prompt-processing-modal">
-            <div className="loading-spinner"></div>
-            <h3>Genererer tidslinje...</h3>
-            <p>Analyserer tekst og oppretter hendelser basert på prompten din.</p>
+        isSidebarCollapsed={isSidebarCollapsed}
+        sidebar={
+          <Sidebar 
+            isCollapsed={isSidebarCollapsed}
+            toggleSidebar={toggleSidebar}
+            createTimeline={createTimeline}
+            addEvent={addEvent}
+            saveTimeline={saveTimeline}
+            timelineData={timelineData}
+            onLogin={openAuthModal}
+            onLoadTimeline={handleLoadTimeline}
+            onCreateTimeline={createTimeline}
+            hasUnsavedChanges={hasUnsavedChanges}
+            timelineListRefreshTrigger={timelineListRefreshTrigger}
+          />
+        }
+        timelineContent={
+          <main className="main-content main-content-with-topbar">
+            <Timeline 
+              timelineData={timelineData}
+              setTimelineData={setTimelineDataWithTracking}
+              showIntervals={showIntervals}
+              intervalCount={intervalCount}
+              intervalType={intervalType}
+              onUpdateIntervalSettings={updateIntervalSettings}
+            />
+          </main>
+        }
+      >
+        {/* Authentication Modal */}
+        <AuthModal 
+          isOpen={isAuthModalOpen} 
+          onClose={closeAuthModal} 
+        />
+        
+        {/* Prompt processing overlay */}
+        {isProcessingPrompt && (
+          <div className="prompt-processing-overlay">
+            <div className="prompt-processing-modal">
+              <div className="loading-spinner"></div>
+              <h3>Genererer tidslinje...</h3>
+              <p>Analyserer tekst og oppretter hendelser basert på prompten din.</p>
+            </div>
           </div>
-        </div>
-      )}
-      
-      {/* Shortcut notification toast */}
-      {shortcutNotification && (
-        <div className="shortcut-notification">
-          {shortcutNotification}
-        </div>
-      )}
+        )}
+        
+        {/* Shortcut notification toast */}
+        {shortcutNotification && (
+          <div className="shortcut-notification">
+            {shortcutNotification}
+          </div>
+        )}
+      </LayoutManager>
     </div>
   );
 }

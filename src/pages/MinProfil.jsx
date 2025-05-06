@@ -3,7 +3,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import Layout from '../components/Layout';
 import { updateProfile } from 'firebase/auth';
-import { setDocumentTitle } from '../services/documentTitleService'; // Import the service
+import { setDocumentTitle } from '../services/documentTitleService';
+import '../styles/pages/MinProfil.css'; // New CSS import
+import '../styles/pages/layout.css'; // Common layout styles
 
 function MinProfil() {
   const { isAuthenticated, currentUser } = useAuth();
@@ -235,9 +237,9 @@ function MinProfil() {
             
             <div className="profile-sidebar">
               <div className="profile-membership-card">
-                <h3>⚠️ Maks 3 tidslinjer</h3>
+                <h3>✨ Opp til 10 tidslinjer</h3>
                 <p className="membership-info">
-                  Du kan lage opptil <strong>3 tidslinjer</strong>. Trenger du flere? Kontakt oss:
+                  Du har tilgang til å lage opptil <strong>10 tidslinjer</strong> i din konto. Trenger du flere eller har du spørsmål? Vi er her for å hjelpe:
                 </p>
                 <div className="membership-actions">
                   <a

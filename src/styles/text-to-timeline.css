@@ -169,3 +169,19 @@
     font-weight: 600;
     vertical-align: middle;
   }
+
+  /* AI Badge styling */
+.ai-badge {
+    display: inline-block;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: inherit;
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 0.15rem 0.3rem;
+    border-radius: 3px;
+    margin-left: 5px;
+    vertical-align: text-top;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  

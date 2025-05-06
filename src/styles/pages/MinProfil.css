@@ -1,0 +1,620 @@
+/* MinProfil.css - Styles for the user profile page */
+
+.profile-page-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+    margin-top: 60px; /* Match topbar height */
+    min-height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
+    background-color: #f8f9fa;
+    overflow-y: auto;
+  }
+  
+  .profile-page-title {
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: #555;
+    padding: 1.3rem 5%;
+    margin: 0;
+    background-color: transparent;
+    box-shadow: none;
+    border-bottom: 1px solid #eaeaea;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-full-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 5%;
+    gap: 2.5rem;
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .profile-main-section {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .profile-sidebar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    min-width: 300px;
+  }
+  
+  /* Profile header */
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1.8rem;
+    background-color: white;
+    padding: 1.8rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 0.5rem;
+    position: relative;
+  }
+  
+  .profile-avatar-large {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  }
+  
+  .profile-avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .avatar-initials-large {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #6c757d;
+    background-color: #f8f9fa;
+  }
+  
+  .profile-info-large h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: #333;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+  
+  .profile-email {
+    font-size: 0.95rem;
+    color: #777;
+    margin: 0.5rem 0 0 0;
+  }
+  
+  /* Profile details section */
+  .profile-details-section {
+    background-color: white;
+    padding: 1.8rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .profile-section-title {
+    font-size: 1.3rem;
+    color: #444;
+    margin: 0 0 1.2rem 0;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .profile-details-list {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .detail-item {
+    display: flex;
+    padding: 1.2rem 0;
+    margin-bottom: 0.2rem;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  
+  .detail-item:last-child {
+    border-bottom: none;
+  }
+  
+  .detail-label {
+    flex: 1;
+    font-weight: 600;
+    color: #777;
+    font-size: 0.95rem;
+  }
+  
+  .detail-value {
+    flex: 2;
+    font-size: 0.95rem;
+    color: #333;
+  }
+  
+  /* Editable username */
+  .editable-username {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    position: relative;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+  
+  .editable-username:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .edit-icon {
+    opacity: 0.3;
+    transition: opacity 0.2s ease;
+    margin-left: 6px;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .editable-username:hover .edit-icon {
+    opacity: 0.7;
+  }
+  
+  .username-edit-input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    background-color: white;
+    color: #333;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+  }
+  
+  .username-edit-input:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  }
+  
+  .username-update-message {
+    padding: 8px 12px;
+    margin: 10px 0;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    animation: fadeIn 0.3s ease;
+  }
+  
+  .username-update-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 3px solid #28a745;
+  }
+  
+  .username-update-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 3px solid #dc3545;
+  }
+  
+  /* Auth provider icons */
+  .profile-auth-providers {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  
+  .auth-provider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .auth-provider-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    color: #555;
+    transition: all 0.2s ease;
+    cursor: default;
+  }
+  
+  .auth-provider-icon:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Provider-specific colors */
+  .auth-provider-icon.google {
+    background-color: #fff;
+    color: #4285F4;
+    border: 1px solid #eee;
+  }
+  
+  .auth-provider-icon.facebook {
+    background-color: #3b5998;
+    color: white;
+  }
+  
+  .auth-provider-icon.twitter {
+    background-color: #1DA1F2;
+    color: white;
+  }
+  
+  .auth-provider-icon.github {
+    background-color: #24292e;
+    color: white;
+  }
+  
+  .auth-provider-icon.email {
+    background-color: #D44638;
+    color: white;
+  }
+  
+  .auth-provider-icon.phone {
+    background-color: #48BB78;
+    color: white;
+  }
+  
+  .auth-provider-icon.apple {
+    background-color: #000;
+    color: white;
+  }
+  
+  .auth-provider-icon.generic {
+    background-color: #6B7280;
+    color: white;
+  }
+  
+  .auth-provider-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  /* Auth methods in details list */
+  .auth-methods-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+  }
+  
+  .auth-method-name {
+    font-weight: 500;
+    background-color: #f8f9fa;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
+  
+  /* Profile membership card */
+  .profile-membership-card {
+    background-color: white;
+    padding: 1.8rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f0f0f0;
+  }
+  
+  .profile-membership-card h3 {
+    font-size: 1.3rem;
+    color: #333;
+    margin: 0 0 1.2rem 0;
+    padding-bottom: 0.8rem;
+    border-bottom: 2px solid #f5f5f5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .membership-info {
+    font-size: 1rem;
+    color: #555;
+    margin: 1.2rem 0;
+    line-height: 1.7;
+  }
+  
+  .membership-info strong {
+    color: #007bff;
+    font-weight: 600;
+  }
+  
+  .membership-actions {
+    margin-top: 1.5rem;
+  }
+  
+  .membership-actions .upgrade-btn {
+    padding: 0.9rem 1rem;
+    background-color: #f8f9fa;
+    color: #495057;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+  
+  .membership-actions .upgrade-btn:hover {
+    background-color: #e9ecef;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    color: #212529;
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+  
+  /* Auth required message */
+  .auth-required-message {
+    background-color: white;
+    border-radius: 12px;
+    padding: 3rem;
+    text-align: center;
+    color: #6c757d;
+    margin: 3rem auto;
+    max-width: 500px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Dark mode styles */
+  body.dark-mode .profile-page-container {
+    background-color: #121212;
+  }
+  
+  body.dark-mode .profile-page-title {
+    color: #adb5bd;
+    border-bottom: 1px solid #333;
+  }
+  
+  body.dark-mode .profile-header {
+    background-color: #1e1e1e;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  body.dark-mode .profile-info-large h2 {
+    color: #f1f1f1;
+  }
+  
+  body.dark-mode .profile-email {
+    color: #adb5bd;
+  }
+  
+  body.dark-mode .avatar-initials-large {
+    color: #ddd;
+    background-color: #2a2a2a;
+  }
+  
+  body.dark-mode .profile-details-section {
+    background-color: #1e1e1e;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  body.dark-mode .profile-section-title {
+    color: #f1f1f1;
+    border-bottom-color: #333;
+  }
+  
+  body.dark-mode .detail-item {
+    border-bottom-color: #282828;
+  }
+  
+  body.dark-mode .detail-label {
+    color: #aaa;
+  }
+  
+  body.dark-mode .detail-value {
+    color: #f1f1f1;
+  }
+  
+  body.dark-mode .editable-username:hover {
+    background-color: #2a2a2a;
+  }
+  
+  body.dark-mode .username-edit-input {
+    background-color: #2a2a2a;
+    border-color: #444;
+    color: #f1f1f1;
+  }
+  
+  body.dark-mode .username-edit-input:focus {
+    border-color: #3a97ff;
+    box-shadow: 0 0 0 3px rgba(58, 151, 255, 0.25);
+  }
+  
+  body.dark-mode .username-update-message.success {
+    background-color: rgba(25, 135, 84, 0.15);
+    color: #75b798;
+    border-left-color: #28a745;
+  }
+  
+  body.dark-mode .username-update-message.error {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #ea868f;
+    border-left-color: #dc3545;
+  }
+  
+/* Continuation of MinProfil.css */
+
+body.dark-mode .auth-provider-icon {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  body.dark-mode .auth-provider-icon.google {
+    background-color: #1e1e1e;
+    color: #4285F4;
+    border: 1px solid #333;
+  }
+  
+  body.dark-mode .auth-method-name {
+    background-color: #2a2a2a;
+  }
+  
+  body.dark-mode .profile-membership-card {
+    background-color: #1e1e1e;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border-color: #2a2a2a;
+  }
+  
+  body.dark-mode .profile-membership-card h3 {
+    color: #e0e0e0;
+    border-bottom-color: #2a2a2a;
+  }
+  
+  body.dark-mode .membership-info {
+    color: #d0d0d0;
+  }
+  
+  body.dark-mode .membership-info strong {
+    color: #3a97ff;
+  }
+  
+  body.dark-mode .membership-actions .upgrade-btn {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    border-color: #3a3a3a;
+  }
+  
+  body.dark-mode .membership-actions .upgrade-btn:hover {
+    background-color: #333;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    color: #f8f9fa;
+  }
+  
+  body.dark-mode .auth-required-message {
+    background-color: #1e1e1e;
+    color: #adb5bd;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 1024px) {
+    .profile-full-container {
+      flex-direction: column;
+    }
+    
+    .profile-sidebar {
+      min-width: 100%;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .profile-page-title {
+      font-size: 1.5rem;
+      padding: 1.5rem 5%;
+    }
+    
+    .profile-full-container {
+      padding: 1.5rem 5%;
+      gap: 1.5rem;
+    }
+    
+    .profile-header {
+      flex-direction: column;
+      text-align: center;
+      padding: 1.5rem;
+    }
+    
+    .profile-avatar-large {
+      margin: 0 auto 1rem;
+    }
+    
+    .profile-info-large h2 {
+      font-size: 1.8rem;
+    }
+    
+    .detail-item {
+      flex-direction: column;
+      padding: 1rem 0;
+    }
+    
+    .detail-label {
+      margin-bottom: 0.5rem;
+    }
+    
+    .detail-value {
+      font-weight: 500;
+    }
+    
+    .profile-membership-card {
+      padding: 1.5rem;
+    }
+    
+    .profile-auth-providers {
+      margin-left: 0;
+      margin-top: 15px;
+      justify-content: center;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .profile-page-title {
+      font-size: 1.3rem;
+      padding: 1rem 5%;
+    }
+    
+    .profile-full-container {
+      padding: 1rem 5%;
+      gap: 1rem;
+    }
+    
+    .profile-avatar-large {
+      width: 90px;
+      height: 90px;
+    }
+    
+    .avatar-initials-large {
+      font-size: 2.25rem;
+    }
+    
+    .profile-info-large h2 {
+      font-size: 1.5rem;
+    }
+  }

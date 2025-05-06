@@ -464,3 +464,64 @@ body.dark-mode .interval-warning {
   background-color: rgba(255, 193, 7, 0.1);
   color: #e0c271;
 }
+
+/* Add these styles to TimelineContextMenu.css */
+
+/* Direction toggle container */
+.context-menu-direction {
+  padding: 10px 15px;
+}
+
+.direction-toggle-container {
+  margin-bottom: 15px;
+}
+
+/* Toggle styling integrated with existing toggle styles */
+.orientation-toggle {
+  margin-bottom: 10px;
+}
+
+.toggle-labels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.toggle-labels span {
+  font-size: 0.85rem;
+  color: var(--text-secondary, #777);
+  transition: color 0.2s;
+}
+
+.toggle-labels span.active {
+  font-weight: 500;
+  color: var(--text-color, #333);
+}
+
+/* Info section for direction similar to interval info */
+.direction-info {
+  display: flex;
+  align-items: flex-start;
+  background-color: rgba(0, 123, 255, 0.1);
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 0.8rem;
+  color: var(--text-secondary, #666);
+}
+
+/* Dark mode adjustments */
+body.dark-mode .toggle-labels span {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+body.dark-mode .toggle-labels span.active {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+body.dark-mode .direction-info {
+  background-color: rgba(0, 123, 255, 0.15);
+  color: var(--text-secondary, #aaa);
+}

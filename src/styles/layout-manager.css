@@ -1,0 +1,129 @@
+/* 
+ * layout-manager.css
+ * Styles for the layout manager and welcome screens
+ */
+
+ .layout-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  
+  .main-content-area {
+    width: 100%; /* Always 100% width */
+    position: relative;
+    transition: padding-left 0.3s ease; /* Change from margin to padding */
+  }
+  
+  .main-content-area.with-sidebar {
+    padding-left: var(--sidebar-width, 280px); /* Use padding instead of margin */
+  }
+  
+  .main-content-area.full-width {
+    padding-left: 0;
+  }
+  
+  /* Add this class for collapsed sidebar state */
+  .main-content-area.with-sidebar.sidebar-collapsed {
+    padding-left: 0;
+  }
+  
+  /* Keep the z-sidebar above content */
+  .z-sidebar {
+    position: fixed;
+    left: 0;
+    top: 60px; /* Topbar height */
+    height: calc(100vh - 60px);
+    z-index: 10;
+  }
+  
+  /* Welcome screen styles */
+  .welcome-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 60px); /* Adjust for topbar height */
+    text-align: center;
+    padding: 2rem;
+    background-color: var(--background-color, #f8f9fa);
+  }
+  
+  .welcome-container h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color, #007bff);
+  }
+  
+  .welcome-container p {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+    color: var(--text-color, #333);
+  }
+  
+  .welcome-container.guest {
+    background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), 
+                      url('/backgrounds/timesculpt.png');
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .welcome-container.authenticated {
+    background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
+                      url('/backgrounds/timesculpt.png');
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .welcome-login-btn {
+    margin-top: 2rem;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    background-color: var(--primary-color, #007bff);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .welcome-login-btn:hover {
+    background-color: var(--primary-hover-color, #0069d9);
+  }
+  
+  /* Dark mode adjustments */
+  .dark-mode .welcome-container {
+    background-color: var(--dark-bg-color, #222);
+  }
+  
+  .dark-mode .welcome-container h2 {
+    color: var(--dark-primary-color, #4da3ff);
+  }
+  
+  .dark-mode .welcome-container p {
+    color: var(--dark-text-color, #e9e9e9);
+  }
+  
+  .dark-mode .welcome-container.guest,
+  .dark-mode .welcome-container.authenticated {
+    background-image: linear-gradient(rgba(34, 34, 34, 0.9), rgba(34, 34, 34, 0.9)), 
+                      url('/backgrounds/timesculpt.png');
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .welcome-container h2 {
+      font-size: 2rem;
+    }
+    
+    .welcome-container p {
+      font-size: 1rem;
+    }
+  }

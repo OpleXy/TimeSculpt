@@ -118,16 +118,16 @@ function TimelineList({ onLoadTimeline, hasUnsavedChanges, refreshTrigger = 0 })
   // Show timeline limit information
   const renderTimelineLimit = () => {
     const count = timelineItems.length;
-    const limitReached = count >= 3;
+    const limitReached = count >= 10; // Assuming the limit is 10
     
     return (
       <div className="timeline-limit-indicator">
         <div className="timeline-limit-count">
-          <strong>{count} av 3</strong> tidslinjer brukt
+          <strong>{count} av 10</strong> tidslinjer brukt
         </div>
         <div className="timeline-limit-progress">
           <div className={`timeline-limit-bar ${limitReached ? 'limit-reached' : ''}`} 
-            style={{ width: `${(count / 3) * 100}%` }}>
+            style={{ width: `${(count / 10) * 100}%` }}>
           </div>
         </div>
       </div>

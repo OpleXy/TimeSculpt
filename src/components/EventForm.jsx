@@ -6,7 +6,7 @@ import '../styles/EventFormTransition.css';
 import '../styles/event-form.css';
 import '../styles/expandable-menu.css';
 
-function EventForm({ onAddEvent, timelineStart, timelineEnd }) {
+function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true }) {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
@@ -238,8 +238,8 @@ const renderColorOptions = () => (
   );
 
   return (
-    <div className="event-form">
-      <h3>Legg til hendelse</h3>
+    <div className={`event-form ${!showTitle ? 'no-title' : ''}`}>
+      {showTitle && <h3>Legg til hendelse</h3>}
       <form onSubmit={handleSubmit} className="compact-form">
         <div className="form-group">
           <label htmlFor="eventTitle">Tittel<span className="required-mark"> *</span></label>

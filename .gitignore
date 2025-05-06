@@ -1,3 +1,10 @@
+# byggmapper og moduler
+dist/
 node_modules/
-build/
+
+# miljøvariabler
 .env
+
+# logg- og cachefiler
+*.log
+*.DS_Store

@@ -299,3 +299,28 @@
 .expandable-group + .form-group {
   margin-top: 0.25rem;
 }
+
+
+/* Add to existing event-form.css */
+
+/* When the form is displayed without a title */
+.event-form.no-title {
+  border-top: none;
+  padding-top: 0;
+}
+
+.event-form.no-title .compact-form {
+  margin-top: 0;
+}
+
+/* Ensure manual form inside the event creation selector has proper styling */
+.manual-event-form .event-form {
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+}
+
+.manual-event-form .event-form h3 {
+  display: none;
+}

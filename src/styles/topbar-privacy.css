@@ -1,0 +1,153 @@
+/* src/styles/topbar-privacy.css */
+
+.topbar-privacy-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 16px;
+  }
+  
+  .privacy-toggle-button,
+  .privacy-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  
+  .privacy-toggle-button {
+    cursor: pointer;
+    border: none;
+  }
+  
+  .privacy-toggle-button:hover {
+    filter: brightness(0.95);
+  }
+  
+  .privacy-toggle-button:active {
+    transform: scale(0.98);
+  }
+  
+  .privacy-toggle-button.public,
+  .privacy-status.public {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.2);
+  }
+  
+  .privacy-toggle-button.private,
+  .privacy-status.private {
+    background-color: rgba(108, 117, 125, 0.1);
+    color: #6c757d;
+    border: 1px solid rgba(108, 117, 125, 0.2);
+  }
+  
+  .share-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 500;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .share-button:hover {
+    background-color: #0069d9;
+  }
+  
+  .share-button:active {
+    transform: scale(0.98);
+  }
+  
+  .copied-notification {
+    position: absolute;
+    right: 16px;
+    top: 60px;
+    padding: 8px 12px;
+    background-color: rgba(40, 167, 69, 0.9);
+    color: white;
+    border-radius: 4px;
+    font-size: 13px;
+    animation: fadeIn 0.3s, fadeOut 0.3s 1.7s;
+    z-index: 1000;
+    pointer-events: none;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+  
+  /* Dark mode styles */
+  .dark-mode .privacy-toggle-button.public,
+  .dark-mode .privacy-status.public {
+    background-color: rgba(40, 167, 69, 0.15);
+    color: #2fd655;
+    border-color: rgba(40, 167, 69, 0.3);
+  }
+  
+  .dark-mode .privacy-toggle-button.private,
+  .dark-mode .privacy-status.private {
+    background-color: rgba(108, 117, 125, 0.15);
+    color: #adb5bd;
+    border-color: rgba(108, 117, 125, 0.3);
+  }
+  
+  .dark-mode .share-button {
+    background-color: #0d6efd;
+  }
+  
+  .dark-mode .share-button:hover {
+    background-color: #0b5ed7;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .topbar-privacy-status {
+      margin-left: 8px;
+    }
+    
+    .privacy-toggle-button,
+    .privacy-status,
+    .share-button {
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+    
+    .privacy-toggle-button svg,
+    .privacy-status svg,
+    .share-button svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+  
+  /* Extremely narrow screens */
+  @media (max-width: 480px) {
+    .privacy-toggle-button span,
+    .privacy-status span,
+    .share-button span {
+      display: none;
+    }
+    
+    .privacy-toggle-button,
+    .privacy-status,
+    .share-button {
+      padding: 6px;
+    }
+  }

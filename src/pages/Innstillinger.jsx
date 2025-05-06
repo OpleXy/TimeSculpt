@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { updateUserTheme } from '../userAPI'; // Import directly for debugging
+import { updateUserTheme } from '../userAPI';
 import Layout from '../components/Layout';
-import { setDocumentTitle } from '../services/documentTitleService'; // Import the service
+import { setDocumentTitle } from '../services/documentTitleService';
+import '../styles/pages/Innstillinger.css'; // CSS import
+import '../styles/pages/layout.css'; // Common layout styles
 
 function Innstillinger() {
   const { isAuthenticated, currentUser } = useAuth();
@@ -83,8 +85,8 @@ function Innstillinger() {
       <div className="page-fullwidth-container">
         <h1 className="page-subtle-title">⚙️ Innstillinger</h1>
         
-        {!isAuthenticated ? (
-          <div className="content-container">
+        <div className="content-container">
+          {!isAuthenticated && (
             <div className="auth-notification-message">
               <p>
                 <strong>Merk:</strong> Du er ikke logget inn. Endringer i innstillinger vil kun gjelde for denne enheten og denne nettleseren.
@@ -94,7 +96,9 @@ function Innstillinger() {
                 </a> for å lagre dine preferanser på tvers av enheter.
               </p>
             </div>
-            
+          )}
+          
+          <div className="settings-container">
             <div className="settings-form">
               <div className="settings-section">
                 <h2>🌓 Utseende</h2>
@@ -147,61 +151,7 @@ function Innstillinger() {
               </div>
             </div>
           </div>
-        ) : (
-          <div className="content-container">
-            <div className="settings-form">
-              <div className="settings-section">
-                <h2>🌓 Utseende</h2>
-                
-                <div className="setting-item">
-                  <div className="setting-label">
-                    <label htmlFor="darkMode">Mørk modus</label>
-                    <p className="setting-description">
-                      Bytt til mørkt tema for applikasjonen
-                    </p>
-                  </div>
-                  <div className="setting-control">
-                    <div className="toggle-switch">
-                      <input
-                        type="checkbox"
-                        id="darkMode"
-                        checked={darkMode}
-                        onChange={() => handleToggleChange('darkMode')}
-                      />
-                      <label htmlFor="darkMode"></label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="settings-section">
-                <h2>🌍 Språk</h2>
-                
-                <div className="setting-item">
-                  <div className="setting-label">
-                    <label htmlFor="language">Velg språk</label>
-                    <p className="setting-description">
-                      Endre språket for brukergrensesnittet
-                    </p>
-                  </div>
-                  <div className="setting-control">
-                    <select
-                      id="language"
-                      value={settings.language}
-                      onChange={handleLanguageChange}
-                      className="language-select"
-                    >
-                      <option value="no">Norsk</option>
-                      <option value="en">English</option>
-                      <option value="sv">Svenska</option>
-                      <option value="da">Dansk</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        </div>
         
         {savedMessage && (
           <div className="floating-message">
