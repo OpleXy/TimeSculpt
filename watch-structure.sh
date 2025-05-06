@@ -17,6 +17,7 @@ done
 
 while true; do
   {
+    echo "npm install"
     echo "This is the current filestructure of TimeSculpt, react vite@latest:"
     echo
     ls -a
