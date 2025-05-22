@@ -1,11 +1,10 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import TimelineEvent from './TimelineEvent';
-import EventEditModal from './EventEditModal';
 import TimelineContextMenu from './TimelineContextMenu';
 import EventDetailPanel from './EventDetailPanel';
 import BackgroundManager from './BackgroundManager';
 import TimelineIntervals from './TimelineIntervals';
-import CreateEventModal from './CreateEventModal'; // Ny import
+import CreateEventModal from './CreateEventModal';
 import { setDocumentTitle } from '../services/documentTitleService';
 
 function Timeline({ 
@@ -22,8 +21,6 @@ function Timeline({
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [translatePos, setTranslatePos] = useState({ x: 280, y: 125 });
   const [zoom, setZoom] = useState(0.7);
-  const [editingEvent, setEditingEvent] = useState(null);
-  const [editingEventIndex, setEditingEventIndex] = useState(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [eventToDelete, setEventToDelete] = useState(null);
   const [detailEvent, setDetailEvent] = useState(null);
@@ -413,15 +410,7 @@ function Timeline({
     });
   };
   
-  // Handle event editing and bring to front
-  const handleEditEvent = (event, index) => {
-    setEditingEvent({...event, index});
-    setEditingEventIndex(index);
-    setLastClickedEvent(index);
-    setShowDetailPanel(false);
-  };
-  
-  // Handle showing event details in the side panel
+  // Handle showing event details in the side panel (no longer opens edit modal)
   const handleShowEventDetail = (event, index) => {
     if (showDetailPanel) {
       setDetailEvent({...event, index});
@@ -443,14 +432,15 @@ function Timeline({
     setLastClickedEvent(index);
   };
   
-  // Save edited event
-  const handleSaveEvent = (updatedEvent) => {
-    if (editingEventIndex === null) return;
+  // Save edited event from the detail panel
+  const handleSaveEventFromPanel = (updatedEvent) => {
+    if (!detailEvent || detailEvent.index === undefined) return;
     
     const newEvents = [...timelineData.events];
+    const eventIndex = detailEvent.index;
     
-    const currentEvent = newEvents[editingEventIndex];
-    newEvents[editingEventIndex] = {
+    const currentEvent = newEvents[eventIndex];
+    newEvents[eventIndex] = {
       ...updatedEvent,
       xOffset: currentEvent.xOffset || 0,
       yOffset: currentEvent.yOffset || currentEvent.offset || 0,
@@ -462,16 +452,14 @@ function Timeline({
       events: newEvents
     });
     
-    setEditingEvent(null);
-    setEditingEventIndex(null);
+    // Update the detail event to reflect changes
+    setDetailEvent({...updatedEvent, index: eventIndex});
   };
   
-  // Delete event from modal with confirmation
-  const handleDeleteFromModal = (event, index) => {
-    setEditingEvent(null);
-    setEditingEventIndex(null);
+  // Delete event from detail panel
+  const handleDeleteFromPanel = (event, index) => {
     setShowDetailPanel(false);
-    setEventToDelete(index !== undefined ? index : editingEventIndex);
+    setEventToDelete(index !== undefined ? index : detailEvent?.index);
     setShowConfirmDelete(true);
   };
   
@@ -844,8 +832,6 @@ function Timeline({
                 orientation={timelineData.orientation}
                 positionPercentage={positionPercentage}
                 onDrag={handleEventDrag}
-                onEdit={handleEditEvent}
-                onDelete={handleDeleteEvent}
                 zoom={zoom}
                 timelineColor={timelineColor}
                 timelineThickness={timelineThickness}
@@ -894,21 +880,9 @@ function Timeline({
           event={detailEvent}
           isOpen={showDetailPanel}
           onClose={handleCloseDetailPanel}
-          onEdit={handleEditEvent}
-          onDelete={handleDeleteFromModal}
+          onSave={handleSaveEventFromPanel}
+          onDelete={handleDeleteFromPanel}
         />
-        
-        {editingEvent && (
-          <EventEditModal 
-            event={editingEvent}
-            onSave={handleSaveEvent}
-            onDelete={handleDeleteFromModal}
-            onClose={() => {
-              setEditingEvent(null);
-              setEditingEventIndex(null);
-            }}
-          />
-        )}
         
         {showConfirmDelete && (
           <div className="modal-overlay">

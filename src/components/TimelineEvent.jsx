@@ -7,8 +7,6 @@ function TimelineEvent({
   positionPercentage, 
   onDrag, 
   zoom, 
-  onEdit, 
-  onDelete,
   timelineColor, 
   timelineThickness, 
   setLastClickedEvent, 
@@ -260,7 +258,7 @@ function TimelineEvent({
     return processHtmlContent(event.title);
   }, [event.title]);
   
-  // Handle context menu (right click) - directly open edit modal and set as last clicked
+  // Handle context menu (right click) - opens detail panel for editing
   const handleContextMenu = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -270,14 +268,13 @@ function TimelineEvent({
       setLastClickedEvent(index);
     }
     
-    // Directly call the edit function
-    if (onEdit) {
-      onEdit(event, index);
+    // Open the detail panel for editing
+    if (onShowDetail) {
+      onShowDetail(event, index);
     }
   };
 
-  // Prevent double-click events from propagating to the timeline container
-  // and set as last clicked
+  // Handle double-click - opens detail panel for editing
   const handleDoubleClick = (e) => {
     e.stopPropagation();
     
@@ -285,23 +282,25 @@ function TimelineEvent({
     if (setLastClickedEvent) {
       setLastClickedEvent(index);
     }
+    
+    // Open the detail panel for editing
+    if (onShowDetail) {
+      onShowDetail(event, index);
+    }
   };
   
-  // Add click handler to set last clicked event and open detail panel
+  // Handle regular click - only sets as last clicked, doesn't open detail panel
   const handleClick = (e) => {
-    // If we're dragging, don't open detail panel
+    // If we're dragging, don't do anything
     if (isDragging) return;
     
-    // Set this event as the last clicked event
+    // Set this event as the last clicked event (for z-index ordering)
     if (setLastClickedEvent) {
       setLastClickedEvent(index);
     }
     
-    // Call the onShowDetail function passed from parent
-    if (onShowDetail) {
-      e.stopPropagation(); // Prevent event from bubbling up
-      onShowDetail(event, index);
-    }
+    // Stop propagation to prevent timeline interactions
+    e.stopPropagation();
   };
   
   // Generate the appropriate size class
@@ -368,7 +367,7 @@ function TimelineEvent({
         onDoubleClick={handleDoubleClick}
         onClick={handleClick}
         data-index={index}
-        title={event.description ? "Klikk for å vise detaljer" : ""}
+        title={event.description ? "Høyreklikk eller dobbelklikk for å redigere" : "Høyreklikk eller dobbelklikk for å redigere"}
       >
         <div dangerouslySetInnerHTML={{ __html: processedContent }}></div>
         <br/>
