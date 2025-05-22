@@ -698,10 +698,49 @@ function Timeline({
       setLocalIntervalType(timelineData.intervalSettings.type);
     }
     
-    setShowDetailPanel(false);
+    // Don't automatically close detail panel when timeline data changes
+    // The panel should only close when user explicitly clicks the close button
   }, [timelineData]);
   
-  // Generate the CSS styles for the timeline line
+  // Calculate timeline duration
+  const calculateTimelineDuration = () => {
+    if (!timelineData.start || !timelineData.end) return '';
+    
+    const startDate = timelineData.start instanceof Date ? 
+      timelineData.start : 
+      new Date(timelineData.start);
+    const endDate = timelineData.end instanceof Date ?
+      timelineData.end :
+      new Date(timelineData.end);
+    
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) return '';
+    
+    // Calculate difference in months
+    const years = endDate.getFullYear() - startDate.getFullYear();
+    const months = endDate.getMonth() - startDate.getMonth();
+    const totalMonths = years * 12 + months;
+    
+    if (totalMonths === 0) {
+      // Same month, calculate days
+      const days = Math.abs(endDate.getDate() - startDate.getDate());
+      if (days === 0) return 'samme dag';
+      return days === 1 ? '1 dag' : `${days} dager`;
+    }
+    
+    const finalYears = Math.floor(totalMonths / 12);
+    const finalMonths = totalMonths % 12;
+    
+    let duration = '';
+    if (finalYears > 0) {
+      duration += finalYears === 1 ? '1 år' : `${finalYears} år`;
+    }
+    if (finalMonths > 0) {
+      if (duration) duration += ', ';
+      duration += finalMonths === 1 ? '1 mnd' : `${finalMonths} mnd`;
+    }
+    
+    return duration || '0 mnd';
+  };
   const getTimelineLineStyle = () => {
     const baseStyle = {
       backgroundColor: timelineColor
@@ -909,6 +948,22 @@ function Timeline({
             </div>
           </div>
         )}
+        
+        {/* Timeline info bar at bottom */}
+        <div className="timeline-info-bar">
+          <div className="timeline-duration">
+            {timelineData.start && timelineData.end && (
+              <span>Varighet: {calculateTimelineDuration()}</span>
+            )}
+          </div>
+          <div className="timeline-instructions">
+  <strong>Klikk og dra</strong> tidslinjen for å endre view • 
+  <strong> Dobbelklikk</strong> for å nullstille • 
+  <strong> Høyreklikk</strong> på canvas for å redigere tidslinje • 
+  <strong> Høyreklikk</strong> på hendelser for å redigere dem
+</div>
+
+        </div>
         
         {/* CreateEventModal for hendelsesopprettelse ved klikk */}
         <CreateEventModal
