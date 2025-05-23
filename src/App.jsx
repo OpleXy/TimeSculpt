@@ -9,7 +9,6 @@ import { useTheme } from './contexts/ThemeContext.jsx';
 import AuthModal from './components/auth/AuthModal';
 import MobileWarning from './components/MobileWarning';
 
-
 import { generateTimelineEvents } from './services/aiTimelineService';
 
 // Import styles
@@ -20,7 +19,6 @@ import './styles/auth.css';
 import './styles/topbar.css';
 import './styles/mobile-warning.css';
 import './styles/theme-toggle.css';
-
 import './styles/sidebarinfo.css';
 import './styles/event-colors.css';
 import './styles/text-to-timeline.css';
@@ -30,6 +28,7 @@ import './styles/privacy-toggle.css';
 import './styles/topbar-privacy.css';
 import './styles/layout-manager.css';
 import './styles/welcome-screen.css';
+
 
 function App() {
   const { isAuthenticated, authChanged, currentUser, logOut } = useAuth();
@@ -67,6 +66,9 @@ function App() {
   // State for timeline list refresh trigger
   const [timelineListRefreshTrigger, setTimelineListRefreshTrigger] = useState(0);
   
+  // Add state for viewing mode
+  const [isViewingMode, setIsViewingMode] = useState(false);
+  
   const [timelineData, setTimelineData] = useState({
     start: null,
     end: null,
@@ -88,6 +90,26 @@ function App() {
   });
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  // Check if user can edit the current timeline
+  const canEditTimeline = () => {
+    if (!timelineData.id) return true; // New timelines can be edited
+    if (!isAuthenticated) return false; // Not logged in users can't edit
+    if (timelineData.isOwner) return true; // Owner can edit
+    if (timelineData.canEdit) return true; // Editor collaborator can edit
+    return false; // Default to no edit
+  };
+
+  // Update viewing mode based on edit permissions
+  useEffect(() => {
+    const canEdit = canEditTimeline();
+    setIsViewingMode(!canEdit);
+    
+    // If in viewing mode, collapse sidebar immediately
+    if (!canEdit && timelineData.id) {
+      setIsSidebarCollapsed(true);
+    }
+  }, [timelineData, isAuthenticated]);
 
   // Check for timelineId in URL parameters when component mounts
   useEffect(() => {
@@ -198,6 +220,9 @@ function App() {
       // Also reset unsaved changes
       setHasUnsavedChanges(false);
       
+      // Reset viewing mode
+      setIsViewingMode(false);
+      
       // Keep welcome popup hidden even when logged out
       // setShowWelcomePopup(false);
     }
@@ -211,6 +236,8 @@ function App() {
 
   // Handle privacy toggle
   const handlePrivacyChange = (isPublicValue) => {
+    if (isViewingMode) return; // Don't allow changes in viewing mode
+    
     setIsPublic(isPublicValue);
     setTimelineData(prev => ({
       ...prev,
@@ -247,6 +274,9 @@ function App() {
   // Add keyboard shortcut for saving (s key)
   useEffect(() => {
     const handleKeyDown = (e) => {
+      // Don't allow shortcuts in viewing mode
+      if (isViewingMode) return;
+      
       // Check if 's' key is pressed and the user isn't in a text input or textarea
       if (e.key === 's' && 
           !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName) &&
@@ -272,7 +302,7 @@ function App() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [hasUnsavedChanges, timelineData]);
+  }, [hasUnsavedChanges, timelineData, isViewingMode]);
 
   // Function to show shortcut notification
   const showShortcutNotification = (message) => {
@@ -284,13 +314,16 @@ function App() {
     }, 2000);
   };
 
-  // Toggle sidebar visibility
+  // Toggle sidebar visibility - not allowed in viewing mode
   const toggleSidebar = () => {
+    if (isViewingMode) return; // Don't allow sidebar toggle in viewing mode
     setIsSidebarCollapsed(!isSidebarCollapsed);
   };
 
-  // Update interval settings
+  // Update interval settings - not allowed in viewing mode
   const updateIntervalSettings = (settings) => {
+    if (isViewingMode) return; // Don't allow changes in viewing mode
+    
     // Extract settings from parameter object
     const { showIntervals: show, intervalCount: count, intervalType: type } = settings;
     
@@ -326,6 +359,8 @@ function App() {
   
   // Create timeline with the provided data
   const createTimeline = async (data) => {
+    if (isViewingMode) return; // Don't allow new timeline creation in viewing mode
+    
     // Check for unsaved changes before creating new timeline
     if (hasUnsavedChanges) {
       const confirm = window.confirm('Du har ulagrede endringer. Er du sikker på at du vil opprette en ny tidslinje? Ulagrede endringer vil gå tapt.');
@@ -424,6 +459,8 @@ function App() {
 
   // Update timeline data (for editing title and dates)
   const updateTimelineData = (updatedTimeline) => {
+    if (isViewingMode) return; // Don't allow changes in viewing mode
+    
     // Mark changes as unsaved
     setHasUnsavedChanges(true);
     setTimelineData(updatedTimeline);
@@ -432,6 +469,8 @@ function App() {
 
   // Add event to the timeline
   const addEvent = (event) => {
+    if (isViewingMode) return; // Don't allow adding events in viewing mode
+    
     // Mark changes as unsaved
     setHasUnsavedChanges(true);
     setTimelineData(prevData => ({
@@ -442,6 +481,8 @@ function App() {
   };
   
   const saveTimeline = async () => {
+    if (isViewingMode) return; // Don't allow saving in viewing mode
+    
     try {
       // Basic validation
       if (!timelineData.title || !timelineData.start || !timelineData.end) {
@@ -528,6 +569,8 @@ function App() {
 
   // Load timeline from Firebase with unsaved changes check
   const handleLoadTimeline = (timeline) => {
+    if (isViewingMode) return; // Don't allow loading in viewing mode
+    
     if (hasUnsavedChanges) {
       const confirm = window.confirm('Du har ulagrede endringer. Er du sikker på at du vil laste en annen tidslinje? Ulagrede endringer vil gå tapt.');
       if (!confirm) {
@@ -574,8 +617,10 @@ function App() {
     }
   };
   
-  // Modified timeline data setter to track changes
+  // Modified timeline data setter to track changes - not allowed in viewing mode
   const setTimelineDataWithTracking = (newData) => {
+    if (isViewingMode) return; // Don't allow changes in viewing mode
+    
     // Mark as having unsaved changes
     setHasUnsavedChanges(true);
     // Update the timeline data
@@ -584,14 +629,16 @@ function App() {
   };
 
   return (
-    <div className={`app-container ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`app-container ${darkMode ? 'dark-mode' : ''} ${isViewingMode ? 'viewing-mode' : ''}`}>
       {/* Welcome popup is disabled because showWelcomePopup is set to false */}
-      {showWelcomePopup && !isAuthenticated && (
+      {showWelcomePopup && !isAuthenticated && !isViewingMode && (
         <WelcomePopup onClose={closeWelcomePopup} onLogin={openAuthModal} />
       )}
       
       {/* Add the Mobile Warning Component */}
       <MobileWarning />
+      
+
       
       <Topbar 
         timelineData={timelineData} 
@@ -607,6 +654,7 @@ function App() {
         onPrivacyChange={handlePrivacyChange}
         currentUser={currentUser}
         isAuthenticated={isAuthenticated}
+        isViewingMode={isViewingMode}
       />
       
       {/* Use the LayoutManager to handle conditional rendering */}
@@ -614,23 +662,27 @@ function App() {
         timelineData={timelineData}
         onLogin={openAuthModal}
         isSidebarCollapsed={isSidebarCollapsed}
+        isViewingMode={isViewingMode} // Pass viewing mode to layout manager
         sidebar={
-          <Sidebar 
-            isCollapsed={isSidebarCollapsed}
-            toggleSidebar={toggleSidebar}
-            createTimeline={createTimeline}
-            addEvent={addEvent}
-            saveTimeline={saveTimeline}
-            timelineData={timelineData}
-            onLogin={openAuthModal}
-            onLoadTimeline={handleLoadTimeline}
-            onCreateTimeline={createTimeline}
-            hasUnsavedChanges={hasUnsavedChanges}
-            timelineListRefreshTrigger={timelineListRefreshTrigger}
-          />
+          // Only render sidebar when not in viewing mode
+          !isViewingMode ? (
+            <Sidebar 
+              isCollapsed={isSidebarCollapsed}
+              toggleSidebar={toggleSidebar}
+              createTimeline={createTimeline}
+              addEvent={addEvent}
+              saveTimeline={saveTimeline}
+              timelineData={timelineData}
+              onLogin={openAuthModal}
+              onLoadTimeline={handleLoadTimeline}
+              onCreateTimeline={createTimeline}
+              hasUnsavedChanges={hasUnsavedChanges}
+              timelineListRefreshTrigger={timelineListRefreshTrigger}
+            />
+          ) : null
         }
         timelineContent={
-          <main className="main-content main-content-with-topbar">
+          <main className={`main-content main-content-with-topbar ${isViewingMode ? 'viewing-mode-main' : ''}`}>
             <Timeline 
               timelineData={timelineData}
               setTimelineData={setTimelineDataWithTracking}
@@ -638,6 +690,7 @@ function App() {
               intervalCount={intervalCount}
               intervalType={intervalType}
               onUpdateIntervalSettings={updateIntervalSettings}
+              isViewingMode={isViewingMode}
             />
           </main>
         }

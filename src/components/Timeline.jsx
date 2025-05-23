@@ -1,10 +1,11 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import TimelineEvent from './TimelineEvent';
+import EventEditModal from './EventEditModal';
 import TimelineContextMenu from './TimelineContextMenu';
 import EventDetailPanel from './EventDetailPanel';
 import BackgroundManager from './BackgroundManager';
 import TimelineIntervals from './TimelineIntervals';
-import CreateEventModal from './CreateEventModal';
+import CreateEventModal from './CreateEventModal'; // Ny import
 import { setDocumentTitle } from '../services/documentTitleService';
 
 function Timeline({ 
@@ -13,7 +14,8 @@ function Timeline({
   showIntervals = true,
   intervalCount = 5,
   intervalType = 'even',
-  onUpdateIntervalSettings
+  onUpdateIntervalSettings,
+  isViewingMode = false // Ny prop for visningsmodus
 }) {
   const timelineRef = useRef(null);
   const containerRef = useRef(null);
@@ -21,6 +23,8 @@ function Timeline({
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [translatePos, setTranslatePos] = useState({ x: 280, y: 125 });
   const [zoom, setZoom] = useState(0.7);
+  const [editingEvent, setEditingEvent] = useState(null);
+  const [editingEventIndex, setEditingEventIndex] = useState(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [eventToDelete, setEventToDelete] = useState(null);
   const [detailEvent, setDetailEvent] = useState(null);
@@ -91,8 +95,11 @@ function Timeline({
     }
   };
   
-  // Håndter hover over tidslinjen for å vise dato
+  // Håndter hover over tidslinjen for å vise dato - kun i redigeringsmodus
   const handleTimelineMouseMove = (e) => {
+    // Ikke vis hover-dato i visningsmodus
+    if (isViewingMode) return;
+    
     // Bare vis hoverdate når musen er over selve tidslinjelinjen
     if (e.target.classList.contains('timeline-line')) {
       // Sikre at tidslinjen har start og slutt dato
@@ -155,11 +162,15 @@ function Timeline({
   
   // Skjul hover-datoen når musen forlater tidslinjen
   const handleTimelineMouseLeave = () => {
+    if (isViewingMode) return;
     setShowHoverDate(false);
   };
   
-  // Håndter klikk på tidslinjen for å opprette ny hendelse
+  // Håndter klikk på tidslinjen for å opprette ny hendelse - kun i redigeringsmodus
   const handleTimelineLineClick = (e) => {
+    // Ikke tillat hendelsesopprettelse i visningsmodus
+    if (isViewingMode) return;
+    
     // Bare utløs på direkte klikk på tidslinje-linjen
     if (e.target.classList.contains('timeline-line')) {
       e.stopPropagation();
@@ -227,8 +238,10 @@ function Timeline({
     }
   };
   
-  // Funksjon for å legge til en ny hendelse fra modalen
+  // Funksjon for å legge til en ny hendelse fra modalen - kun i redigeringsmodus
   const addNewEvent = (newEvent) => {
+    if (isViewingMode) return;
+    
     // Legg til den nye hendelsen i tidslinjens events-array
     const updatedEvents = [...timelineData.events, newEvent];
     
@@ -393,8 +406,10 @@ function Timeline({
     };
   }, [isPanning, startPos, translatePos, zoom, timelineData]);
 
-  // Handle event dragging with 2D movement
+  // Handle event dragging with 2D movement - kun i redigeringsmodus
   const handleEventDrag = (index, xOffset, yOffset) => {
+    if (isViewingMode) return;
+    
     const newEvents = [...timelineData.events];
     
     newEvents[index] = {
@@ -410,8 +425,19 @@ function Timeline({
     });
   };
   
-  // Handle showing event details in the side panel (no longer opens edit modal)
+  // Handle event editing and bring to front - kun i redigeringsmodus
+  const handleEditEvent = (event, index) => {
+    if (isViewingMode) return;
+    
+    setEditingEvent({...event, index});
+    setEditingEventIndex(index);
+    setLastClickedEvent(index);
+    setShowDetailPanel(false);
+  };
+  
+  // Handle showing event details in the side panel
   const handleShowEventDetail = (event, index) => {
+    // Allow showing event details in viewing mode
     if (showDetailPanel) {
       setDetailEvent({...event, index});
     } else {
@@ -425,22 +451,24 @@ function Timeline({
     setShowDetailPanel(false);
   };
   
-  // Handle event deletion
+  // Handle event deletion - kun i redigeringsmodus
   const handleDeleteEvent = (event, index) => {
+    if (isViewingMode) return;
+    
     setEventToDelete(index);
     setShowConfirmDelete(true);
     setLastClickedEvent(index);
   };
   
-  // Save edited event from the detail panel
-  const handleSaveEventFromPanel = (updatedEvent) => {
-    if (!detailEvent || detailEvent.index === undefined) return;
+  // Save edited event - kun i redigeringsmodus
+  const handleSaveEvent = (updatedEvent) => {
+    if (isViewingMode) return;
+    if (editingEventIndex === null) return;
     
     const newEvents = [...timelineData.events];
-    const eventIndex = detailEvent.index;
     
-    const currentEvent = newEvents[eventIndex];
-    newEvents[eventIndex] = {
+    const currentEvent = newEvents[editingEventIndex];
+    newEvents[editingEventIndex] = {
       ...updatedEvent,
       xOffset: currentEvent.xOffset || 0,
       yOffset: currentEvent.yOffset || currentEvent.offset || 0,
@@ -452,19 +480,24 @@ function Timeline({
       events: newEvents
     });
     
-    // Update the detail event to reflect changes
-    setDetailEvent({...updatedEvent, index: eventIndex});
+    setEditingEvent(null);
+    setEditingEventIndex(null);
   };
   
-  // Delete event from detail panel
-  const handleDeleteFromPanel = (event, index) => {
+  // Delete event from modal with confirmation - kun i redigeringsmodus
+  const handleDeleteFromModal = (event, index) => {
+    if (isViewingMode) return;
+    
+    setEditingEvent(null);
+    setEditingEventIndex(null);
     setShowDetailPanel(false);
-    setEventToDelete(index !== undefined ? index : detailEvent?.index);
+    setEventToDelete(index !== undefined ? index : editingEventIndex);
     setShowConfirmDelete(true);
   };
   
-  // Confirm delete event
+  // Confirm delete event - kun i redigeringsmodus
   const confirmDeleteEvent = () => {
+    if (isViewingMode) return;
     if (eventToDelete === null) return;
     
     const newEvents = [...timelineData.events];
@@ -490,8 +523,10 @@ function Timeline({
     }
   };
   
-  // Handle right click to show context menu
+  // Handle right click to show context menu - kun i redigeringsmodus
   const handleContextMenu = (e) => {
+    if (isViewingMode) return;
+    
     e.preventDefault();
     
     if (e.target === containerRef.current || e.target === timelineRef.current || e.target.classList.contains('timeline-line')) {
@@ -507,8 +542,10 @@ function Timeline({
     }
   };
   
-  // Handle color selection for background
+  // Handle color selection for background - kun i redigeringsmodus
   const handleColorSelect = (color) => {
+    if (isViewingMode) return;
+    
     if (color === 'none') {
       setBackgroundColor(null);
     } else {
@@ -524,8 +561,10 @@ function Timeline({
     });
   };
   
-  // Handle timeline style selection (color & thickness)
+  // Handle timeline style selection (color & thickness) - kun i redigeringsmodus
   const handleStyleSelect = (style) => {
+    if (isViewingMode) return;
+    
     if (style.color !== undefined) {
       setTimelineColor(style.color);
       
@@ -553,8 +592,10 @@ function Timeline({
     }
   };
   
-  // Handle background image selection
+  // Handle background image selection - kun i redigeringsmodus
   const handleBackgroundImageSelect = (imageName) => {
+    if (isViewingMode) return;
+    
     if (imageName) {
       setBackgroundImage(imageName);
       setBackgroundColor(null);
@@ -577,8 +618,10 @@ function Timeline({
     }
   };
   
-  // Handle interval toggle from context menu - UPDATED for consistent state
+  // Handle interval toggle from context menu - kun i redigeringsmodus
   const handleIntervalToggle = (shouldShow) => {
+    if (isViewingMode) return;
+    
     // Update local state
     setLocalShowIntervals(shouldShow);
     
@@ -601,8 +644,10 @@ function Timeline({
     }
   };
   
-  // Handle interval count change from context menu
+  // Handle interval count change from context menu - kun i redigeringsmodus
   const handleIntervalCountChange = (count) => {
+    if (isViewingMode) return;
+    
     // Force update the local state with the new count
     setLocalIntervalCount(count);
     
@@ -626,8 +671,10 @@ function Timeline({
     }
   };
   
-  // Handle interval type change from context menu
+  // Handle interval type change from context menu - kun i redigeringsmodus
   const handleIntervalTypeChange = (type) => {
+    if (isViewingMode) return;
+    
     // Update local state
     setLocalIntervalType(type);
     
@@ -698,49 +745,10 @@ function Timeline({
       setLocalIntervalType(timelineData.intervalSettings.type);
     }
     
-    // Don't automatically close detail panel when timeline data changes
-    // The panel should only close when user explicitly clicks the close button
+    setShowDetailPanel(false);
   }, [timelineData]);
   
-  // Calculate timeline duration
-  const calculateTimelineDuration = () => {
-    if (!timelineData.start || !timelineData.end) return '';
-    
-    const startDate = timelineData.start instanceof Date ? 
-      timelineData.start : 
-      new Date(timelineData.start);
-    const endDate = timelineData.end instanceof Date ?
-      timelineData.end :
-      new Date(timelineData.end);
-    
-    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) return '';
-    
-    // Calculate difference in months
-    const years = endDate.getFullYear() - startDate.getFullYear();
-    const months = endDate.getMonth() - startDate.getMonth();
-    const totalMonths = years * 12 + months;
-    
-    if (totalMonths === 0) {
-      // Same month, calculate days
-      const days = Math.abs(endDate.getDate() - startDate.getDate());
-      if (days === 0) return 'samme dag';
-      return days === 1 ? '1 dag' : `${days} dager`;
-    }
-    
-    const finalYears = Math.floor(totalMonths / 12);
-    const finalMonths = totalMonths % 12;
-    
-    let duration = '';
-    if (finalYears > 0) {
-      duration += finalYears === 1 ? '1 år' : `${finalYears} år`;
-    }
-    if (finalMonths > 0) {
-      if (duration) duration += ', ';
-      duration += finalMonths === 1 ? '1 mnd' : `${finalMonths} mnd`;
-    }
-    
-    return duration || '0 mnd';
-  };
+  // Generate the CSS styles for the timeline line
   const getTimelineLineStyle = () => {
     const baseStyle = {
       backgroundColor: timelineColor
@@ -787,7 +795,7 @@ function Timeline({
           id="timelineContainer" 
           className="timeline-container" 
           ref={containerRef}
-          onContextMenu={handleContextMenu}
+          onContextMenu={isViewingMode ? undefined : handleContextMenu}
           onClick={handleTimelineClick}
           style={getContainerStyle()}
         >
@@ -795,7 +803,8 @@ function Timeline({
             <div className="timeline-line" style={getTimelineLineStyle()}></div>
           </div>
           
-          {showContextMenu && (
+          {/* Only show context menu in edit mode */}
+          {showContextMenu && !isViewingMode && (
             <TimelineContextMenu
             position={menuPosition}
             onColorSelect={handleColorSelect}
@@ -833,7 +842,7 @@ function Timeline({
         id="timelineContainer" 
         className={`timeline-container ${showDetailPanel ? 'with-detail-panel' : ''}`}
         ref={containerRef}
-        onContextMenu={handleContextMenu}
+        onContextMenu={isViewingMode ? undefined : handleContextMenu}
         onClick={handleTimelineClick}
         style={getContainerStyle()}
       >
@@ -842,13 +851,13 @@ function Timeline({
           className={`timeline ${timelineData.orientation}`} 
           ref={timelineRef}
         >
-          {/* Tidslinjeelement med klikk og hover-funksjonalitet */}
+          {/* Tidslinjeelement med klikk og hover-funksjonalitet - kun i redigeringsmodus */}
           <div 
             className="timeline-line" 
             style={getTimelineLineStyle()} 
-            onClick={handleTimelineLineClick}
-            onMouseMove={handleTimelineMouseMove}
-            onMouseLeave={handleTimelineMouseLeave}
+            onClick={isViewingMode ? undefined : handleTimelineLineClick}
+            onMouseMove={isViewingMode ? undefined : handleTimelineMouseMove}
+            onMouseLeave={isViewingMode ? undefined : handleTimelineMouseLeave}
           ></div>
 
           <TimelineIntervals 
@@ -870,20 +879,23 @@ function Timeline({
                 index={index}
                 orientation={timelineData.orientation}
                 positionPercentage={positionPercentage}
-                onDrag={handleEventDrag}
+                onDrag={isViewingMode ? () => {} : handleEventDrag}
+                onEdit={isViewingMode ? () => {} : handleEditEvent}
+                onDelete={isViewingMode ? () => {} : handleDeleteEvent}
                 zoom={zoom}
                 timelineColor={timelineColor}
                 timelineThickness={timelineThickness}
                 setLastClickedEvent={setLastClickedEvent}
                 lastClickedEvent={lastClickedEvent}
                 onShowDetail={handleShowEventDetail}
+                isViewingMode={isViewingMode} // Pass viewing mode to events
               />
             );
           })}
         </div>
         
-        {/* Vis hoverdato når musen er over tidslinjen */}
-        {showHoverDate && (
+        {/* Vis hoverdato når musen er over tidslinjen - kun i redigeringsmodus */}
+        {showHoverDate && !isViewingMode && (
           <div className="timeline-hover-date" style={{
             position: 'absolute',
             top: hoverPosition.y - 35,
@@ -894,7 +906,8 @@ function Timeline({
           </div>
         )}
         
-        {showContextMenu && (
+        {/* Only show context menu in edit mode */}
+        {showContextMenu && !isViewingMode && (
           <TimelineContextMenu
             position={menuPosition}
             onColorSelect={handleColorSelect}
@@ -919,11 +932,26 @@ function Timeline({
           event={detailEvent}
           isOpen={showDetailPanel}
           onClose={handleCloseDetailPanel}
-          onSave={handleSaveEventFromPanel}
-          onDelete={handleDeleteFromPanel}
+          onEdit={isViewingMode ? undefined : handleEditEvent}
+          onDelete={isViewingMode ? undefined : handleDeleteFromModal}
+          isViewingMode={isViewingMode} // Pass viewing mode to detail panel
         />
         
-        {showConfirmDelete && (
+        {/* Only show edit modal in edit mode */}
+        {editingEvent && !isViewingMode && (
+          <EventEditModal 
+            event={editingEvent}
+            onSave={handleSaveEvent}
+            onDelete={handleDeleteFromModal}
+            onClose={() => {
+              setEditingEvent(null);
+              setEditingEventIndex(null);
+            }}
+          />
+        )}
+        
+        {/* Only show delete confirmation in edit mode */}
+        {showConfirmDelete && !isViewingMode && (
           <div className="modal-overlay">
             <div className="delete-confirmation-modal">
               <h3>Bekreft sletting</h3>
@@ -949,31 +977,17 @@ function Timeline({
           </div>
         )}
         
-        {/* Timeline info bar at bottom */}
-        <div className="timeline-info-bar">
-          <div className="timeline-duration">
-            {timelineData.start && timelineData.end && (
-              <span>Varighet: {calculateTimelineDuration()}</span>
-            )}
-          </div>
-          <div className="timeline-instructions">
-  <strong>Klikk og dra</strong> tidslinjen for å endre view • 
-  <strong> Dobbelklikk</strong> for å nullstille • 
-  <strong> Høyreklikk</strong> på canvas for å redigere tidslinje • 
-  <strong> Høyreklikk</strong> på hendelser for å redigere dem
-</div>
-
-        </div>
-        
-        {/* CreateEventModal for hendelsesopprettelse ved klikk */}
-        <CreateEventModal
-          isOpen={showCreateModal}
-          onClose={() => setShowCreateModal(false)}
-          onSave={addNewEvent}
-          position={createModalPosition}
-          date={createEventDate}
-          timelineColor={timelineColor}
-        />
+        {/* CreateEventModal for hendelsesopprettelse ved klikk - kun i redigeringsmodus */}
+        {!isViewingMode && (
+          <CreateEventModal
+            isOpen={showCreateModal}
+            onClose={() => setShowCreateModal(false)}
+            onSave={addNewEvent}
+            position={createModalPosition}
+            date={createEventDate}
+            timelineColor={timelineColor}
+          />
+        )}
       </div>
     </>
   );
