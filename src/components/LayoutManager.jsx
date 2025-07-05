@@ -12,7 +12,7 @@ import '../styles/welcome-screen.css';
 function LayoutManager({ 
   timelineData, 
   onLogin, 
-  onCreateTimeline, // <-- Denne må være i parameterlisten
+  onCreateTimeline,
   isSidebarCollapsed, 
   sidebar, 
   timelineContent, 
@@ -56,8 +56,9 @@ function LayoutManager({
         {/* Show welcome screen or timeline content */}
         {showWelcomeContent ? (
           <WelcomeScreen 
-          onLogin={onLogin} 
-          onCreateTimeline={onCreateTimeline} />
+            onLogin={onLogin} 
+            onCreateTimeline={onCreateTimeline} 
+          />
         ) : (
           timelineContent
         )}
