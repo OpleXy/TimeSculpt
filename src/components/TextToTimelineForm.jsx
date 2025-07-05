@@ -1,155 +1,133 @@
-import { useState } from 'react';
-import RichTextEditor from './RichTextEditor';
-import { generateTimelineEvents } from '../services/aiTimelineService';
-import '../styles/event-form.css';
-import '../styles/text-to-timeline.css';
+import React, { useState } from 'react';
+import { generateTimelineFromPrompt } from '../services/openAiService';
 
-function TextToTimelineForm({ onGenerateEvents, timelineStart, timelineEnd }) {
-  const [text, setText] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+const TextToTimelineForm = ({ onTimelineGenerated, onClose }) => {
+  const [prompt, setPrompt] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState('');
-  const [generatedCount, setGeneratedCount] = useState(0);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!prompt.trim()) {
+      setError('Vennligst skriv inn en beskrivelse av tidslinjen');
+      return;
+    }
+
+    setIsGenerating(true);
     setError('');
 
-    // Basic validation
-    if (!text.trim()) {
-      setError('Vennligst skriv eller lim inn tekst for å generere hendelser');
-      return;
-    }
-
-    if (!timelineStart || !timelineEnd) {
-      setError('Tidslinjen må ha start- og sluttdato');
-      return;
-    }
-
     try {
-      setIsLoading(true);
+      // Kall den nye OpenAI-servicen direkte
+      const timelineConfig = await generateTimelineFromPrompt(prompt);
       
-      // Use the AI service to generate events
-      const generatedEvents = await generateTimelineEvents(text, timelineStart, timelineEnd);
+      // Send den komplette tidslinjen til parent komponenten
+      onTimelineGenerated(timelineConfig);
       
-      // Track how many events were generated
-      setGeneratedCount(generatedEvents.length);
+      // Lukk modalen
+      if (onClose) {
+        onClose();
+      }
       
-      // Send events back to parent component
-      onGenerateEvents(generatedEvents);
-      
-      // Clear form after successful generation
-      setText('');
     } catch (error) {
-      console.error('Feil ved generering av hendelser:', error);
-      setError('Kunne ikke generere hendelser. Prøv igjen senere.');
+      console.error('Feil ved generering av tidslinje:', error);
+      setError(`Kunne ikke generere tidslinje: ${error.message}`);
     } finally {
-      setIsLoading(false);
+      setIsGenerating(false);
     }
   };
 
-  // Utility function to strip HTML for plaintext storage
-  const stripHtml = (html) => {
-    const tmp = document.createElement('DIV');
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || '';
+  const handleExampleClick = (examplePrompt) => {
+    setPrompt(examplePrompt);
   };
 
   return (
     <div className="text-to-timeline-form">
-      <h3>Tekst til tidslinje</h3>
-      <form onSubmit={handleSubmit} className="compact-form">
-        <div className="form-group">
-          <label htmlFor="timelineText">Skriv eller lim inn tekst<span className="required-mark"> *</span></label>
-          <RichTextEditor 
-            value={text}
-            onChange={(val) => {
-              setText(val);
-              setError('');
-            }}
-            placeholder="Skriv eller lim inn en sammenhengende tekst med historiske hendelser..."
-            minHeight="200px"
+      <h3>Lag tidslinje fra tekst</h3>
+      <p>Skriv en kort beskrivelse av tidslinjen du ønsker å lage:</p>
+      
+      <form onSubmit={handleSubmit}>
+        <div className="input-group">
+          <textarea
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="F.eks: 'en tidslinje over den russiske revolusjon' eller 'andre verdenskrig 1939-1945'"
+            rows="3"
+            disabled={isGenerating}
           />
         </div>
-        
-        <div className="text-to-timeline-info">
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="16" 
-            height="16" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-          >
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="16" x2="12" y2="12"></line>
-            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-          </svg>
-          <span>
-            AI-assistenten vil analysere teksten og foreslå en rekke hendelser innenfor tidsperioden.
-            Du kan redigere eller flytte hendelsene etter generering.
-          </span>
-        </div>
-        
-        {error && <div className="error">{error}</div>}
-        
-        {generatedCount > 0 && !isLoading && (
-          <div className="success-message">
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="16" 
-              height="16" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            >
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-              <polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
-            <span>
-              {generatedCount} hendelse{generatedCount !== 1 ? 'r' : ''} ble generert! 
-              Du kan nå redigere og plassere dem på tidslinjen.
-            </span>
+
+        {error && (
+          <div className="error-message">
+            {error}
           </div>
         )}
-        
-        <button 
-          type="submit" 
-          className="generate-timeline-btn"
-          disabled={isLoading || !text.trim()}
-        >
-          {isLoading ? (
-            <>
-              <span className="loading-spinner"></span>
-              <span>Genererer...</span>
-            </>
-          ) : (
-            <>
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="18" 
-                height="18" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
-                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-              </svg>
-              <span>{generatedCount > 0 ? 'Generer flere hendelser' : 'Generer hendelser'}</span>
-            </>
-          )}
-        </button>
+
+        <div className="example-prompts">
+          <p>💡 Eksempler du kan prøve:</p>
+          <div className="example-buttons">
+            <button 
+              type="button" 
+              className="example-btn"
+              onClick={() => handleExampleClick('en tidslinje over den russiske revolusjon')}
+              disabled={isGenerating}
+            >
+              Den russiske revolusjon
+            </button>
+            <button 
+              type="button" 
+              className="example-btn"
+              onClick={() => handleExampleClick('andre verdenskrig i Europa')}
+              disabled={isGenerating}
+            >
+              Andre verdenskrig
+            </button>
+            <button 
+              type="button" 
+              className="example-btn"
+              onClick={() => handleExampleClick('den amerikanske borgerkrigen')}
+              disabled={isGenerating}
+            >
+              Amerikansk borgerkrig
+            </button>
+            <button 
+              type="button" 
+              className="example-btn"
+              onClick={() => handleExampleClick('den kalde krigen')}
+              disabled={isGenerating}
+            >
+              Den kalde krigen
+            </button>
+          </div>
+        </div>
+
+        <div className="form-buttons">
+          <button 
+            type="button" 
+            onClick={onClose}
+            disabled={isGenerating}
+            className="cancel-btn"
+          >
+            Avbryt
+          </button>
+          <button 
+            type="submit"
+            disabled={isGenerating || !prompt.trim()}
+            className="generate-btn"
+          >
+            {isGenerating ? (
+              <>
+                <span className="spinner"></span>
+                Genererer...
+              </>
+            ) : (
+              'Generer tidslinje'
+            )}
+          </button>
+        </div>
       </form>
     </div>
   );
-}
+};
 
 export default TextToTimelineForm;

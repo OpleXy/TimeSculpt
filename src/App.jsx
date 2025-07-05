@@ -9,9 +9,6 @@ import { useTheme } from './contexts/ThemeContext.jsx';
 import AuthModal from './components/auth/AuthModal';
 import MobileWarning from './components/MobileWarning';
 
-
-import { generateTimelineEvents } from './services/aiTimelineService';
-
 // Import styles
 import './styles/base.css';
 import './styles/timeline.css';
@@ -20,7 +17,6 @@ import './styles/auth.css';
 import './styles/topbar.css';
 import './styles/mobile-warning.css';
 import './styles/theme-toggle.css';
-
 import './styles/sidebarinfo.css';
 import './styles/event-colors.css';
 import './styles/text-to-timeline.css';
@@ -197,9 +193,6 @@ function App() {
       
       // Also reset unsaved changes
       setHasUnsavedChanges(false);
-      
-      // Keep welcome popup hidden even when logged out
-      // setShowWelcomePopup(false);
     }
   }, [isAuthenticated, authChanged]);
 
@@ -324,7 +317,7 @@ function App() {
     setSaveError(''); // Clear any save errors
   };
   
-  // Create timeline with the provided data
+  // Create timeline with the provided data - UPDATED FOR AI INTEGRATION
   const createTimeline = async (data) => {
     // Check for unsaved changes before creating new timeline
     if (hasUnsavedChanges) {
@@ -340,12 +333,12 @@ function App() {
     // Ensure sidebar is shown by default for new timelines
     setIsSidebarCollapsed(false);
     
-    // Check if this timeline was generated from a prompt and needs events
-    if (data.generatedFromPrompt && data.promptText) {
+    // Check if this is a timeline generated from AI prompt
+    if (data.generatedFromPrompt) {
       try {
         setIsProcessingPrompt(true);
         
-        // Create the timeline first without events
+        // The AI service now returns a complete timeline config - no extra processing needed!
         const newTimelineData = {
           ...data,
           showIntervals: showIntervals,
@@ -361,47 +354,20 @@ function App() {
         
         setTimelineData(newTimelineData);
         setShowWelcomePopup(false);
-        
-        // Now generate events based on the prompt
-        const generatedEvents = await generateTimelineEvents(data.promptText, data.start, data.end);
-        
-        // Add the generated events to the timeline
-        setTimelineData(prev => ({
-          ...prev,
-          events: generatedEvents
-        }));
-        
-        // Mark as having unsaved changes since we've added events
-        setHasUnsavedChanges(true);
+        setHasUnsavedChanges(true); // Mark as having unsaved changes
         setSaveError('');
         
+        // Show success notification
+        showShortcutNotification(`AI-tidslinje "${data.title}" opprettet med ${data.events.length} hendelser!`);
+        
       } catch (error) {
-        console.error('Error processing prompt timeline:', error);
-        alert('Kunne ikke generere hendelser fra prompten. Tidslinjen er opprettet uten hendelser.');
-        
-        // Still create the timeline but without events
-        const newTimelineData = {
-          ...data,
-          showIntervals: showIntervals,
-          intervalCount: intervalCount,
-          intervalType: intervalType,
-          intervalSettings: {
-            show: showIntervals,
-            count: intervalCount,
-            type: intervalType
-          },
-          isPublic: false // Default to private
-        };
-        
-        setTimelineData(newTimelineData);
-        setShowWelcomePopup(false);
-        setHasUnsavedChanges(false);
-        
+        console.error('Error processing AI timeline:', error);
+        alert('Det oppstod en feil ved prosessering av AI-tidslinjen.');
       } finally {
         setIsProcessingPrompt(false);
       }
     } else {
-      // Regular timeline creation
+      // Regular timeline creation (manual)
       const newTimelineData = {
         ...data,
         showIntervals: showIntervals,
@@ -613,6 +579,8 @@ function App() {
       <LayoutManager
         timelineData={timelineData}
         onLogin={openAuthModal}
+        
+        onCreateTimeline={createTimeline} // Add this prop to LayoutManager
         isSidebarCollapsed={isSidebarCollapsed}
         sidebar={
           <Sidebar 
@@ -654,7 +622,7 @@ function App() {
             <div className="prompt-processing-modal">
               <div className="loading-spinner"></div>
               <h3>Genererer tidslinje...</h3>
-              <p>Analyserer tekst og oppretter hendelser basert på prompten din.</p>
+              <p>AI lager en komplett tidslinje basert på prompten din.</p>
             </div>
           </div>
         )}

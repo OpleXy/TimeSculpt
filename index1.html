@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenAI Timeline Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .examples {
+            margin: 15px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .example-btn {
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .example-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .timeline-info {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #e9ecef;
+        }
+
+        .timeline-info h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .timeline-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .meta-item {
+            background: #f1f3f4;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .meta-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .meta-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-top: 5px;
+        }
+
+        .events-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+        }
+
+        .event-item {
+            padding: 12px;
+            border-bottom: 1px solid #f1f3f4;
+            display: flex;
+            align-items: center;
+        }
+
+        .event-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-date {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            min-width: 80px;
+            text-align: center;
+            margin-right: 12px;
+        }
+
+        .event-content {
+            flex: 1;
+        }
+
+        .event-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .event-description {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .error-section {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .raw-response {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🕰️ OpenAI Timeline Test</h1>
+        
+        <div class="input-section">
+            <label for="promptInput">Skriv inn en beskrivelse av tidslinjen du vil lage:</label>
+            <input type="text" id="promptInput" placeholder="f.eks: 'en tidslinje over den russiske revolusjon'" />
+            
+            <div class="examples">
+                <span class="example-btn" onclick="setPrompt('en tidslinje over den russiske revolusjon')">
+                    Den russiske revolusjon
+                </span>
+                <span class="example-btn" onclick="setPrompt('andre verdenskrig')">
+                    Andre verdenskrig
+                </span>
+                <span class="example-btn" onclick="setPrompt('den amerikanske borgerkrigen')">
+                    Amerikansk borgerkrig
+                </span>
+                <span class="example-btn" onclick="setPrompt('den kalde krigen')">
+                    Den kalde krigen
+                </span>
+                <span class="example-btn" onclick="setPrompt('huleboertiden i Norge')">
+                    Huleboertiden i Norge
+                </span>
+            </div>
+        </div>
+
+        <button onclick="generateTimeline()" id="generateBtn">
+            📡 Generer tidslinje med OpenAI
+        </button>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Genererer tidslinje med OpenAI...</p>
+        </div>
+
+        <div class="result-section" id="resultSection">
+            <!-- Results will be shown here -->
+        </div>
+    </div>
+
+    <script>
+        // OpenAI Configuration
+        const OPENAI_API_KEY = "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";
+
+        // Set prompt function
+        function setPrompt(prompt) {
+            document.getElementById('promptInput').value = prompt;
+        }
+
+        // Date fixing functions
+        function fixTimelineDates(timelineData) {
+            if (!timelineData.timeline) return timelineData;
+            
+            const timeline = timelineData.timeline;
+            
+            timeline.startDate = fixSingleDate(timeline.startDate);
+            timeline.endDate = fixSingleDate(timeline.endDate);
+            
+            if (timeline.events) {
+                timeline.events = timeline.events.map(event => ({
+                    ...event,
+                    date: fixSingleDate(event.date)
+                }));
+            }
+            
+            return timelineData;
+        }
+
+        function fixSingleDate(dateStr) {
+            if (!dateStr) return "1000-01-01";
+            
+            // If already in correct format, return as is
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                return dateStr;
+            }
+            
+            // Handle BC dates (Before Christ / f.Kr.)
+            if (dateStr.includes('BC') || dateStr.includes('f.Kr') || dateStr.includes('f.kr') || dateStr.includes('BCE')) {
+                const yearMatch = dateStr.match(/(\d+)/);
+                if (yearMatch) {
+                    const year = parseInt(yearMatch[1]);
+                    const yearStr = year.toString().padStart(4, '0');
+                    return `-${yearStr}-01-01`;
+                }
+            }
+            
+            // Handle AD dates (Anno Domini / e.Kr.)
+            if (dateStr.includes('AD') || dateStr.includes('e.Kr') || dateStr.includes('e.kr') || dateStr.includes('CE')) {
+                const yearMatch = dateStr.match(/(\d+)/);
+                if (yearMatch) {
+                    const year = parseInt(yearMatch[1]);
+                    const yearStr = year.toString().padStart(4, '0');
+                    return `${yearStr}-01-01`;
+                }
+            }
+            
+            // Handle ranges like "10000-8000", "1000-800"
+            const rangeMatch = dateStr.match(/(\d+)-(\d+)/);
+            if (rangeMatch) {
+                let startYear = parseInt(rangeMatch[1]);
+                let endYear = parseInt(rangeMatch[2]);
+                
+                let chosenYear;
+                if (startYear > endYear) {
+                    // Prehistoric: 10000-8000, choose 10000 (earlier time)
+                    chosenYear = startYear;
+                } else {
+                    // Historical: 1000-1100, choose 1000 (earlier time)
+                    chosenYear = startYear;
+                }
+                
+                // Check if this is likely BC (very old dates)
+                if (chosenYear > 3000) {
+                    // Prehistoric dates are BC
+                    const yearStr = chosenYear.toString().padStart(4, '0');
+                    return `-${yearStr}-01-01`;
+                } else {
+                    // More recent dates are AD
+                    const yearStr = chosenYear.toString().padStart(4, '0');
+                    return `${yearStr}-01-01`;
+                }
+            }
+            
+            // Handle single years
+            const yearMatch = dateStr.match(/(\d+)/);
+            if (yearMatch) {
+                const year = parseInt(yearMatch[1]);
+                
+                // Determine if BC or AD based on year size
+                if (year > 3000) {
+                    // Very old dates are likely BC
+                    const yearStr = year.toString().padStart(4, '0');
+                    return `-${yearStr}-01-01`;
+                } else {
+                    // More recent dates are AD
+                    const yearStr = year.toString().padStart(4, '0');
+                    return `${yearStr}-01-01`;
+                }
+            }
+            
+            return "1000-01-01";
+        }
+
+        // Main generate function
+        async function generateTimeline() {
+            const promptInput = document.getElementById('promptInput');
+            const generateBtn = document.getElementById('generateBtn');
+            const loading = document.getElementById('loading');
+            const resultSection = document.getElementById('resultSection');
+
+            const prompt = promptInput.value.trim();
+            if (!prompt) {
+                alert('Vennligst skriv inn en beskrivelse!');
+                return;
+            }
+
+            generateBtn.disabled = true;
+            loading.style.display = 'block';
+            resultSection.style.display = 'none';
+
+            try {
+                console.log('🚀 Sender forespørsel til OpenAI...');
+                
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-3.5-turbo",
+                        messages: [
+                            {
+                                role: "system",
+                                content: `Du er en ekspert historiker. Lag en JSON-tidslinje med nøyaktig dette formatet:
+
+{"timeline":{"title":"Beskrivende tittel","startDate":"YYYY-MM-DD","endDate":"YYYY-MM-DD","events":[{"title":"Hendelsestitel","date":"YYYY-MM-DD","description":"Kort beskrivelse","size":"medium","color":"blue"}]}}
+
+KRITISKE REGLER FOR DATOER:
+- Alle datoer MÅ være i eksakt YYYY-MM-DD format
+- For år ETTER Kristus (1-2024): Bruk positive år som "0800-01-01", "1066-10-14", "1917-02-23"
+- For år FØR Kristus: Bruk negative år som "-0500-01-01", "-1000-01-01", "-8000-01-01"
+- ALDRI bruk områder som "1000-800" eller "10000-8000"
+- ALDRI bruk "f.Kr", "e.Kr", "BC", "AD" i datoene
+- Hvis du er usikker på nøyaktig dato, VELG ALLTID det tidligste året og sett dag/måned til 01-01
+
+EKSEMPLER på riktige datoer:
+- Steinalderen (8000 f.Kr): "-8000-01-01"
+- Bronsealderen (1500 f.Kr): "-1500-01-01"
+- Romerriket (500 f.Kr): "-0500-01-01"
+- Vikingtiden (800 e.Kr): "0800-01-01"
+- Hastings-slaget (1066): "1066-10-14"
+- Oktoberrevolusjonen (1917): "1917-10-25"
+
+ANDRE REGLER:
+- Inkluder 8-12 viktige hendelser
+- Titler maks 60 tegn
+- Beskrivelser maks 150 tegn
+- Størrelser: "small", "medium", "large"
+- Farger: "red" (konflikter), "blue" (politisk), "green" (positive), "orange" (vendepunkter), "purple" (kulturelt), "default"
+
+Returner KUN JSON, ingen annen tekst.`
+                            },
+                            {
+                                role: "user",
+                                content: `Lag en komplett tidslinje for: "${prompt}"`
+                            }
+                        ],
+                        temperature: 0.3,
+                        max_tokens: 2000
+                    })
+                });
+
+                console.log('📨 Mottok respons fra OpenAI');
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const rawResponse = data.choices[0].message.content;
+
+                console.log('📝 Raw response:', rawResponse);
+
+                // Parse JSON with date fixing
+                let timelineData;
+                try {
+                    const cleanedResponse = rawResponse
+                        .replace(/```json\n?|\n?```/g, '')
+                        .replace(/```\n?|\n?```/g, '')
+                        .trim();
+                    
+                    timelineData = JSON.parse(cleanedResponse);
+                    timelineData = fixTimelineDates(timelineData);
+                    
+                } catch (parseError) {
+                    throw new Error(`JSON Parsing Error: ${parseError.message}\n\nRaw response: ${rawResponse}`);
+                }
+
+                // Validate structure
+                if (!timelineData.timeline || !timelineData.timeline.startDate || !timelineData.timeline.endDate || !timelineData.timeline.events) {
+                    throw new Error('Invalid timeline structure from OpenAI');
+                }
+
+                displayTimeline(timelineData.timeline, rawResponse);
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                displayError(error, prompt);
+            } finally {
+                generateBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        function displayTimeline(timeline, rawResponse) {
+            const resultSection = document.getElementById('resultSection');
+            
+            const startDate = new Date(timeline.startDate);
+            const endDate = new Date(timeline.endDate);
+            
+            // Handle BC dates for display
+            const formatDateForDisplay = (dateStr) => {
+                if (dateStr.startsWith('-')) {
+                    const year = Math.abs(parseInt(dateStr.substring(1, 5)));
+                    return `${year} f.Kr.`;
+                } else {
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString('no-NO');
+                }
+            };
+            
+            const validEvents = timeline.events.filter(event => {
+                const eventDate = new Date(event.date);
+                return !isNaN(eventDate.getTime()) && eventDate >= startDate && eventDate <= endDate;
+            });
+
+            resultSection.innerHTML = `
+                <h3><span style="color: #28a745; margin-right: 10px;">✅</span>Tidslinje generert vellykket!</h3>
+                
+                <div class="timeline-info">
+                    <h4>${timeline.title}</h4>
+                    
+                    <div class="timeline-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">Startdato</div>
+                            <div class="meta-value">${formatDateForDisplay(timeline.startDate)}</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Sluttdato</div>
+                            <div class="meta-value">${formatDateForDisplay(timeline.endDate)}</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Antall hendelser</div>
+                            <div class="meta-value">${validEvents.length}/${timeline.events.length}</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Tidsperiode</div>
+                            <div class="meta-value">${Math.round(Math.abs(endDate - startDate) / (365.25 * 24 * 60 * 60 * 1000))} år</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="events-list">
+                    ${validEvents.map(event => {
+                        return `
+                            <div class="event-item">
+                                <div class="event-date">${formatDateForDisplay(event.date)}</div>
+                                <div class="event-content">
+                                    <div class="event-title">${event.title}</div>
+                                    <div class="event-description">${event.description || ''}</div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+
+                <details style="margin-top: 15px;">
+                    <summary style="cursor: pointer; color: #666;">Vis raw JSON-respons</summary>
+                    <div class="raw-response">${rawResponse}</div>
+                </details>
+            `;
+
+            resultSection.classList.add('show');
+            resultSection.style.display = 'block';
+        }
+
+        function displayError(error, prompt) {
+            const resultSection = document.getElementById('resultSection');
+            
+            resultSection.innerHTML = `
+                <h3><span style="color: #dc3545; margin-right: 10px;">❌</span>Feil ved generering</h3>
+                
+                <div class="error-section">
+                    <h4>Feilmelding:</h4>
+                    <p>${error.message}</p>
+                    
+                    <h4 style="margin-top: 15px;">Prompt som ble brukt:</h4>
+                    <p>"${prompt}"</p>
+                    
+                    <h4 style="margin-top: 15px;">Mulige løsninger:</h4>
+                    <ul>
+                        <li>Sjekk at API-nøkkelen er gyldig og har kreditt</li>
+                        <li>Prøv en enklere/kortere beskrivelse</li>
+                        <li>Vent et øyeblikk og prøv igjen</li>
+                        <li>Sjekk internettforbindelsen din</li>
+                    </ul>
+                </div>
+            `;
+
+            resultSection.classList.add('show');
+            resultSection.style.display = 'block';
+        }
+
+        // Enter key support
+        document.getElementById('promptInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateTimeline();
+            }
+        });
+
+        console.log('🎉 OpenAI Timeline Test side lastet!');
+    </script>
+</body>
+</html>

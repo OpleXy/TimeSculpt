@@ -10,12 +10,13 @@ import '../styles/welcome-screen.css';
  * Updated to always show sidebar when a timeline exists with required fields.
  */
 function LayoutManager({ 
-  timelineData,
-  children,
-  sidebar,
-  timelineContent,
-  onLogin,
-  isSidebarCollapsed
+  timelineData, 
+  onLogin, 
+  onCreateTimeline, // <-- Denne må være i parameterlisten
+  isSidebarCollapsed, 
+  sidebar, 
+  timelineContent, 
+  children 
 }) {
   const { isAuthenticated, currentUser } = useAuth();
   const [showSidebar, setShowSidebar] = useState(false);
@@ -54,7 +55,9 @@ function LayoutManager({
       >
         {/* Show welcome screen or timeline content */}
         {showWelcomeContent ? (
-          <WelcomeScreen onLogin={onLogin} />
+          <WelcomeScreen 
+          onLogin={onLogin} 
+          onCreateTimeline={onCreateTimeline} />
         ) : (
           timelineContent
         )}
