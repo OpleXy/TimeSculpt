@@ -69,6 +69,85 @@ function Timeline({
     setLocalIntervalCount(intervalCount);
     setLocalIntervalType(intervalType);
   }, [showIntervals, intervalCount, intervalType]);
+
+  // Function to calculate automatic positioning for events to prevent overlap
+  const calculateEventPositions = (events, timelineData) => {
+    if (!events || events.length === 0) return events;
+    
+    // Sort events by date first
+    const sortedEvents = [...events].sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    // Calculate positions for each event
+    const positionedEvents = sortedEvents.map((event, index) => {
+      const totalDuration = timelineData.end - timelineData.start;
+      const eventPosition = event.date - timelineData.start;
+      const positionPercentage = (eventPosition / totalDuration) * 100;
+      
+      return {
+        ...event,
+        positionPercentage,
+        originalIndex: events.findIndex(e => e === event)
+      };
+    });
+    
+    // Auto-position events to prevent overlap
+    const VERTICAL_SPACING = 120; // Increased spacing between layers for better separation
+    const MIN_HORIZONTAL_DISTANCE = 150; // Minimum horizontal distance to trigger vertical offset
+    const BASE_OFFSET = -100; // Increased base position above timeline (100px from timeline)
+    
+    for (let i = 0; i < positionedEvents.length; i++) {
+      const currentEvent = positionedEvents[i];
+      let verticalLevel = 0;
+      
+      // Check for conflicts with previous events
+      for (let j = 0; j < i; j++) {
+        const prevEvent = positionedEvents[j];
+        
+        if (timelineData.orientation === 'horizontal') {
+          // For horizontal timelines, check horizontal distance
+          const horizontalDistance = Math.abs(currentEvent.positionPercentage - prevEvent.positionPercentage);
+          const pixelDistance = (horizontalDistance / 100) * 800; // Assume 800px timeline width
+          
+          if (pixelDistance < MIN_HORIZONTAL_DISTANCE) {
+            // Events are too close horizontally, need to offset vertically
+            const prevVerticalLevel = Math.floor(Math.abs(prevEvent.autoYOffset || BASE_OFFSET) / VERTICAL_SPACING);
+            verticalLevel = Math.max(verticalLevel, prevVerticalLevel + 1);
+          }
+        } else {
+          // For vertical timelines, check vertical distance
+          const verticalDistance = Math.abs(currentEvent.positionPercentage - prevEvent.positionPercentage);
+          const pixelDistance = (verticalDistance / 100) * 600; // Assume 600px timeline height
+          
+          if (pixelDistance < MIN_HORIZONTAL_DISTANCE) {
+            // Events are too close vertically, need to offset horizontally
+            const prevHorizontalLevel = Math.floor(Math.abs(prevEvent.autoXOffset || -40) / VERTICAL_SPACING);
+            verticalLevel = Math.max(verticalLevel, prevHorizontalLevel + 1);
+          }
+        }
+      }
+      
+      // Apply automatic positioning
+      if (timelineData.orientation === 'horizontal') {
+        currentEvent.autoYOffset = BASE_OFFSET - (verticalLevel * VERTICAL_SPACING);
+        currentEvent.autoXOffset = 0; // Reset manual x offset for clean auto-positioning
+      } else {
+        currentEvent.autoXOffset = -100 - (verticalLevel * VERTICAL_SPACING); // Increased base offset for vertical
+        currentEvent.autoYOffset = 0; // Reset manual y offset for clean auto-positioning
+      }
+    }
+    
+    // Return events in original order with positioning data
+    return events.map(originalEvent => {
+      const positionedEvent = positionedEvents.find(pe => 
+        events[pe.originalIndex] === originalEvent
+      );
+      return {
+        ...originalEvent,
+        autoXOffset: positionedEvent?.autoXOffset || (timelineData.orientation === 'vertical' ? -100 : 0),
+        autoYOffset: positionedEvent?.autoYOffset || (timelineData.orientation === 'horizontal' ? BASE_OFFSET : 0)
+      };
+    });
+  };
   
   // Funksjon for å formatere dato
   const formatDate = (date) => {
@@ -166,7 +245,7 @@ function Timeline({
       
       // Sjekk om tidslinjen har start og slutt dato
       if (!timelineData.start || !timelineData.end) {
-        // Ikke gjør noe hvis tidslinjen ikke er initialisert
+        // Ikke gjør noe hvis tidslinjen ikke er initialisiert
         return;
       }
       
@@ -741,6 +820,7 @@ function Timeline({
     
     return duration || '0 mnd';
   };
+  
   const getTimelineLineStyle = () => {
     const baseStyle = {
       backgroundColor: timelineColor
@@ -858,7 +938,8 @@ function Timeline({
             intervalType={localIntervalType}
           />
           
-          {timelineData.events.map((event, index) => {
+          {/* Updated events rendering with automatic positioning */}
+          {calculateEventPositions(timelineData.events, timelineData).map((event, index) => {
             const totalDuration = timelineData.end - timelineData.start;
             const eventPosition = event.date - timelineData.start;
             const positionPercentage = (eventPosition / totalDuration) * 100;
@@ -877,6 +958,8 @@ function Timeline({
                 setLastClickedEvent={setLastClickedEvent}
                 lastClickedEvent={lastClickedEvent}
                 onShowDetail={handleShowEventDetail}
+                autoXOffset={event.autoXOffset || 0}
+                autoYOffset={event.autoYOffset || 0}
               />
             );
           })}
@@ -957,12 +1040,11 @@ function Timeline({
             )}
           </div>
           <div className="timeline-instructions">
-  <strong>Klikk og dra</strong> tidslinjen for å endre view • 
-  <strong> Dobbelklikk</strong> for å nullstille • 
-  <strong> Høyreklikk</strong> på canvas for å redigere tidslinje • 
-  <strong> Høyreklikk</strong> på hendelser for å redigere dem
-</div>
-
+            <strong>Klikk og dra</strong> tidslinjen for å endre view • 
+            <strong> Dobbelklikk</strong> for å nullstille • 
+            <strong> Høyreklikk</strong> på canvas for å redigere tidslinje • 
+            <strong> Høyreklikk</strong> på hendelser for å redigere dem
+          </div>
         </div>
         
         {/* CreateEventModal for hendelsesopprettelse ved klikk */}
