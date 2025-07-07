@@ -633,28 +633,37 @@ function Timeline({
   };
   
   // Handle background image selection
-  const handleBackgroundImageSelect = (imageName) => {
-    if (imageName) {
-      setBackgroundImage(imageName);
-      setBackgroundColor(null);
-      
-      setTimelineData({
-        ...timelineData,
-        backgroundImage: imageName,
-        backgroundColor: null
-      });
+  const handleBackgroundImageSelect = (imageValue) => {
+  if (imageValue) {
+    setBackgroundImage(imageValue);
+    setBackgroundColor(null);
+    
+    // Check if it's an uploaded image (URL) or local image (filename)
+    if (imageValue.startsWith('https://')) {
+      // It's an uploaded image URL - set it directly as backgroundImageUrl
+      setBackgroundImageUrl(imageValue);
     } else {
-      setBackgroundImage(null);
+      // It's a local predefined image - clear backgroundImageUrl so BackgroundManager handles it
       setBackgroundImageUrl(null);
-      setBackgroundColor('white');
-      
-      setTimelineData({
-        ...timelineData,
-        backgroundImage: null,
-        backgroundColor: 'white'
-      });
     }
-  };
+    
+    setTimelineData({
+      ...timelineData,
+      backgroundImage: imageValue,
+      backgroundColor: null
+    });
+  } else {
+    setBackgroundImage(null);
+    setBackgroundImageUrl(null);
+    setBackgroundColor('white');
+    
+    setTimelineData({
+      ...timelineData,
+      backgroundImage: null,
+      backgroundColor: 'white'
+    });
+  }
+};
   
   // Handle interval toggle from context menu - UPDATED for consistent state
   const handleIntervalToggle = (shouldShow) => {
@@ -737,18 +746,27 @@ function Timeline({
   
   // Set styling from timelineData when it changes
   useEffect(() => {
-    if (timelineData.backgroundColor) {
-      setBackgroundColor(timelineData.backgroundColor);
-      setBackgroundImage(null);
-      setBackgroundImageUrl(null);
-    } else if (timelineData.backgroundImage) {
-      setBackgroundImage(timelineData.backgroundImage);
-      setBackgroundColor(null);
+  if (timelineData.backgroundColor) {
+    setBackgroundColor(timelineData.backgroundColor);
+    setBackgroundImage(null);
+    setBackgroundImageUrl(null);
+  } else if (timelineData.backgroundImage) {
+    setBackgroundImage(timelineData.backgroundImage);
+    setBackgroundColor(null);
+    
+    // Check if it's an uploaded image (URL)
+    if (timelineData.backgroundImage.startsWith('https://')) {
+      setBackgroundImageUrl(timelineData.backgroundImage);
     } else {
-      setBackgroundColor('white');
-      setBackgroundImage(null);
+      // It's a local image, let BackgroundManager handle it
       setBackgroundImageUrl(null);
     }
+  } else {
+    setBackgroundColor('white');
+    setBackgroundImage(null);
+    setBackgroundImageUrl(null);
+  }
+
     
     if (timelineData.timelineColor) {
       setTimelineColor(timelineData.timelineColor);
@@ -839,20 +857,34 @@ function Timeline({
   
   // Get container style including background color or image
   const getContainerStyle = () => {
-    const baseStyle = {};
-    
-    if (backgroundImageUrl) {
-      baseStyle.backgroundImage = `url(${backgroundImageUrl})`;
-      baseStyle.backgroundSize = 'cover';
-      baseStyle.backgroundPosition = 'center';
-    } else if (backgroundColor) {
-      baseStyle.backgroundColor = backgroundColor;
-    } else {
-      baseStyle.backgroundColor = 'white';
-    }
-    
-    return baseStyle;
-  };
+  const baseStyle = {};
+  
+  // Check if we have an uploaded image (URL)
+  if (backgroundImage && backgroundImage.startsWith('https://')) {
+    baseStyle.backgroundImage = `url(${backgroundImage})`;
+    baseStyle.backgroundSize = 'cover';
+    baseStyle.backgroundPosition = 'center';
+    baseStyle.backgroundRepeat = 'no-repeat';
+  } 
+  // Check if we have a local image and it's loaded via BackgroundManager
+  else if (backgroundImageUrl) {
+    baseStyle.backgroundImage = `url(${backgroundImageUrl})`;
+    baseStyle.backgroundSize = 'cover';
+    baseStyle.backgroundPosition = 'center';
+    baseStyle.backgroundRepeat = 'no-repeat';
+  } 
+  // Use background color
+  else if (backgroundColor) {
+    baseStyle.backgroundColor = backgroundColor;
+  } 
+  // Default background
+  else {
+    baseStyle.backgroundColor = 'white';
+  }
+  
+  return baseStyle;
+};
+
   
   // Return early if no timeline data
   if (!timelineData.start || !timelineData.end) {

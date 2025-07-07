@@ -1,0 +1,400 @@
+/* Add these styles to your existing TimelineContextMenu.css file */
+
+/* Background submenu styles */
+.context-menu-background {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.background-tabs {
+  display: flex;
+  background: var(--bg-secondary, #f8f9fa);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.background-tab {
+  flex: 1;
+  padding: 8px 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary, #666);
+  transition: all 0.2s;
+  border-radius: 4px;
+}
+
+.background-tab:hover {
+  background: var(--hover-bg, #e9ecef);
+  color: var(--text-primary, #333);
+}
+
+.background-tab.active {
+  color: var(--primary-color, #007bff);
+  background: var(--bg-primary, #ffffff);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.background-content {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Color palette styles */
+.background-color-palette {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.background-color-option {
+  width: 100%;
+  height: 40px;
+  border: 2px solid var(--border-color, #e1e5e9);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.background-color-option:hover {
+  transform: scale(1.05);
+  border-color: var(--primary-color, #007bff);
+}
+
+.background-color-option.selected {
+  border-color: var(--primary-color, #007bff);
+  border-width: 3px;
+}
+
+/* Custom color option with pencil icon */
+.custom-color-option {
+  position: relative;
+  border: 2px dashed var(--border-color, #e1e5e9) !important;
+}
+
+.custom-color-option:hover {
+  border-color: var(--primary-color, #007bff) !important;
+  border-style: dashed !important;
+}
+
+.custom-color-option.selected {
+  border-color: var(--primary-color, #007bff) !important;
+  border-style: solid !important;
+  border-width: 3px !important;
+}
+
+.custom-color-pencil {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.background-checkmark {
+  color: white;
+  font-weight: bold;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+  font-size: 14px;
+}
+
+/* Custom color picker styles */
+.background-color-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.background-current-color {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: var(--bg-secondary, #f8f9fa);
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.background-color-preview {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 2px solid var(--border-color, #e1e5e9);
+  flex-shrink: 0;
+}
+
+.background-color-input-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.background-color-input {
+  width: 60px;
+  height: 32px;
+  border: 2px solid var(--border-color, #e1e5e9);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.background-color-input:hover {
+  border-color: var(--primary-color, #007bff);
+}
+
+.background-apply-button {
+  padding: 6px 12px;
+  background: var(--primary-color, #007bff);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.background-apply-button:hover {
+  background: var(--primary-hover, #0056b3);
+}
+
+/* Image gallery styles */
+.background-image-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.background-image-option {
+  border: 2px solid var(--border-color, #e1e5e9);
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  background: none;
+  padding: 0;
+}
+
+.background-image-option:hover {
+  transform: scale(1.02);
+  border-color: var(--primary-color, #007bff);
+}
+
+.background-image-option.selected {
+  border-color: var(--primary-color, #007bff);
+  border-width: 3px;
+}
+
+.background-image-preview {
+  width: 100%;
+  height: 60px;
+  object-fit: cover;
+  display: block;
+}
+
+.background-image-info {
+  padding: 6px;
+  background: var(--bg-primary, #ffffff);
+  text-align: left;
+}
+
+.background-image-name {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-primary, #333);
+}
+
+.background-image-option .background-checkmark {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--primary-color, #007bff);
+  color: white;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+/* Upload section styles */
+.background-upload-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.background-login-required {
+  text-align: center;
+  padding: 20px 12px;
+  color: var(--text-secondary, #666);
+  background: var(--bg-secondary, #f8f9fa);
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.background-drop-zone {
+  border: 2px dashed var(--border-color, #e1e5e9);
+  border-radius: 8px;
+  padding: 20px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: var(--bg-secondary, #f8f9fa);
+}
+
+.background-drop-zone:hover:not(.uploading) {
+  border-color: var(--primary-color, #007bff);
+  background: rgba(0, 123, 255, 0.05);
+}
+
+.background-drop-zone.uploading {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.background-upload-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.background-drop-zone p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-primary, #333);
+}
+
+.background-upload-hint {
+  color: var(--text-secondary, #666);
+  font-size: 10px;
+  margin-top: 4px;
+}
+
+.background-upload-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.background-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border-color, #e1e5e9);
+  border-top: 2px solid var(--primary-color, #007bff);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.background-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--border-color, #e1e5e9);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.background-progress-fill {
+  height: 100%;
+  background: var(--primary-color, #007bff);
+  transition: width 0.3s;
+}
+
+.background-hidden-file-input {
+  display: none;
+}
+
+.background-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  background: #fff5f5;
+  border: 1px solid #fed7d7;
+  border-radius: 6px;
+  color: #c53030;
+  font-size: 11px;
+}
+
+.background-error-icon {
+  flex-shrink: 0;
+}
+
+.background-custom-image-actions {
+  padding: 12px;
+  background: var(--bg-secondary, #f8f9fa);
+  border-radius: 6px;
+}
+
+.background-custom-image-actions h4 {
+  margin: 0 0 8px 0;
+  color: var(--text-primary, #333);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.background-custom-image-preview {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.background-remove-button {
+  width: 100%;
+  padding: 6px 12px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.background-remove-button:hover {
+  background: #c82333;
+}
+
+/* Responsive adjustments for background menu */
+@media (max-width: 480px) {
+  .background-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .background-tab {
+    flex-basis: 50%;
+    font-size: 10px;
+  }
+  
+  .background-image-gallery {
+    grid-template-columns: 1fr;
+  }
+  
+  .background-color-palette {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
