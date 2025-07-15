@@ -673,7 +673,7 @@
 
 /* Plus-cursor ved hover */
 .timeline-line:hover {
-  cursor: crosshair;
+  cursor: cell;
   filter: brightness(1.2);
 }
 

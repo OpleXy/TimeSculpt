@@ -19,6 +19,10 @@ function IntervalSettings({
   // Local state for interval type
   const [localIntervalType, setLocalIntervalType] = useState(intervalType);
   
+  // New state for interval count input
+  const [showIntervalInput, setShowIntervalInput] = useState(false);
+  const [intervalInputValue, setIntervalInputValue] = useState(String(intervalCount));
+  
   // Available interval types - Added "Decade" option
   const intervalTypes = [
     { id: 'even', label: 'Jevnt fordelt' },
@@ -218,6 +222,7 @@ function IntervalSettings({
   // Update local interval count when prop changes
   useEffect(() => {
     setLocalIntervalCount(intervalCount);
+    setIntervalInputValue(String(intervalCount));
   }, [intervalCount]);
   
   // Update local interval type when prop changes
@@ -254,6 +259,7 @@ function IntervalSettings({
     // Only apply validation for 'even' type
     if (localIntervalType !== 'even') {
       setLocalIntervalCount(newCount);
+      setIntervalInputValue(String(newCount));
       return;
     }
     
@@ -261,6 +267,7 @@ function IntervalSettings({
     if (newCount > MAXIMUM_EVEN_INTERVALS) {
       setValidationWarning(`Maks ${MAXIMUM_EVEN_INTERVALS} intervaller tillatt for jevnt fordelte intervaller`);
       setLocalIntervalCount(MAXIMUM_EVEN_INTERVALS);
+      setIntervalInputValue(String(MAXIMUM_EVEN_INTERVALS));
       return;
     }
     
@@ -281,10 +288,12 @@ function IntervalSettings({
       
       // Set to max allowed
       setLocalIntervalCount(maxAllowedIntervals);
+      setIntervalInputValue(String(maxAllowedIntervals));
     } else {
       // Clear warning and set new count
       setValidationWarning('');
       setLocalIntervalCount(newCount);
+      setIntervalInputValue(String(newCount));
     }
     // Effect will handle calling onIntervalCountChange
   };
@@ -300,6 +309,7 @@ function IntervalSettings({
     // If switching to 'even' type, enforce the hard limit
     if (newType === 'even' && localIntervalCount > MAXIMUM_EVEN_INTERVALS) {
       setLocalIntervalCount(MAXIMUM_EVEN_INTERVALS);
+      setIntervalInputValue(String(MAXIMUM_EVEN_INTERVALS));
       setValidationWarning(`Maks ${MAXIMUM_EVEN_INTERVALS} intervaller tillatt for jevnt fordelte intervaller`);
     }
     
@@ -317,6 +327,48 @@ function IntervalSettings({
     }
     
     // Effect will handle calling onIntervalTypeChange
+  };
+  
+  // Handle interval label click
+  const handleIntervalLabelClick = () => {
+    setShowIntervalInput(true);
+    setIntervalInputValue(String(localIntervalCount));
+  };
+  
+  // Handle interval input change
+  const handleIntervalInputChange = (e) => {
+    const value = e.target.value;
+    setIntervalInputValue(value);
+  };
+  
+  // Handle interval input submit
+  const handleIntervalInputSubmit = () => {
+    const numValue = parseInt(intervalInputValue);
+    const maxValue = Math.min(MAXIMUM_EVEN_INTERVALS, maxAllowedIntervals);
+    
+    if (!isNaN(numValue) && numValue >= 2 && numValue <= maxValue) {
+      setLocalIntervalCount(numValue);
+      setShowIntervalInput(false);
+    } else {
+      // Reset to current value if invalid
+      setIntervalInputValue(String(localIntervalCount));
+      setShowIntervalInput(false);
+    }
+  };
+  
+  // Handle interval input key press
+  const handleIntervalInputKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleIntervalInputSubmit();
+    } else if (e.key === 'Escape') {
+      setIntervalInputValue(String(localIntervalCount));
+      setShowIntervalInput(false);
+    }
+  };
+  
+  // Handle interval input blur
+  const handleIntervalInputBlur = () => {
+    handleIntervalInputSubmit();
   };
   
   // Calendar icon for interval type
@@ -381,7 +433,30 @@ function IntervalSettings({
           {/* Only show count slider for 'even' interval type */}
           {localIntervalType === 'even' && (
             <div className="interval-count-row">
-              <span>Antall intervaller: {localIntervalCount}</span>
+              {showIntervalInput ? (
+                <div className="interval-input-container">
+                  <span>Antall intervaller: </span>
+                  <input
+                    type="number"
+                    min="2"
+                    max={Math.min(MAXIMUM_EVEN_INTERVALS, maxAllowedIntervals)}
+                    value={intervalInputValue}
+                    onChange={handleIntervalInputChange}
+                    onKeyDown={handleIntervalInputKeyPress}
+                    onBlur={handleIntervalInputBlur}
+                    className="interval-input"
+                    autoFocus
+                  />
+                </div>
+              ) : (
+                <span 
+                  className="interval-label clickable"
+                  onClick={handleIntervalLabelClick}
+                  title="Klikk for å skrive inn verdi"
+                >
+                  Antall intervaller: {localIntervalCount}
+                </span>
+              )}
               <input
                 type="range"
                 min="2"
@@ -393,8 +468,8 @@ function IntervalSettings({
             </div>
           )}
 
-{/* Display validation warning if present */}
-{validationWarning && (
+          {/* Display validation warning if present */}
+          {validationWarning && (
             <div className="interval-warning">
               <svg 
                 className="warning-icon"
@@ -435,7 +510,7 @@ function IntervalSettings({
             </svg>
             <span>
               {localIntervalType === 'even' 
-                ? 'Jevnt fordelte intervaller viser punkter med lik avstand over hele tidslinjen. Maks 20 intervaller tillatt.'
+                ? 'Jevnt fordelte intervaller viser punkter med lik avstand over hele tidslinjen. Maks 20 intervaller tillatt. Klikk på verdien for å skrive inn et tall.'
                 : localIntervalType === 'daily'
                   ? 'Daglige intervaller markerer hver dag på tidslinjen. Tilgjengelig for tidslinjer med opptil 30 dager.'
                   : localIntervalType === 'weekly'

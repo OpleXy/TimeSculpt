@@ -4,24 +4,27 @@ function CreateEventModal({
   isOpen, 
   onClose, 
   onSave, 
-  position, 
   date,
   timelineColor 
 }) {
   const [title, setTitle] = useState('');
+  const [eventDate, setEventDate] = useState(date);
+  const [isEditingDate, setIsEditingDate] = useState(false);
   const modalRef = useRef(null);
   
-  // Reset tittel når modal åpnes
+  // Reset tittel og dato når modal åpnes
   useEffect(() => {
     if (isOpen) {
       setTitle('');
+      setEventDate(date);
+      setIsEditingDate(false);
       // Fokuser på input når modalen åpnes
       setTimeout(() => {
-        const input = modalRef.current?.querySelector('input');
+        const input = modalRef.current?.querySelector('input[type="text"]');
         if (input) input.focus();
       }, 100);
     }
-  }, [isOpen]);
+  }, [isOpen, date]);
   
   // Forbedret formatDate funksjon med bedre feilhåndtering
   const formatDate = (date) => {
@@ -46,19 +49,56 @@ function CreateEventModal({
       return `${day}.${month}.${year}`;
     }
   };
+
+  // Konverter dato til YYYY-MM-DD format for input
+  const formatDateForInput = (date) => {
+    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+      return '';
+    }
+    
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // Håndter datoendring
+  const handleDateChange = (e) => {
+    const newDate = new Date(e.target.value);
+    if (!isNaN(newDate.getTime())) {
+      setEventDate(newDate);
+    }
+  };
+
+  // Håndter klikk på dato for å redigere
+  const handleDateClick = () => {
+    setIsEditingDate(true);
+  };
+
+  // Håndter ferdig redigering av dato
+  const handleDateBlur = () => {
+    setIsEditingDate(false);
+  };
+
+  // Håndter tastaturtaster for dato
+  const handleDateKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      setIsEditingDate(false);
+    }
+  };
   
   // Håndter lagring med datovalidering
   const handleSave = () => {
     // Sikre at vi har en gyldig dato, eller bruk nåværende dato som fallback
-    let eventDate = date;
-    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+    let finalDate = eventDate;
+    if (!eventDate || !(eventDate instanceof Date) || isNaN(eventDate.getTime())) {
       console.warn('Ugyldig dato ved lagring, bruker nåværende dato i stedet');
-      eventDate = new Date(); // Bruk nåværende dato som fallback
+      finalDate = new Date(); // Bruk nåværende dato som fallback
     }
     
     onSave({
       title: title.trim() || 'Hendelse uten navn',
-      date: eventDate,
+      date: finalDate,
       // Standardverdier
       description: '',
       color: 'default',
@@ -105,15 +145,36 @@ function CreateEventModal({
         className="create-event-modal" 
         ref={modalRef}
         style={{
-          position: 'absolute',
-          top: position.y,
-          left: position.x,
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
           transform: 'translate(-50%, -50%)',
           zIndex: 100
         }}
       >
         <h3>Ny hendelse</h3>
-        <p className="date-display">Dato: {formatDate(date)}</p>
+        <div className="date-section">
+          <label>Dato:</label>
+          {isEditingDate ? (
+            <input
+              type="date"
+              value={formatDateForInput(eventDate)}
+              onChange={handleDateChange}
+              onBlur={handleDateBlur}
+              onKeyDown={handleDateKeyDown}
+              className="date-input"
+              autoFocus
+            />
+          ) : (
+            <span 
+              className="date-display clickable-date" 
+              onClick={handleDateClick}
+              title="Klikk for å endre dato"
+            >
+              {formatDate(eventDate)}
+            </span>
+          )}
+        </div>
         
         <div className="form-group">
           <label htmlFor="eventTitle">Tittel:</label>

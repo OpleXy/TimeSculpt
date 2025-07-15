@@ -1738,3 +1738,129 @@ body.dark-mode .direction-info {
   }
 }
 
+/* Add these styles to your existing TimelineContextMenu.css */
+
+/* Timeline Thickness Slider Styles */
+.context-menu-thickness-slider {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.thickness-slider-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.thickness-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary, #333);
+  text-align: center;
+}
+
+.thickness-slider {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-secondary, #e0e0e0);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.thickness-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary-color, #007bff);
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.thickness-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.thickness-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary-color, #007bff);
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.thickness-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.thickness-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary, #666);
+  margin-top: 5px;
+}
+
+.thickness-info {
+  display: flex;
+  align-items: flex-start;
+  background-color: rgba(0, 123, 255, 0.1);
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-secondary, #666);
+  border-left: 3px solid var(--primary-color, #007bff);
+}
+
+.thickness-info .info-icon {
+  margin-right: 8px;
+  color: var(--primary-color, #007bff);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Dark mode adjustments for thickness slider */
+body.dark-mode .thickness-slider {
+  background: var(--bg-secondary, #4a5568);
+}
+
+body.dark-mode .thickness-slider::-webkit-slider-thumb {
+  border-color: var(--bg-primary, #2d3748);
+}
+
+body.dark-mode .thickness-slider::-moz-range-thumb {
+  border-color: var(--bg-primary, #2d3748);
+}
+
+body.dark-mode .thickness-info {
+  background-color: rgba(0, 123, 255, 0.15);
+  color: var(--text-secondary, #aaa);
+}
+
+body.dark-mode .thickness-label {
+  color: var(--text-primary, #e2e8f0);
+}
+
+body.dark-mode .thickness-slider-labels {
+  color: var(--text-secondary, #a0aec0);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .thickness-slider-container {
+    padding: 0 10px;
+  }
+}

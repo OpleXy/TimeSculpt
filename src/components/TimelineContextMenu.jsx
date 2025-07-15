@@ -39,19 +39,30 @@ function TimelineContextMenu({
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [colorPickerPosition, setColorPickerPosition] = useState({ x: 0, y: 0 });
   
-  // Local state for interval count slider
+  // Local state for interval settings - FIXED: Use ref to prevent loops
   const [localIntervalCount, setLocalIntervalCount] = useState(intervalCount);
   const [validationWarning, setValidationWarning] = useState('');
   const [maxAllowedIntervals, setMaxAllowedIntervals] = useState(20);
   const [localIntervalType, setLocalIntervalType] = useState(intervalType);
+  const updateInProgressRef = useRef(false);
   
-  // Available interval types
+  // New state for interval count input
+  const [showIntervalInput, setShowIntervalInput] = useState(false);
+  const [intervalInputValue, setIntervalInputValue] = useState(String(intervalCount));
+  
+  // Local state for thickness slider
+  const [localThickness, setLocalThickness] = useState(currentThickness || 2);
+  const [showThicknessInput, setShowThicknessInput] = useState(false);
+  const [thicknessInputValue, setThicknessInputValue] = useState(String(currentThickness || 2));
+  
+  // Available interval types - FIXED: Added decade option
   const intervalTypes = [
     { id: 'even', label: 'Jevnt fordelt' },
     { id: 'daily', label: 'Daglig' },
     { id: 'weekly', label: 'Ukentlig' },
     { id: 'monthly', label: 'Månedlig' },
     { id: 'yearly', label: 'Årlig' },
+    { id: 'decade', label: 'Tiår' },
     { id: 'century', label: 'Århundre' }
   ];
   
@@ -92,6 +103,8 @@ function TimelineContextMenu({
   ];
   
   const MINIMUM_DAYS_PER_INTERVAL = 2;
+  const MAXIMUM_EVEN_INTERVALS = 20;
+  const MAXIMUM_TOTAL_MARKERS = 30;
   
   // Timeline color options
   const timelineColors = [
@@ -104,35 +117,10 @@ function TimelineContextMenu({
     { name: 'Gray', value: '#6c757d' }
   ];
   
-  // Timeline thickness options
-  const thicknesses = [
-    { name: 'Thin', value: 1 },
-    { name: 'Medium', value: 2 },
-    { name: 'Thick', value: 3 },
-    { name: 'Extra Thick', value: 4 }
-  ];
-  
-  // Update local interval count when prop changes
-  useEffect(() => {
-    setLocalIntervalCount(intervalCount);
-  }, [intervalCount]);
-  
-  // Update local interval type when prop changes
-  useEffect(() => {
-    setLocalIntervalType(intervalType);
-  }, [intervalType]);
-  
-  // Update custom color when background color changes
-  useEffect(() => {
-    setCustomColor(currentBackgroundColor || '#ffffff');
-  }, [currentBackgroundColor]);
-  
-  // Calculate available interval types and max allowed intervals
-  useEffect(() => {
+  // FIXED: Better interval type filtering with proper limits
+  const calculateAvailableTypes = useCallback(() => {
     if (!timelineData || !timelineData.start || !timelineData.end) {
-      setMaxAllowedIntervals(20);
-      setAvailableTypes(intervalTypes);
-      return;
+      return intervalTypes;
     }
     
     const startDate = typeof timelineData.start === 'string' 
@@ -145,73 +133,134 @@ function TimelineContextMenu({
     
     const timeDiff = Math.abs(endDate.getTime() - startDate.getTime());
     const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    const diffWeeks = Math.floor(diffDays / 7);
-    const diffMonths = Math.floor(diffDays / 30);
-    const diffYears = Math.floor(diffDays / 365);
-    const diffCenturies = Math.floor(diffYears / 100);
+    const diffWeeks = Math.ceil(diffDays / 7);
+    const diffMonths = Math.ceil(diffDays / 30);
+    const diffYears = Math.ceil(diffDays / 365);
+    const diffDecades = Math.ceil(diffYears / 10);
+    const diffCenturies = Math.ceil(diffYears / 100);
     
-    const types = intervalTypes.filter(type => {
+    return intervalTypes.filter(type => {
       switch (type.id) {
         case 'daily':
-          return diffDays >= 2;
+          // Only show daily if timeline is short enough and won't create too many markers
+          return diffDays >= 2 && diffDays <= MAXIMUM_TOTAL_MARKERS;
         case 'weekly':
-          return diffWeeks >= 2;
+          return diffWeeks >= 2 && diffWeeks <= MAXIMUM_TOTAL_MARKERS;
         case 'monthly':
-          return diffMonths >= 2;
+          return diffMonths >= 2 && diffMonths <= MAXIMUM_TOTAL_MARKERS;
         case 'yearly':
           return diffYears >= 2;
+        case 'decade':
+          return diffDecades >= 2;
         case 'century':
           return diffCenturies >= 2;
         default:
-          return true;
+          return true; // Always include 'even'
       }
     });
+  }, [timelineData]);
+  
+  // FIXED: Single effect for timeline data changes
+  useEffect(() => {
+    if (updateInProgressRef.current) return;
     
-    setAvailableTypes(types);
+    const newAvailableTypes = calculateAvailableTypes();
+    setAvailableTypes(newAvailableTypes);
     
-    if (!types.find(t => t.id === localIntervalType)) {
-      setLocalIntervalType('even');
+    // If current type is no longer available, switch to appropriate one
+    if (!newAvailableTypes.find(t => t.id === localIntervalType)) {
+      const newType = ['even', 'yearly', 'decade', 'monthly', 'weekly', 'daily', 'century']
+        .find(t => newAvailableTypes.some(available => available.id === t)) || 'even';
+      
+      setLocalIntervalType(newType);
       if (onIntervalTypeChange) {
-        onIntervalTypeChange('even');
+        onIntervalTypeChange(newType);
       }
     }
     
-    if (localIntervalType === 'even') {
+    // Calculate max intervals for 'even' type
+    if (timelineData?.start && timelineData?.end) {
+      const startDate = typeof timelineData.start === 'string' 
+        ? new Date(timelineData.start) 
+        : timelineData.start;
+      const endDate = typeof timelineData.end === 'string' 
+        ? new Date(timelineData.end) 
+        : timelineData.end;
+      
+      const timeDiff = Math.abs(endDate.getTime() - startDate.getTime());
+      const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+      
       const maxIntervals = Math.min(
-        diffDays,
-        Math.floor(diffDays / MINIMUM_DAYS_PER_INTERVAL)
+        MAXIMUM_EVEN_INTERVALS,
+        Math.max(2, Math.floor(diffDays / MINIMUM_DAYS_PER_INTERVAL))
       );
       
-      const calculatedMax = Math.max(2, maxIntervals);
-      setMaxAllowedIntervals(calculatedMax);
+      setMaxAllowedIntervals(maxIntervals);
       
-      if (localIntervalCount > calculatedMax) {
-        setLocalIntervalCount(calculatedMax);
-        if (onIntervalCountChange) {
-          onIntervalCountChange(calculatedMax);
-        }
-        
-        const warningMessage = `Maks ${calculatedMax} intervaller for en tidslinje på ${diffDays} dager (maks 1 per dag)`;
-        setValidationWarning(warningMessage);
+      // Adjust interval count if needed
+      if (localIntervalType === 'even' && localIntervalCount > maxIntervals) {
+        setLocalIntervalCount(maxIntervals);
+        setIntervalInputValue(String(maxIntervals));
+        setValidationWarning(`Maks ${maxIntervals} intervaller for en tidslinje på ${diffDays} dager`);
       } else {
         setValidationWarning('');
       }
     }
-  }, [timelineData, localIntervalCount, localIntervalType, onIntervalCountChange, onIntervalTypeChange]);
+  }, [timelineData, calculateAvailableTypes, localIntervalType, localIntervalCount]);
   
-  // Apply interval count changes automatically
+  // FIXED: Simplified prop sync effects
   useEffect(() => {
-    if (localIntervalCount !== intervalCount && onIntervalCountChange) {
-      onIntervalCountChange(localIntervalCount);
+    if (intervalCount !== localIntervalCount) {
+      setLocalIntervalCount(intervalCount);
+      setIntervalInputValue(String(intervalCount));
     }
+  }, [intervalCount]);
+  
+  useEffect(() => {
+    if (intervalType !== localIntervalType) {
+      setLocalIntervalType(intervalType);
+    }
+  }, [intervalType]);
+  
+  // FIXED: Debounced change handlers to prevent loops
+  useEffect(() => {
+    if (updateInProgressRef.current) return;
+    
+    const timeoutId = setTimeout(() => {
+      if (localIntervalCount !== intervalCount && onIntervalCountChange) {
+        updateInProgressRef.current = true;
+        onIntervalCountChange(localIntervalCount);
+        setTimeout(() => { updateInProgressRef.current = false; }, 50);
+      }
+    }, 100);
+    
+    return () => clearTimeout(timeoutId);
   }, [localIntervalCount, intervalCount, onIntervalCountChange]);
   
-  // Apply interval type changes automatically
   useEffect(() => {
-    if (localIntervalType !== intervalType && onIntervalTypeChange) {
-      onIntervalTypeChange(localIntervalType);
-    }
+    if (updateInProgressRef.current) return;
+    
+    const timeoutId = setTimeout(() => {
+      if (localIntervalType !== intervalType && onIntervalTypeChange) {
+        updateInProgressRef.current = true;
+        onIntervalTypeChange(localIntervalType);
+        setTimeout(() => { updateInProgressRef.current = false; }, 50);
+      }
+    }, 100);
+    
+    return () => clearTimeout(timeoutId);
   }, [localIntervalType, intervalType, onIntervalTypeChange]);
+  
+  // Apply thickness changes with debouncing
+  useEffect(() => {
+    if (localThickness !== currentThickness && onStyleSelect) {
+      const timeoutId = setTimeout(() => {
+        onStyleSelect({ thickness: localThickness });
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [localThickness, currentThickness, onStyleSelect]);
   
   // Validation of image files
   const validateFile = (file) => {
@@ -330,20 +379,11 @@ function TimelineContextMenu({
     }
   }, [showColorPicker]);
 
-  // Handle background image selection (updated to handle both local and uploaded images)
+  // Handle background image selection
   const handleBackgroundImageSelect = (imageValue) => {
     if (imageValue) {
-      // Check if it's an uploaded image (URL) or local image (filename)
-      if (imageValue.startsWith('https://')) {
-        // It's an uploaded image URL
-        if (onBackgroundImageSelect) {
-          onBackgroundImageSelect(imageValue);
-        }
-      } else {
-        // It's a local predefined image
-        if (onBackgroundImageSelect) {
-          onBackgroundImageSelect(imageValue);
-        }
+      if (onBackgroundImageSelect) {
+        onBackgroundImageSelect(imageValue);
       }
     }
   };
@@ -429,9 +469,49 @@ function TimelineContextMenu({
     onStyleSelect({ color });
   };
   
-  // Handle thickness selection
-  const handleThicknessClick = (thickness) => {
-    onStyleSelect({ thickness });
+  // Handle thickness change
+  const handleThicknessChange = (newThickness) => {
+    setLocalThickness(newThickness);
+    setThicknessInputValue(String(newThickness));
+  };
+  
+  // Handle thickness label click
+  const handleThicknessLabelClick = () => {
+    setShowThicknessInput(true);
+    setThicknessInputValue(String(localThickness));
+  };
+  
+  // Handle thickness input change
+  const handleThicknessInputChange = (e) => {
+    const value = e.target.value;
+    setThicknessInputValue(value);
+  };
+  
+  // Handle thickness input submit
+  const handleThicknessInputSubmit = () => {
+    const numValue = parseInt(thicknessInputValue);
+    if (!isNaN(numValue) && numValue >= 1 && numValue <= 10) {
+      setLocalThickness(numValue);
+      setShowThicknessInput(false);
+    } else {
+      setThicknessInputValue(String(localThickness));
+      setShowThicknessInput(false);
+    }
+  };
+  
+  // Handle thickness input key press
+  const handleThicknessInputKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleThicknessInputSubmit();
+    } else if (e.key === 'Escape') {
+      setThicknessInputValue(String(localThickness));
+      setShowThicknessInput(false);
+    }
+  };
+  
+  // Handle thickness input blur
+  const handleThicknessInputBlur = () => {
+    handleThicknessInputSubmit();
   };
   
   // Handle interval toggle
@@ -442,28 +522,29 @@ function TimelineContextMenu({
     }
   };
 
-  // Handle interval count change with validation
+  // FIXED: Simplified interval count change handler
   const handleIntervalCountChange = (newCount) => {
     if (localIntervalType !== 'even') {
       setLocalIntervalCount(newCount);
+      setIntervalInputValue(String(newCount));
+      return;
+    }
+    
+    if (newCount > MAXIMUM_EVEN_INTERVALS) {
+      setValidationWarning(`Maks ${MAXIMUM_EVEN_INTERVALS} intervaller tillatt for jevnt fordelte intervaller`);
+      setLocalIntervalCount(MAXIMUM_EVEN_INTERVALS);
+      setIntervalInputValue(String(MAXIMUM_EVEN_INTERVALS));
       return;
     }
     
     if (newCount > maxAllowedIntervals) {
-      const startDate = typeof timelineData.start === 'string' 
-        ? new Date(timelineData.start) 
-        : timelineData.start;
-      const endDate = typeof timelineData.end === 'string' 
-        ? new Date(timelineData.end) 
-        : timelineData.end;
-      const timeDiff = Math.abs(endDate.getTime() - startDate.getTime());
-      const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-      
-      setValidationWarning(`Maks ${maxAllowedIntervals} intervaller for en tidslinje på ${diffDays} dager (maks 1 per dag)`);
+      setValidationWarning(`Maks ${maxAllowedIntervals} intervaller tillatt`);
       setLocalIntervalCount(maxAllowedIntervals);
+      setIntervalInputValue(String(maxAllowedIntervals));
     } else {
       setValidationWarning('');
       setLocalIntervalCount(newCount);
+      setIntervalInputValue(String(newCount));
     }
   };
   
@@ -472,6 +553,52 @@ function TimelineContextMenu({
     const newType = e.target.value;
     setLocalIntervalType(newType);
     setValidationWarning('');
+    
+    if (newType === 'even' && localIntervalCount > MAXIMUM_EVEN_INTERVALS) {
+      setLocalIntervalCount(MAXIMUM_EVEN_INTERVALS);
+      setIntervalInputValue(String(MAXIMUM_EVEN_INTERVALS));
+    }
+  };
+  
+  // Handle interval label click
+  const handleIntervalLabelClick = () => {
+    setShowIntervalInput(true);
+    setIntervalInputValue(String(localIntervalCount));
+  };
+  
+  // Handle interval input change
+  const handleIntervalInputChange = (e) => {
+    const value = e.target.value;
+    setIntervalInputValue(value);
+  };
+  
+  // Handle interval input submit
+  const handleIntervalInputSubmit = () => {
+    const numValue = parseInt(intervalInputValue);
+    const maxValue = Math.min(MAXIMUM_EVEN_INTERVALS, maxAllowedIntervals);
+    
+    if (!isNaN(numValue) && numValue >= 2 && numValue <= maxValue) {
+      setLocalIntervalCount(numValue);
+      setShowIntervalInput(false);
+    } else {
+      setIntervalInputValue(String(localIntervalCount));
+      setShowIntervalInput(false);
+    }
+  };
+  
+  // Handle interval input key press
+  const handleIntervalInputKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleIntervalInputSubmit();
+    } else if (e.key === 'Escape') {
+      setIntervalInputValue(String(localIntervalCount));
+      setShowIntervalInput(false);
+    }
+  };
+  
+  // Handle interval input blur
+  const handleIntervalInputBlur = () => {
+    handleIntervalInputSubmit();
   };
   
   // Go back to main menu
@@ -612,6 +739,25 @@ function TimelineContextMenu({
     </svg>
   );
 
+  const ThicknessIcon = () => (
+    <svg 
+      className="context-menu-icon"
+      xmlns="http://www.w3.org/2000/svg" 
+      width="16" 
+      height="16" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <path d="M3 12h18" strokeWidth="1" />
+      <path d="M3 8h18" strokeWidth="2" />
+      <path d="M3 16h18" strokeWidth="3" />
+    </svg>
+  );
+
   return (
     <div 
       ref={menuRef} 
@@ -658,12 +804,9 @@ function TimelineContextMenu({
               className="context-menu-item"
               onClick={() => setCurrentView('thickness')}
             >
-              <div
-                className="context-menu-thickness-swatch"
-                style={{
-                  height: `${currentThickness || 2}px`
-                }}
-              />
+              <div className="context-menu-icon-wrapper">
+                <ThicknessIcon />
+              </div>
               Timeline Thickness
               <ChevronIcon />
             </li>
@@ -886,24 +1029,67 @@ function TimelineContextMenu({
         
         {/* Timeline Thickness Submenu */}
         {currentView === 'thickness' && (
-          <ul className="context-menu-list">
-            {thicknesses.map((thickness) => (
-              <li
-                key={thickness.value}
-                onClick={() => handleThicknessClick(thickness.value)}
-                className={`context-menu-item ${isActive(thickness.value, currentThickness) ? 'active' : ''}`}
+          <div className="context-menu-thickness-slider">
+            <div className="thickness-slider-container">
+              {showThicknessInput ? (
+                <div className="thickness-input-container">
+                  <span>Tykkelse: </span>
+                  <input
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={thicknessInputValue}
+                    onChange={handleThicknessInputChange}
+                    onKeyDown={handleThicknessInputKeyPress}
+                    onBlur={handleThicknessInputBlur}
+                    className="thickness-input"
+                    autoFocus
+                  />
+                  <span>px</span>
+                </div>
+              ) : (
+                <span 
+                  className="thickness-label clickable"
+                  onClick={handleThicknessLabelClick}
+                  title="Klikk for å skrive inn verdi"
+                >
+                  Tykkelse: {localThickness}px
+                </span>
+              )}
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={localThickness}
+                onChange={(e) => handleThicknessChange(parseInt(e.target.value))}
+                className="thickness-slider"
+              />
+              <div className="thickness-slider-labels">
+                <span>1px</span>
+                <span>10px</span>
+              </div>
+            </div>
+            
+            <div className="thickness-info">
+              <svg 
+                className="info-icon"
+                xmlns="http://www.w3.org/2000/svg" 
+                width="14" 
+                height="14" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
               >
-                <div
-                  className="context-menu-thickness-swatch"
-                  style={{
-                    height: `${thickness.value}px`
-                  }}
-                />
-                {thickness.name}
-                {isActive(thickness.value, currentThickness) && <CheckIcon />}
-              </li>
-            ))}
-          </ul>
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>Dra for å justere tykkelsen på tidslinjen fra 1px til 10px. Klikk på verdien for å skrive inn et tall.</span>
+            </div>
+          </div>
         )}
         
         {/* Interval Markers Submenu */}
@@ -946,11 +1132,34 @@ function TimelineContextMenu({
                 
                 {localIntervalType === 'even' && (
                   <div className="interval-count-row">
-                    <span>Antall intervaller: {localIntervalCount}</span>
+                    {showIntervalInput ? (
+                      <div className="interval-input-container">
+                        <span>Antall intervaller: </span>
+                        <input
+                          type="number"
+                          min="2"
+                          max={Math.min(MAXIMUM_EVEN_INTERVALS, maxAllowedIntervals)}
+                          value={intervalInputValue}
+                          onChange={handleIntervalInputChange}
+                          onKeyDown={handleIntervalInputKeyPress}
+                          onBlur={handleIntervalInputBlur}
+                          className="interval-input"
+                          autoFocus
+                        />
+                      </div>
+                    ) : (
+                      <span 
+                        className="interval-label clickable"
+                        onClick={handleIntervalLabelClick}
+                        title="Klikk for å skrive inn verdi"
+                      >
+                        Antall intervaller: {localIntervalCount}
+                      </span>
+                    )}
                     <input
                       type="range"
                       min="2"
-                      max={maxAllowedIntervals}
+                      max={Math.min(MAXIMUM_EVEN_INTERVALS, maxAllowedIntervals)}
                       value={localIntervalCount}
                       onChange={(e) => handleIntervalCountChange(parseInt(e.target.value))}
                       className="interval-slider"
@@ -999,16 +1208,18 @@ function TimelineContextMenu({
                   </svg>
                   <span>
                     {localIntervalType === 'even' 
-                      ? 'Jevnt fordelte intervaller viser punkter med lik avstand over hele tidslinjen.'
+                      ? 'Jevnt fordelte intervaller viser punkter med lik avstand over hele tidslinjen. Maks 20 intervaller tillatt. Klikk på verdien for å skrive inn et tall.'
                       : localIntervalType === 'daily'
-                        ? 'Daglige intervaller markerer hver dag på tidslinjen.'
+                        ? 'Daglige intervaller markerer hver dag på tidslinjen. Tilgjengelig for tidslinjer med opptil 30 dager.'
                         : localIntervalType === 'weekly'
-                          ? 'Ukentlige intervaller markerer starten av hver uke på tidslinjen.'
+                          ? 'Ukentlige intervaller markerer starten av hver uke på tidslinjen. Tilgjengelig for tidslinjer med opptil 30 uker.'
                           : localIntervalType === 'monthly'
-                            ? 'Månedlige intervaller markerer starten av hver måned på tidslinjen.'
+                            ? 'Månedlige intervaller markerer starten av hver måned på tidslinjen. Tilgjengelig for tidslinjer med opptil 30 måneder.'
                             : localIntervalType === 'yearly'
                               ? 'Årlige intervaller markerer starten av hvert år på tidslinjen.'
-                              : 'Århundreintervaller markerer starten av hvert århundre på tidslinjen.'
+                              : localIntervalType === 'decade'
+                                ? 'Tiårsintervaller markerer starten av hvert tiår på tidslinjen.'
+                                : 'Århundreintervaller markerer starten av hvert århundre på tidslinjen.'
                     }
                   </span>
                 </div>
