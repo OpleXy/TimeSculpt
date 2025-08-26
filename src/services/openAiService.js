@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 
 // Initialiser OpenAI-klienten
-const OPENAI_API_KEY = "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";
+const OPENAI_API_KEY = "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";
 
 const openai = new OpenAI({
   apiKey: OPENAI_API_KEY,

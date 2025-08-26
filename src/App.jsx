@@ -8,6 +8,9 @@ import { useAuth } from './contexts/AuthContext.jsx';
 import { useTheme } from './contexts/ThemeContext.jsx';
 import AuthModal from './components/auth/AuthModal';
 import MobileWarning from './components/MobileWarning';
+import useAutoSave from './hooks/useAutoSave'; // Import the new hook
+
+import { generateTimelineEvents } from './services/aiTimelineService';
 
 // Import styles
 import './styles/base.css';
@@ -17,6 +20,7 @@ import './styles/auth.css';
 import './styles/topbar.css';
 import './styles/mobile-warning.css';
 import './styles/theme-toggle.css';
+
 import './styles/sidebarinfo.css';
 import './styles/event-colors.css';
 import './styles/text-to-timeline.css';
@@ -45,8 +49,10 @@ function App() {
   // Add state for privacy setting
   const [isPublic, setIsPublic] = useState(false);
   
-  // Add state for tracking unsaved changes
+  // Auto-save states
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [lastSaved, setLastSaved] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
   
   // Add state for tracking save errors (like reaching limit)
   const [saveError, setSaveError] = useState('');
@@ -85,6 +91,68 @@ function App() {
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
+  // Auto-save function
+  const autoSaveTimeline = async (data) => {
+    // Don't save if there's no meaningful data or if it's not saved initially
+    if (!data || !data.title || !data.id || data.events.length === 0) {
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      
+      // Make sure interval settings are included
+      const intervalSettings = {
+        show: showIntervals,
+        count: intervalCount,
+        type: intervalType
+      };
+      
+      const dataToSave = {
+        ...data,
+        showIntervals: intervalSettings.show,
+        intervalCount: intervalSettings.count,
+        intervalType: intervalSettings.type,
+        intervalSettings: intervalSettings,
+        isPublic: isPublic
+      };
+      
+      // Import API functions dynamically
+      const api = await import('./api');
+      const result = await api.updateTimeline(dataToSave.id, dataToSave);
+      
+      if (result.success) {
+        setLastSaved(Date.now());
+        setHasUnsavedChanges(false);
+        setSaveError('');
+        console.log('Auto-saved timeline at:', new Date().toLocaleTimeString());
+      }
+    } catch (error) {
+      console.error('Auto-save failed:', error);
+      setSaveError(error.message);
+      setHasUnsavedChanges(true);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Set up auto-save with dependencies that should trigger saving
+  useAutoSave(
+    timelineData, 
+    autoSaveTimeline, 
+    2000, // 2 second delay
+    [
+      timelineData?.events, 
+      timelineData?.title, 
+      timelineData?.start, 
+      timelineData?.end,
+      showIntervals,
+      intervalCount,
+      intervalType,
+      isPublic
+    ]
+  );
+
   // Check for timelineId in URL parameters when component mounts
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -107,7 +175,7 @@ function App() {
   // Handle logout
   const handleLogout = async () => {
     if (hasUnsavedChanges) {
-      const confirm = window.confirm('Du har ulagrede endringer. Er du sikker på at du vil logge ut? Ulagrede endringer vil gå tapt.');
+      const confirm = window.confirm('Du har ulagrede endringer som lagres automatisk. Er du sikker på at du vil logge ut?');
       if (!confirm) {
         return;
       }
@@ -148,6 +216,11 @@ function App() {
         // Ensure welcome popup is hidden when timeline is loaded
         setShowWelcomePopup(false);
         setHasUnsavedChanges(false);
+        
+        // Set last saved time if available
+        if (timeline.updatedAt) {
+          setLastSaved(new Date(timeline.updatedAt).getTime());
+        }
       }
     } catch (error) {
       console.error('Error loading timeline:', error);
@@ -193,6 +266,7 @@ function App() {
       
       // Also reset unsaved changes
       setHasUnsavedChanges(false);
+      setLastSaved(null);
     }
   }, [isAuthenticated, authChanged]);
 
@@ -210,7 +284,7 @@ function App() {
       isPublic: isPublicValue
     }));
     
-    // Mark as having unsaved changes
+    // Mark as having unsaved changes (auto-save will handle it)
     setHasUnsavedChanges(true);
     
     // Show notification about the privacy change
@@ -237,36 +311,6 @@ function App() {
       });
   };
 
-  // Add keyboard shortcut for saving (s key)
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      // Check if 's' key is pressed and the user isn't in a text input or textarea
-      if (e.key === 's' && 
-          !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName) &&
-          !document.activeElement.isContentEditable) {
-        
-        // Prevent the browser's default "Save" action
-        e.preventDefault();
-        
-        // Only trigger save if there are unsaved changes and a timeline exists
-        if (hasUnsavedChanges && timelineData.title && timelineData.events.length > 0) {
-          saveTimeline();
-          
-          // Show a brief keyboard shortcut notification
-          showShortcutNotification('Lagret med tastatursnarveien (S)');
-        }
-      }
-    };
-
-    // Add the event listener to the window
-    window.addEventListener('keydown', handleKeyDown);
-    
-    // Clean up the event listener when component unmounts
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [hasUnsavedChanges, timelineData]);
-
   // Function to show shortcut notification
   const showShortcutNotification = (message) => {
     setShortcutNotification(message);
@@ -292,7 +336,7 @@ function App() {
     if (count !== undefined) setIntervalCount(count);
     if (type !== undefined) setIntervalType(type);
     
-    // Mark changes as unsaved
+    // Mark changes as unsaved (auto-save will handle it)
     setHasUnsavedChanges(true);
     
     // Update the timeline data with new settings
@@ -317,11 +361,11 @@ function App() {
     setSaveError(''); // Clear any save errors
   };
   
-  // Create timeline with the provided data - UPDATED FOR AI INTEGRATION
+  // Create timeline with the provided data
   const createTimeline = async (data) => {
     // Check for unsaved changes before creating new timeline
     if (hasUnsavedChanges) {
-      const confirm = window.confirm('Du har ulagrede endringer. Er du sikker på at du vil opprette en ny tidslinje? Ulagrede endringer vil gå tapt.');
+      const confirm = window.confirm('Du har ulagrede endringer som lagres automatisk. Er du sikker på at du vil opprette en ny tidslinje?');
       if (!confirm) {
         return; // User cancelled, don't create a new timeline
       }
@@ -333,12 +377,12 @@ function App() {
     // Ensure sidebar is shown by default for new timelines
     setIsSidebarCollapsed(false);
     
-    // Check if this is a timeline generated from AI prompt
-    if (data.generatedFromPrompt) {
+    // Check if this timeline was generated from a prompt and needs events
+    if (data.generatedFromPrompt && data.promptText) {
       try {
         setIsProcessingPrompt(true);
         
-        // The AI service now returns a complete timeline config - no extra processing needed!
+        // Create the timeline first without events
         const newTimelineData = {
           ...data,
           showIntervals: showIntervals,
@@ -354,20 +398,47 @@ function App() {
         
         setTimelineData(newTimelineData);
         setShowWelcomePopup(false);
-        setHasUnsavedChanges(true); // Mark as having unsaved changes
+        
+        // Now generate events based on the prompt
+        const generatedEvents = await generateTimelineEvents(data.promptText, data.start, data.end);
+        
+        // Add the generated events to the timeline
+        setTimelineData(prev => ({
+          ...prev,
+          events: generatedEvents
+        }));
+        
+        // Mark as having unsaved changes (auto-save will handle it)
+        setHasUnsavedChanges(true);
         setSaveError('');
         
-        // Show success notification
-        showShortcutNotification(`AI-tidslinje "${data.title}" opprettet med ${data.events.length} hendelser!`);
-        
       } catch (error) {
-        console.error('Error processing AI timeline:', error);
-        alert('Det oppstod en feil ved prosessering av AI-tidslinjen.');
+        console.error('Error processing prompt timeline:', error);
+        alert('Kunne ikke generere hendelser fra prompten. Tidslinjen er opprettet uten hendelser.');
+        
+        // Still create the timeline but without events
+        const newTimelineData = {
+          ...data,
+          showIntervals: showIntervals,
+          intervalCount: intervalCount,
+          intervalType: intervalType,
+          intervalSettings: {
+            show: showIntervals,
+            count: intervalCount,
+            type: intervalType
+          },
+          isPublic: false // Default to private
+        };
+        
+        setTimelineData(newTimelineData);
+        setShowWelcomePopup(false);
+        setHasUnsavedChanges(false);
+        
       } finally {
         setIsProcessingPrompt(false);
       }
     } else {
-      // Regular timeline creation (manual)
+      // Regular timeline creation
       const newTimelineData = {
         ...data,
         showIntervals: showIntervals,
@@ -390,7 +461,7 @@ function App() {
 
   // Update timeline data (for editing title and dates)
   const updateTimelineData = (updatedTimeline) => {
-    // Mark changes as unsaved
+    // Mark changes as unsaved (auto-save will handle it)
     setHasUnsavedChanges(true);
     setTimelineData(updatedTimeline);
     setSaveError(''); // Clear any save errors
@@ -398,7 +469,7 @@ function App() {
 
   // Add event to the timeline
   const addEvent = (event) => {
-    // Mark changes as unsaved
+    // Mark changes as unsaved (auto-save will handle it)
     setHasUnsavedChanges(true);
     setTimelineData(prevData => ({
       ...prevData,
@@ -407,6 +478,7 @@ function App() {
     setSaveError(''); // Clear any save errors
   };
   
+  // Manual save function (for initial save when timeline doesn't have ID yet)
   const saveTimeline = async () => {
     try {
       // Basic validation
@@ -419,6 +491,8 @@ function App() {
         alert('Legg til minst én hendelse i tidslinjen');
         return;
       }
+      
+      setIsSaving(true);
       
       // Make sure interval settings are included in the data as a single object
       const intervalSettings = {
@@ -448,8 +522,9 @@ function App() {
         // Update existing timeline
         result = await api.updateTimeline(dataToSave.id, dataToSave);
         if (result.success) {
-          setHasUnsavedChanges(false); // Reset unsaved changes flag
-          setSaveError(''); // Clear any save errors
+          setHasUnsavedChanges(false);
+          setLastSaved(Date.now());
+          setSaveError('');
           
           // Show success notification
           showShortcutNotification('Tidslinjen ble lagret');
@@ -466,11 +541,12 @@ function App() {
             ...prevData,
             id: result.timelineId
           }));
-          setHasUnsavedChanges(false); // Reset unsaved changes flag
-          setSaveError(''); // Clear any save errors
+          setHasUnsavedChanges(false);
+          setLastSaved(Date.now());
+          setSaveError('');
           
           // Show success notification
-          showShortcutNotification('Tidslinjen ble opprettet');
+          showShortcutNotification('Tidslinjen ble opprettet og auto-lagring aktivert');
           
           // Update URL with the new timeline ID
           navigate(`/?timelineId=${result.timelineId}`, { replace: true });
@@ -481,7 +557,7 @@ function App() {
       }
     } catch (error) {
       console.error('Feil ved lagring av tidslinje:', error);
-      setSaveError(error.message); // Store the error message
+      setSaveError(error.message);
 
       // Check if error is about timeline limit
       if (error.message.includes('grensen på 10 tidslinjer')) {
@@ -489,13 +565,15 @@ function App() {
       } else {
         alert(`Kunne ikke lagre tidslinjen: ${error.message}`);
       }
+    } finally {
+      setIsSaving(false);
     }
   };
 
   // Load timeline from Firebase with unsaved changes check
   const handleLoadTimeline = (timeline) => {
     if (hasUnsavedChanges) {
-      const confirm = window.confirm('Du har ulagrede endringer. Er du sikker på at du vil laste en annen tidslinje? Ulagrede endringer vil gå tapt.');
+      const confirm = window.confirm('Du har ulagrede endringer som lagres automatisk. Er du sikker på at du vil laste en annen tidslinje?');
       if (!confirm) {
         return; // User cancelled, don't load the new timeline
       }
@@ -532,6 +610,11 @@ function App() {
       
       setShowWelcomePopup(false); // Hide welcome popup when a timeline is loaded
       
+      // Set last saved time if available
+      if (timeline.updatedAt) {
+        setLastSaved(new Date(timeline.updatedAt).getTime());
+      }
+      
       // Update URL with the timeline ID
       navigate(`/?timelineId=${timeline.id}`, { replace: true });
     } else {
@@ -542,7 +625,7 @@ function App() {
   
   // Modified timeline data setter to track changes
   const setTimelineDataWithTracking = (newData) => {
-    // Mark as having unsaved changes
+    // Mark as having unsaved changes (auto-save will handle it)
     setHasUnsavedChanges(true);
     // Update the timeline data
     setTimelineData(newData);
@@ -567,7 +650,8 @@ function App() {
         onCreateTimeline={createTimeline}
         onSaveTimeline={saveTimeline}
         onUpdateTimeline={updateTimelineData}
-        hasUnsavedChanges={hasUnsavedChanges}
+        hasUnsavedChanges={hasUnsavedChanges || isSaving}
+        lastSaved={lastSaved}
         saveError={saveError}
         isPublic={isPublic}
         onPrivacyChange={handlePrivacyChange}
@@ -579,8 +663,6 @@ function App() {
       <LayoutManager
         timelineData={timelineData}
         onLogin={openAuthModal}
-        
-        onCreateTimeline={createTimeline} // Add this prop to LayoutManager
         isSidebarCollapsed={isSidebarCollapsed}
         sidebar={
           <Sidebar 
@@ -622,7 +704,7 @@ function App() {
             <div className="prompt-processing-modal">
               <div className="loading-spinner"></div>
               <h3>Genererer tidslinje...</h3>
-              <p>AI lager en komplett tidslinje basert på prompten din.</p>
+              <p>Analyserer tekst og oppretter hendelser basert på prompten din.</p>
             </div>
           </div>
         )}

@@ -1,0 +1,3 @@
+Ctrl + Shift + P >> Git: Clone
+https://github.com/OpleXy/TimeSculpt
+npm install

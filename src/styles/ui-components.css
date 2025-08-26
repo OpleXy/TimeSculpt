@@ -1551,3 +1551,83 @@ body.dark-mode .interval-type-select-wrapper::after {
 .event-detail-panel {
   z-index: 100; /* Higher than info bar (z-index: 5) */
 }
+
+
+.autosave-status {
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.autosave-status:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Pulse animation for unsaved changes */
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+/* Auto-save status variants */
+.autosave-status.saving {
+  background-color: rgba(255, 193, 7, 0.1);
+  border-color: rgba(255, 193, 7, 0.3);
+  color: #856404;
+}
+
+.autosave-status.saved {
+  background-color: rgba(40, 167, 69, 0.1);
+  border-color: rgba(40, 167, 69, 0.3);
+  color: #155724;
+}
+
+.autosave-status.error {
+  background-color: rgba(220, 53, 69, 0.1);
+  border-color: rgba(220, 53, 69, 0.3);
+  color: #721c24;
+}
+
+/* Dark mode for auto-save status */
+.dark-mode .autosave-status.saving {
+  background-color: rgba(255, 193, 7, 0.2);
+  border-color: rgba(255, 193, 7, 0.4);
+  color: #ffc107;
+}
+
+.dark-mode .autosave-status.saved {
+  background-color: rgba(40, 167, 69, 0.2);
+  border-color: rgba(40, 167, 69, 0.4);
+  color: #28a745;
+}
+
+.dark-mode .autosave-status.error {
+  background-color: rgba(220, 53, 69, 0.2);
+  border-color: rgba(220, 53, 69, 0.4);
+  color: #dc3545;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .autosave-status {
+    padding: 0 8px;
+    height: 32px;
+    font-size: 12px;
+  }
+  
+  .autosave-status span {
+    display: none;
+  }
+  
+  /* Show only icon on mobile */
+  .autosave-status.saved span:after {
+    content: '✓';
+    display: inline;
+  }
+  
+  .autosave-status.saving span:after {
+    content: '⋯';
+    display: inline;
+  }
+}

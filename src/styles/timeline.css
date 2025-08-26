@@ -63,11 +63,7 @@
   transition: stroke 0.3s ease, stroke-width 0.2s ease;
 }
 
-/* Snapped line style - make it more prominent */
-.event-connection-line line.snapped {
-  stroke-width: calc(var(--timeline-thickness, 2px) + 1px);
-  stroke-dasharray: none;
-}
+
 
 /* Event Styles - Updated for color handling and dynamic colors */
 .event {

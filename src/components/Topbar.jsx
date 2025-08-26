@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -8,7 +7,7 @@ import ActiveLink from './ActiveLink';
 import TopbarTimelineForm from './TopbarTimelineForm';
 import ToggleSwitch from './ToggleSwitch';
 import DateInput from './DateInput';
-import TimelineShareModal from './TimelineShareModal'; // New component for sharing UI
+import TimelineShareModal from './TimelineShareModal';
 import logoWithText from '../assets/logo-timesculpt.png';
 
 function Topbar({ 
@@ -20,7 +19,8 @@ function Topbar({
   hasUnsavedChanges, 
   onSaveTimeline,
   isPublic, 
-  onPrivacyChange 
+  onPrivacyChange,
+  lastSaved // Ny prop for timestamp
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -37,7 +37,7 @@ function Topbar({
   
   // New state for sharing
   const [showShareModal, setShowShareModal] = useState(false);
-  const [shareModalTab, setShareModalTab] = useState('permissions'); // 'permissions' or 'links'
+  const [shareModalTab, setShareModalTab] = useState('permissions');
   
   // Check if we're on the main timeline page
   const isTimelinePage = location.pathname === '/';
@@ -47,6 +47,26 @@ function Topbar({
   
   // Check if user is the owner of the timeline
   const isTimelineOwner = timelineData && currentUser && timelineData.userId === currentUser.uid;
+
+  // Format timestamp for display
+  const formatLastSaved = (timestamp) => {
+    if (!timestamp) return '';
+    
+    const now = new Date();
+    const savedTime = new Date(timestamp);
+    const diffInMinutes = Math.floor((now - savedTime) / (1000 * 60));
+    
+    if (diffInMinutes < 1) {
+      return 'Nettopp lagret';
+    } else if (diffInMinutes < 60) {
+      return `Lagret for ${diffInMinutes} min siden`;
+    } else if (diffInMinutes < 1440) { // Less than 24 hours
+      const hours = Math.floor(diffInMinutes / 60);
+      return `Lagret for ${hours} time${hours > 1 ? 'r' : ''} siden`;
+    } else {
+      return `Lagret ${savedTime.toLocaleDateString('no-NO')}`;
+    }
+  };
   
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -84,7 +104,6 @@ function Topbar({
   const formatDate = (date) => {
     if (!date) return '';
     
-    // Create a formatted date string (DD/MM/YYYY format)
     return date.toLocaleDateString('no-NO', {
       day: '2-digit',
       month: '2-digit',
@@ -97,7 +116,6 @@ function Topbar({
       setShowTitleEditor(true);
     }
   };
-  
 
   const handleTitleChange = (e) => {
     setEditTitle(e.target.value);
@@ -106,20 +124,15 @@ function Topbar({
   const handleStartDateChange = (e) => {
     const newStartDate = e.target.value;
     setEditStartDate(newStartDate);
-    
-    // Check if any events fall outside the new range
     checkEventsOutsideRange(new Date(newStartDate), editEndDate ? new Date(editEndDate) : timelineData.end);
   };
 
   const handleEndDateChange = (e) => {
     const newEndDate = e.target.value;
     setEditEndDate(newEndDate);
-    
-    // Check if any events fall outside the new range
     checkEventsOutsideRange(editStartDate ? new Date(editStartDate) : timelineData.start, new Date(newEndDate));
   };
 
-  
   // Check if events fall outside the new date range
   const checkEventsOutsideRange = (startDate, endDate) => {
     if (!timelineData.events || timelineData.events.length === 0) {
@@ -155,7 +168,6 @@ function Topbar({
       return;
     }
     
-    // Filter out events that are now outside the date range
     let updatedEvents = [...timelineData.events];
     if (showWarning) {
       updatedEvents = timelineData.events.filter(event => {
@@ -163,7 +175,6 @@ function Topbar({
       });
     }
     
-    // Update the timeline data
     const updatedTimeline = {
       ...timelineData,
       title: editTitle,
@@ -172,14 +183,12 @@ function Topbar({
       events: updatedEvents
     };
     
-    // Call the update function passed from App.jsx
     if (typeof onUpdateTimeline === 'function') {
       onUpdateTimeline(updatedTimeline);
     } else {
       console.warn('onUpdateTimeline function is not provided');
     }
     
-    // Close the editor
     setShowTitleEditor(false);
     setShowWarning(false);
   };
@@ -202,7 +211,6 @@ function Topbar({
     }
   };
 
-  // Navigation handlers
   const handleMyTimelines = () => {
     setShowDropdown(false);
     navigate('/mine-tidslinjer');
@@ -234,20 +242,17 @@ function Topbar({
     }
   };
   
-  // New function to handle opening share modal
   const handleOpenShareModal = (tab = 'permissions') => {
     setShareModalTab(tab);
     setShowShareModal(true);
   };
   
-  // Toggle privacy of timeline
   const toggleTimelinePrivacy = () => {
     if (onPrivacyChange) {
       onPrivacyChange(!isPublic);
     }
   };
 
-  // Define a consistent height for both the logo and the new timeline button
   const consistentHeight = '36px';
 
   return (
@@ -308,7 +313,7 @@ function Topbar({
             cursor: 'pointer',
             transition: 'all 0.2s ease',
             marginRight: '15px',
-            height: consistentHeight, // Set consistent height
+            height: consistentHeight,
             overflow: 'hidden',
           }}
           onMouseOver={(e) => {
@@ -324,7 +329,7 @@ function Topbar({
             src={logoWithText} 
             alt="TimeSculpt" 
             style={{ 
-              height: '32px', // Slightly smaller than container to add padding
+              height: '32px',
               width: 'auto',
               display: 'block',
               filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1))',
@@ -334,102 +339,160 @@ function Topbar({
           />
         </div>
         
-        {/* Show the New Timeline form on the main timeline page, regardless of whether a timeline is active */}
         {isTimelinePage && (
           <TopbarTimelineForm 
             onCreateTimeline={onCreateTimeline} 
-            buttonHeight={consistentHeight} // Pass consistent height to the form component
+            buttonHeight={consistentHeight}
           />
         )}
       </div>
       
       <div className="topbar-center">
-        {/* Only show navigation if we're NOT displaying an active timeline */}
         {!isTimelineActive && (
           <nav className="main-nav">
             <ul className="nav-links">
-            <li>
+              <li>
                 <ActiveLink to="/utforsk">Utforsk</ActiveLink>
               </li>
               <li>
                 <ActiveLink to="/">Lag tidsline</ActiveLink>
               </li>
-              
             </ul>
           </nav>
         )}
         
-        {/* Show timeline title when a timeline is active */}
         {isTimelineActive && (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span 
-  className="timeline-title-display" 
-  onClick={handleTitleClick}
-  style={{ cursor: 'pointer' }}
-  title="Klikk for å redigere tidslinje"
->
-  {timelineData.title}
-  {timelineData.start && timelineData.end && (
-    <span className="timeline-period">
-      ({formatDate(timelineData.start)} - {formatDate(timelineData.end)})
-    </span>
-  )}
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width="14" 
-    height="14" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round"
-    style={{ marginLeft: '8px', verticalAlign: 'middle' }}
-  >
-    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-  </svg>
-</span>
+              className="timeline-title-display" 
+              onClick={handleTitleClick}
+              style={{ cursor: 'pointer' }}
+              title="Klikk for å redigere tidslinje"
+            >
+              {timelineData.title}
+              {timelineData.start && timelineData.end && (
+                <span className="timeline-period">
+                  ({formatDate(timelineData.start)} - {formatDate(timelineData.end)})
+                </span>
+              )}
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="14" 
+                height="14" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+                style={{ marginLeft: '8px', verticalAlign: 'middle' }}
+              >
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </span>
             
             {/* Timeline Actions Container */}
             <div className="timeline-actions-container" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: '15px' }}>
-              {/* Save Button */}
-              {isTimelineActive && timelineData.events && timelineData.events.length > 0 && isTimelineOwner && (
-  <button
-    className="save-timeline-btn topbar-save-btn"
-    onClick={handleSaveTimeline}
-    title={hasUnsavedChanges ? "Lagre endringer" : "Lagre tidslinje"}
-    style={{
-      width: 'auto',
-      padding: '0 16px',
-      height: '36px',
-      // Add opacity styling directly rather than using disabled attribute
-      opacity: hasUnsavedChanges ? 1 : 0.7,
-      cursor: 'pointer'
-    }}
-  >
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="18" 
-      height="18" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-      style={{ marginRight: '8px' }}
-    >
-      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-      <polyline points="17 21 17 13 7 13 7 21"></polyline>
-      <polyline points="7 3 7 8 15 8"></polyline>
-    </svg>
-    Lagre
-  </button>
-)}
-
               
-              {/* Share Button - Only visible when user is logged in and timeline is saved */}
+              {/* Auto-save status indicator - erstatter manual lagre knappen */}
+              {isTimelineActive && timelineData.events && timelineData.events.length > 0 && isTimelineOwner && (
+                <div
+                  className="autosave-status"
+                  title={lastSaved ? `Sist lagret: ${new Date(lastSaved).toLocaleString('no-NO')}` : "Automatisk lagring aktivert"}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0 12px',
+                    height: '36px',
+                    backgroundColor: hasUnsavedChanges ? 'rgba(255, 193, 7, 0.1)' : 'rgba(40, 167, 69, 0.1)',
+                    border: hasUnsavedChanges ? '1px solid rgba(255, 193, 7, 0.3)' : '1px solid rgba(40, 167, 69, 0.3)',
+                    borderRadius: '18px',
+                    fontSize: '13px',
+                    color: hasUnsavedChanges ? '#856404' : '#155724',
+                    fontWeight: '500',
+                    gap: '6px',
+                    transition: 'all 0.3s ease',
+                    cursor: 'default',
+                    userSelect: 'none'
+                  }}
+                >
+                  {hasUnsavedChanges ? (
+                    <>
+                      <div 
+                        style={{
+                          width: '6px',
+                          height: '6px',
+                          backgroundColor: '#ffc107',
+                          borderRadius: '50%',
+                          animation: 'pulse 1.5s infinite'
+                        }}
+                      />
+                      <span>Lagrer...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="16" 
+                        height="16" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="2" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                      >
+                        <path d="M20 6L9 17l-5-5"/>
+                      </svg>
+                      <span>{formatLastSaved(lastSaved) || 'Auto-lagring aktiv'}</span>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {/* Fallback manual save button for new timelines without ID */}
+              {isTimelineActive && timelineData.events && timelineData.events.length > 0 && isTimelineOwner && !timelineData.id && (
+                <button
+                  className="save-timeline-btn topbar-save-btn"
+                  onClick={handleSaveTimeline}
+                  title="Lagre tidslinje første gang"
+                  style={{
+                    width: 'auto',
+                    padding: '0 16px',
+                    height: '36px',
+                    backgroundColor: '#007bff',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    fontWeight: '500',
+                    fontSize: '14px'
+                  }}
+                >
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width="18" 
+                    height="18" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    style={{ marginRight: '8px' }}
+                  >
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                  </svg>
+                  Lagre
+                </button>
+              )}
+              
+              {/* Share Button */}
               {isTimelineActive && timelineData.id && isAuthenticated && (
                 <div className="timeline-share-dropdown">
                   <button 
@@ -442,7 +505,13 @@ function Topbar({
                       height: '36px',
                       backgroundColor: isTimelineOwner ? '#28a745' : 'transparent',
                       color: isTimelineOwner ? 'white' : '#333',
-                      border: isTimelineOwner ? 'none' : '1px solid #dee2e6'
+                      border: isTimelineOwner ? 'none' : '1px solid #dee2e6',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      fontWeight: '500',
+                      fontSize: '14px'
                     }}
                   >
                     <svg 
@@ -570,8 +639,6 @@ function Topbar({
                     </div>
                   </div>
                   
-                
-                  
                   {showWarning && (
                     <div className="warning-message">
                       <strong>Advarsel:</strong> Endring av datointervallet vil slette {eventsOutsideRange.length} hendelse(r) 
@@ -600,7 +667,7 @@ function Topbar({
       </div>
       
       <div className="topbar-right">
-        {/* Support button - icon only */}
+        {/* Support button */}
         <button
           onClick={openSupport}
           title="Support"
@@ -679,8 +746,6 @@ function Topbar({
             
             {showDropdown && (
               <div className="user-dropdown">
-                {/* Use ActiveLink for dropdown items */}
-
                 <div onClick={handleMyProfile} className="dropdown-item">
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
@@ -716,8 +781,6 @@ function Topbar({
                   <span>Mitt arkiv</span>
                 </div>
                 
-                
-                
                 <div onClick={handleSettings} className="dropdown-item">
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
@@ -750,7 +813,7 @@ function Topbar({
                     strokeLinecap="round" 
                     strokeLinejoin="round"
                   >
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1-2-2h4"/>
                     <polyline points="16 17 21 12 16 7"/>
                     <line x1="21" y1="12" x2="9" y2="12"/>
                   </svg>

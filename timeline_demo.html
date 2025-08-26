@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <title>Hierarkisk Zoombar Tidslinje</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 0; background: #fafafa; }
+    svg { width: 100%; height: 500px; display: block; }
+
+    .axis line, .axis path { stroke: #999; }
+
+    /* Hierarkiske markører */
+    .primary-tick line { stroke: #000; stroke-width: 3; }
+    .primary-tick text { font-size: 16px; fill: #000; font-weight: 900; text-anchor: middle; }
+
+    .secondary-tick line { stroke: #333; stroke-width: 2; }
+    .secondary-tick text { font-size: 14px; fill: #333; font-weight: bold; text-anchor: middle; }
+
+    .tertiary-tick line { stroke: #666; stroke-width: 1.5; }
+    .tertiary-tick text { font-size: 12px; fill: #666; text-anchor: middle; }
+
+    .quaternary-tick line { stroke: #999; stroke-width: 1; opacity: 0.7; }
+    .quaternary-tick text { font-size: 10px; fill: #999; text-anchor: middle; opacity: 0.8; }
+
+    .minor-tick line { stroke: #ccc; stroke-width: 0.5; opacity: 0.6; }
+
+    .day-tick line { stroke: #ddd; stroke-width: 0.5; opacity: 0.6; }
+    .day-tick text { font-size: 9px; fill: #999; text-anchor: middle; }
+
+    .timeline-axis { stroke: #333; stroke-width: 2; }
+
+    .context-info { font-size: 10px; fill: #999; text-anchor: middle; }
+
+    /* Hover effekter */
+    .primary-tick:hover text { font-size: 18px; }
+    .secondary-tick:hover text { font-size: 16px; }
+    .tertiary-tick:hover text { font-size: 14px; }
+
+    /* Dagens linje */
+    .today-line { stroke: red; stroke-width: 2; stroke-dasharray: 4 2; }
+  </style>
+</head>
+<body>
+  <svg id="timeline"></svg>
+
+  <script>
+    const svg = d3.select("#timeline");
+    const width = window.innerWidth;
+    const height = 500;
+    const margin = { top: 50, right: 40, bottom: 50, left: 40 };
+
+    const startDate = new Date(1000, 0, 1);
+    const endDate = new Date(2025, 0, 1);
+
+    const x = d3.scaleTime()
+      .domain([startDate, endDate])
+      .range([margin.left, width - margin.right]);
+
+    // Grupper
+    const primaryGroup = svg.append("g").attr("transform", `translate(0,${height/2})`);
+    const secondaryGroup = svg.append("g").attr("transform", `translate(0,${height/2})`);
+    const tertiaryGroup = svg.append("g").attr("transform", `translate(0,${height/2})`);
+    const quaternaryGroup = svg.append("g").attr("transform", `translate(0,${height/2})`);
+    const minorGroup = svg.append("g").attr("transform", `translate(0,${height/2})`);
+    const dayGroup = svg.append("g").attr("transform", `translate(0,${height/2})`);
+
+    // Hoved tidslinje
+    svg.append("line")
+      .attr("class", "timeline-axis")
+      .attr("x1", margin.left)
+      .attr("x2", width - margin.right)
+      .attr("y1", height/2)
+      .attr("y2", height/2);
+
+    // "I dag"-linje
+    const todayLine = svg.append("line")
+      .attr("class", "today-line")
+      .attr("y1", height/2 - 40)
+      .attr("y2", height/2 + 40);
+
+    const contextGroup = svg.append("g").attr("class", "context-group");
+
+    // Zoom
+    const zoom = d3.zoom()
+      .scaleExtent([1, 20000]) // gjør det mulig å zoome ned til dagsnivå
+      .translateExtent([[margin.left, 0], [width - margin.right, height]])
+      .on("zoom", zoomed);
+
+    svg.call(zoom);
+
+    function addContextLabels(domain) {
+      contextGroup.selectAll("*").remove();
+      const startYear = domain[0].getFullYear();
+      const endYear = domain[1].getFullYear();
+      const days = (domain[1] - domain[0]) / (1000*60*60*24);
+
+      contextGroup.append("text")
+        .attr("x", margin.left - 10)
+        .attr("y", height/2 - 35)
+        .text(startYear)
+        .style("text-anchor", "end");
+
+      contextGroup.append("text")
+        .attr("x", width - margin.right + 10)
+        .attr("y", height/2 - 35)
+        .text(endYear)
+        .style("text-anchor", "start");
+
+      let periodText = days > 365*2 ? `Periode: ${Math.round(days/365)} år`
+                    : days > 60 ? `Periode: ${Math.round(days/30)} måneder`
+                    : `Periode: ${Math.round(days)} dager`;
+
+      contextGroup.append("text")
+        .attr("x", width/2)
+        .attr("y", 20)
+        .text(periodText);
+    }
+
+    function generateYears(domain) {
+      let years = [];
+      for (let y = domain[0].getFullYear(); y <= domain[1].getFullYear(); y++) {
+        years.push({ date: new Date(y,0,1), year: y });
+      }
+      return years;
+    }
+
+    function generateMonths(domain) {
+      const months = [];
+      let current = new Date(domain[0].getFullYear(), domain[0].getMonth(), 1);
+      const end = new Date(domain[1].getFullYear(), domain[1].getMonth()+1, 1);
+      while (current < end) {
+        months.push({ date: new Date(current), month: current.getMonth(), year: current.getFullYear() });
+        current.setMonth(current.getMonth()+1);
+      }
+      return months;
+    }
+
+    function zoomed(event) {
+      const t = event.transform;
+      const zx = t.rescaleX(x);
+      const domain = zx.domain();
+      const days = (domain[1]-domain[0]) / (1000*60*60*24);
+      const visibleYears = domain[1].getFullYear() - domain[0].getFullYear() + 1;
+      const visibleMonths = Math.ceil(days/30);
+
+      addContextLabels(domain);
+
+      // Oppdater "i dag"-linje
+      todayLine.attr("x1", zx(new Date()))
+               .attr("x2", zx(new Date()));
+
+      [primaryGroup, secondaryGroup, tertiaryGroup, quaternaryGroup, minorGroup, dayGroup]
+        .forEach(g => g.selectAll("*").remove());
+// ---- ÅR ----
+const years = generateYears(domain);
+
+// Maks antall ticks vi tillater på skjermen samtidig
+const maxTicks = 80;
+let step = Math.ceil(years.length / maxTicks);
+
+// Rund opp til nærmeste "meningsfulle" steg (10, 25, 50, 100, 500, 1000)
+if (step <= 1) step = 1;
+else if (step <= 2) step = 2;
+else if (step <= 5) step = 5;
+else if (step <= 10) step = 10;
+else if (step <= 25) step = 25;
+else if (step <= 50) step = 50;
+else if (step <= 100) step = 100;
+else if (step <= 500) step = 500;
+else step = 1000;
+
+years.forEach((d,i) => {
+  if (d.year % step === 0) {   // bare tegn hvis år er delelig med step
+    const g = primaryGroup.append("g")
+      .attr("class","primary-tick")
+      .attr("transform",`translate(${zx(d.date)},0)`);
+
+    g.append("line").attr("y1",-25).attr("y2",25);
+
+    // vis tekst kun hvis steget ikke er for grovt
+    if (step <= 1000) {
+      g.append("text").attr("y",-30).text(d.year);
+    }
+  }
+});
+
+
+      // ---- MÅNEDER ----
+      if (days <= 365*5) {
+        const months = generateMonths(domain);
+        months.forEach((d,i) => {
+          const g = secondaryGroup.append("g")
+            .attr("class","secondary-tick")
+            .attr("transform",`translate(${zx(d.date)},0)`);
+
+          g.append("line").attr("y1",-12).attr("y2",12);
+
+          if (visibleMonths <= 36 && (i % Math.ceil(visibleMonths/24) === 0)) {
+            g.append("text").attr("y",25).text(d3.timeFormat("%b")(d.date));
+          }
+        });
+      }
+
+      // ---- DAGER ----
+      if (days <= 120) {
+        const dayTicks = zx.ticks(d3.timeDay.every(Math.ceil(days/60)));
+        dayTicks.forEach((d,i) => {
+          const g = dayGroup.append("g")
+            .attr("class","day-tick")
+            .attr("transform",`translate(${zx(d)},0)`);
+
+          g.append("line").attr("y1",-5).attr("y2",5);
+
+          if (days <= 45 || i % 2 === 0) {
+            g.append("text").attr("y",40).text(d.getDate());
+          }
+        });
+      }
+    }
+
+    // Start
+    svg.call(zoom.transform, d3.zoomIdentity);
+    addContextLabels(x.domain());
+
+    svg.append("text")
+      .attr("x", width/2)
+      .attr("y", height-10)
+      .attr("text-anchor","middle")
+      .style("font-size","12px")
+      .style("fill","#666")
+      .text("Bruk musehjulet for å zoome • Dra for å panorere • Zoom helt ned til dag-nivå!");
+  </script>
+</body>
+</html>

@@ -1,8 +1,8 @@
+npm install
 This is the current filestructure of TimeSculpt, react vite@latest:
 
 .
 ..
-.env
 .eslintignore
 .git
 .gitignore
@@ -11,12 +11,15 @@ README.md
 dist
 eslint.config.js
 index.html
+index1.html
 node_modules
+oppstart timesculpt github.txt
 package-lock.json
 package.json
 public
 src
 structure_full.txt
+timeline_demo.html
 vite.config.js
 watch-structure.sh
 
@@ -52,6 +55,7 @@ src
 ├── components
 │   ├── ActiveLink.jsx
 │   ├── BackgroundManager.jsx
+│   ├── BackgroundSelector.jsx
 │   ├── CreateEventModal.jsx
 │   ├── DateInput.jsx
 │   ├── EventCreationSelector.jsx
@@ -81,7 +85,6 @@ src
 │   ├── ToggleSwitch.jsx
 │   ├── Topbar.jsx
 │   ├── TopbarTimelineForm.jsx
-│   ├── WelcomePopup.jsx
 │   ├── WelcomeScreen.jsx
 │   └── auth
 │       ├── AppleSignIn.jsx
@@ -97,6 +100,9 @@ src
 │   ├── AuthContext.jsx
 │   └── ThemeContext.jsx
 ├── firebase.js
+├── hooks
+│   ├── useAutoSave.js
+│   └── useBackgroundManager.js
 ├── main.jsx
 ├── pages
 │   ├── Innstillinger.jsx
@@ -108,12 +114,14 @@ src
 │   └── AppRoutes.jsx
 ├── services
 │   ├── aiTimelineService.js
+│   ├── backgroundImageService.js
 │   ├── documentTitleService.js
 │   ├── historicalEvents.js
 │   ├── openAiService.js
 │   ├── promptTimelineService.js
 │   └── timelineCommandProcessor.js
 ├── styles
+│   ├── BackgroundSelector.css
 │   ├── DateInput.css
 │   ├── EventEditModal.css
 │   ├── EventFormStyles.css
@@ -154,14 +162,13 @@ src
 │   ├── topbar-timeline-form.css
 │   ├── topbar.css
 │   ├── ui-components.css
-│   ├── welcome-popup.css
 │   └── welcome-screen.css
 ├── themeManager.js
 ├── userAPI.js
 └── utils
     └── dateUtils.js
 
-10 directories, 108 files
+11 directories, 111 files
 
 Line Counts Per File:
 12839 public/backgrounds/dino.png
@@ -180,35 +187,40 @@ Line Counts Per File:
 9714 public/backgrounds/kina.png
 2588 public/backgrounds/cctv.png
 2301 public/backgrounds/timesculpt.png
+1865 src/styles/TimelineContextMenu.css
 1698 src/styles/darkMode.css
+1632 src/styles/ui-components.css
 1296 src/styles/topbar.css
+1274 src/components/TimelineContextMenu.jsx
 1193 src/styles/timeline-share-modal.css
-1048 src/styles/ui-components.css
+1088 src/components/Timeline.jsx
 1046 src/api.js
 993 src/services/timelineCommandProcessor.js
-952 src/components/Timeline.jsx
+861 src/components/Topbar.jsx
 852 src/styles/pages/MineTidslinjer.css
 814 src/styles/auth.css
-809 src/components/TopbarTimelineForm.jsx
-796 src/components/Topbar.jsx
 792 src/components/TimelineStyleMenu.jsx
-701 src/styles/timeline.css
-695 src/App.jsx
+722 src/App.jsx
+699 src/styles/timeline.css
 619 src/styles/pages/MinProfil.css
-553 src/components/TimelineContextMenu.jsx
-526 src/styles/TimelineContextMenu.css
+533 src/components/IntervalSettings.jsx
 477 src/components/TimelineIntervals.jsx
-458 src/components/IntervalSettings.jsx
+467 src/components/EventDetailPanel.jsx
 449 src/pages/MineTidslinjer.jsx
-427 src/components/TimelineEvent.jsx
+435 src/components/TimelineEvent.jsx
+399 src/styles/BackgroundSelector.css
 388 src/services/aiTimelineService.js
 370 src/components/TimelineShareModal.jsx
+367 src/components/BackgroundSelector.jsx
+357 src/services/openAiService.js
+345 src/styles/welcome-screen.css
 339 src/components/TextUploadTimelineGenerator.jsx
 339 src/components/EventEditModal.jsx
 325 src/styles/event-form.css
+324 src/components/Sidebar.jsx
 318 src/styles/timeline-cards.css
 314 src/styles/sidebar.css
-312 src/components/Sidebar.jsx
+311 src/services/backgroundImageService.js
 307 src/components/EventForm.jsx
 291 src/styles/pages/Innstillinger.css
 281 src/services/historicalEvents.js
@@ -217,38 +229,37 @@ Line Counts Per File:
 264 src/components/TimelineCommandInput.jsx
 260 src/pages/MinProfil.jsx
 257 src/firebase.js
+252 src/hooks/useBackgroundManager.js
 238 src/services/promptTimelineService.js
 235 src/components/TimelineList.jsx
-228 src/styles/welcome-popup.css
 222 src/styles/pages/PublicTimelines.css
+217 src/components/TopbarTimelineForm.jsx
+211 src/components/CreateEventModal.jsx
 209 src/styles/text-upload-timeline-generator.css
 209 src/styles/pages/NotFound.css
 207 src/styles/EventFormStyles.css
-204 src/components/EventDetailPanel.jsx
 202 src/styles/pages/layout.css
+189 src/components/WelcomeScreen.jsx
 188 src/components/DateInput.jsx
-186 src/styles/text-to-timeline.css
+187 src/styles/text-to-timeline.css
 167 src/pages/Innstillinger.jsx
 167 src/components/RichTextEditor.jsx
-154 src/components/TextToTimelineForm.jsx
 153 src/styles/background-images.css
 152 src/styles/topbar-privacy.css
 151 src/components/auth/Register.jsx
-150 src/components/CreateEventModal.jsx
 148 src/styles/base.css
 145 src/styles/content-menu.css
 144 src/components/auth/Login.jsx
-141 src/styles/welcome-screen.css
 140 src/styles/sidebarinfo.css
 136 src/pages/PublicTimelines.jsx
+132 src/components/TextToTimelineForm.jsx
 131 src/styles/public-timelines.css
 130 src/styles/expandable-menu.css
-130 src/services/openAiService.js
 129 src/components/PrivacyToggle.jsx
+128 src/styles/layout-manager.css
 126 src/userAPI.js
 122 src/styles/DateInput.css
 122 src/contexts/ThemeContext.jsx
-114 src/styles/layout-manager.css
 109 src/assets/logo-timesculpt.png
 108 src/styles/mobile-warning.css
 103 src/components/TimelineForm.jsx
@@ -256,20 +267,19 @@ Line Counts Per File:
 92 src/components/auth/AuthCompletion.jsx
 90 src/styles/theme-toggle.css
 80 src/pages/NotFound.jsx
-80 src/components/WelcomePopup.jsx
 79 src/components/auth/AuthModal.jsx
 76 src/styles/prompt-processing.css
 75 src/components/BackgroundManager.jsx
+72 src/components/LayoutManager.jsx
 71 src/themeManager.js
 69 src/styles/RichTextEditor.css
 68 src/utils/dateUtils.js
-67 src/components/WelcomeScreen.jsx
-67 src/components/LayoutManager.jsx
 65 src/components/auth/GoogleSignIn.jsx
 64 src/components/auth/MicrosoftSignIn.jsx
 62 src/components/auth/FacebookSignIn.jsx
 60 src/components/auth/UserProfile.jsx
 60 src/components/auth/AppleSignIn.jsx
+57 src/hooks/useAutoSave.js
 57 src/components/Layout.jsx
 56 src/components/EventCreationSelector.jsx
 53 src/styles/EventFormTransition.css

@@ -856,29 +856,22 @@ function Timeline({
   };
   
   // Get container style including background color or image
-  const getContainerStyle = () => {
+const getContainerStyle = () => {
   const baseStyle = {};
   
-  // Check if we have an uploaded image (URL)
-  if (backgroundImage && backgroundImage.startsWith('https://')) {
-    baseStyle.backgroundImage = `url(${backgroundImage})`;
+  // Prioriter bakgrunnsbilde fra timelineData først, deretter fra local state
+  const effectiveBackgroundImage = timelineData.backgroundImage || backgroundImage;
+  const effectiveBackgroundImageUrl = backgroundImageUrl;
+  const effectiveBackgroundColor = timelineData.backgroundColor || backgroundColor;
+  
+  if (effectiveBackgroundImage && effectiveBackgroundImageUrl) {
+    baseStyle.backgroundImage = `url(${effectiveBackgroundImageUrl})`;
     baseStyle.backgroundSize = 'cover';
     baseStyle.backgroundPosition = 'center';
     baseStyle.backgroundRepeat = 'no-repeat';
-  } 
-  // Check if we have a local image and it's loaded via BackgroundManager
-  else if (backgroundImageUrl) {
-    baseStyle.backgroundImage = `url(${backgroundImageUrl})`;
-    baseStyle.backgroundSize = 'cover';
-    baseStyle.backgroundPosition = 'center';
-    baseStyle.backgroundRepeat = 'no-repeat';
-  } 
-  // Use background color
-  else if (backgroundColor) {
-    baseStyle.backgroundColor = backgroundColor;
-  } 
-  // Default background
-  else {
+  } else if (effectiveBackgroundColor) {
+    baseStyle.backgroundColor = effectiveBackgroundColor;
+  } else {
     baseStyle.backgroundColor = 'white';
   }
   
