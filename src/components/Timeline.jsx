@@ -2,6 +2,8 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import TimelineEvent from './TimelineEvent';
 import TimelineContextMenu from './TimelineContextMenu';
 import EventDetailPanel from './EventDetailPanel';
+import EventContextMenu from './EventContextMenu';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 import BackgroundManager from './BackgroundManager';
 import TimelineIntervals from './TimelineIntervals';
 import CreateEventModal from './CreateEventModal';
@@ -36,20 +38,21 @@ function Timeline({
   const [hoverDate, setHoverDate] = useState(null);
   const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
 
-  useEffect(() => {
-    if (timelineData && timelineData.title) {
-      setDocumentTitle(timelineData.title);
-    } else {
-      setDocumentTitle('Hjem');
-    }
-  }, [timelineData?.title]);
-  
   // State for context menu and styling
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [backgroundColor, setBackgroundColor] = useState('white');
   const [backgroundImage, setBackgroundImage] = useState(null);
   const [backgroundImageUrl, setBackgroundImageUrl] = useState(null);
+  
+  // State for event context menu
+  const [showEventContextMenu, setShowEventContextMenu] = useState(false);
+  const [eventContextMenuPosition, setEventContextMenuPosition] = useState({ x: 0, y: 0 });
+  const [contextMenuEvent, setContextMenuEvent] = useState(null);
+  
+  // State for delete confirmation modal
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [deleteEventToConfirm, setDeleteEventToConfirm] = useState(null);
   
   // State for timeline color and thickness
   const [timelineColor, setTimelineColor] = useState('#007bff');
@@ -62,6 +65,14 @@ function Timeline({
   
   // State to track last clicked event for z-index ordering
   const [lastClickedEvent, setLastClickedEvent] = useState(null);
+
+  useEffect(() => {
+    if (timelineData && timelineData.title) {
+      setDocumentTitle(timelineData.title);
+    } else {
+      setDocumentTitle('Hjem');
+    }
+  }, [timelineData?.title]);
   
   // Update local state when props change
   useEffect(() => {
@@ -69,85 +80,6 @@ function Timeline({
     setLocalIntervalCount(intervalCount);
     setLocalIntervalType(intervalType);
   }, [showIntervals, intervalCount, intervalType]);
-
-  // Function to calculate automatic positioning for events to prevent overlap
-  const calculateEventPositions = (events, timelineData) => {
-    if (!events || events.length === 0) return events;
-    
-    // Sort events by date first
-    const sortedEvents = [...events].sort((a, b) => new Date(a.date) - new Date(b.date));
-    
-    // Calculate positions for each event
-    const positionedEvents = sortedEvents.map((event, index) => {
-      const totalDuration = timelineData.end - timelineData.start;
-      const eventPosition = event.date - timelineData.start;
-      const positionPercentage = (eventPosition / totalDuration) * 100;
-      
-      return {
-        ...event,
-        positionPercentage,
-        originalIndex: events.findIndex(e => e === event)
-      };
-    });
-    
-    // Auto-position events to prevent overlap
-    const VERTICAL_SPACING = 120; // Increased spacing between layers for better separation
-    const MIN_HORIZONTAL_DISTANCE = 150; // Minimum horizontal distance to trigger vertical offset
-    const BASE_OFFSET = -100; // Increased base position above timeline (100px from timeline)
-    
-    for (let i = 0; i < positionedEvents.length; i++) {
-      const currentEvent = positionedEvents[i];
-      let verticalLevel = 0;
-      
-      // Check for conflicts with previous events
-      for (let j = 0; j < i; j++) {
-        const prevEvent = positionedEvents[j];
-        
-        if (timelineData.orientation === 'horizontal') {
-          // For horizontal timelines, check horizontal distance
-          const horizontalDistance = Math.abs(currentEvent.positionPercentage - prevEvent.positionPercentage);
-          const pixelDistance = (horizontalDistance / 100) * 800; // Assume 800px timeline width
-          
-          if (pixelDistance < MIN_HORIZONTAL_DISTANCE) {
-            // Events are too close horizontally, need to offset vertically
-            const prevVerticalLevel = Math.floor(Math.abs(prevEvent.autoYOffset || BASE_OFFSET) / VERTICAL_SPACING);
-            verticalLevel = Math.max(verticalLevel, prevVerticalLevel + 1);
-          }
-        } else {
-          // For vertical timelines, check vertical distance
-          const verticalDistance = Math.abs(currentEvent.positionPercentage - prevEvent.positionPercentage);
-          const pixelDistance = (verticalDistance / 100) * 600; // Assume 600px timeline height
-          
-          if (pixelDistance < MIN_HORIZONTAL_DISTANCE) {
-            // Events are too close vertically, need to offset horizontally
-            const prevHorizontalLevel = Math.floor(Math.abs(prevEvent.autoXOffset || -40) / VERTICAL_SPACING);
-            verticalLevel = Math.max(verticalLevel, prevHorizontalLevel + 1);
-          }
-        }
-      }
-      
-      // Apply automatic positioning
-      if (timelineData.orientation === 'horizontal') {
-        currentEvent.autoYOffset = BASE_OFFSET - (verticalLevel * VERTICAL_SPACING);
-        currentEvent.autoXOffset = 0; // Reset manual x offset for clean auto-positioning
-      } else {
-        currentEvent.autoXOffset = -100 - (verticalLevel * VERTICAL_SPACING); // Increased base offset for vertical
-        currentEvent.autoYOffset = 0; // Reset manual y offset for clean auto-positioning
-      }
-    }
-    
-    // Return events in original order with positioning data
-    return events.map(originalEvent => {
-      const positionedEvent = positionedEvents.find(pe => 
-        events[pe.originalIndex] === originalEvent
-      );
-      return {
-        ...originalEvent,
-        autoXOffset: positionedEvent?.autoXOffset || (timelineData.orientation === 'vertical' ? -100 : 0),
-        autoYOffset: positionedEvent?.autoYOffset || (timelineData.orientation === 'horizontal' ? BASE_OFFSET : 0)
-      };
-    });
-  };
   
   // Funksjon for å formatere dato
   const formatDate = (date) => {
@@ -245,7 +177,7 @@ function Timeline({
       
       // Sjekk om tidslinjen har start og slutt dato
       if (!timelineData.start || !timelineData.end) {
-        // Ikke gjør noe hvis tidslinjen ikke er initialisiert
+        // Ikke gjør noe hvis tidslinjen ikke er initialisert
         return;
       }
       
@@ -322,6 +254,175 @@ function Timeline({
   const handleBackgroundLoaded = useCallback((imageUrl) => {
     setBackgroundImageUrl(imageUrl);
   }, []);
+  
+  // Handle event dragging with 2D movement
+  const handleEventDrag = (index, xOffset, yOffset) => {
+    const newEvents = [...timelineData.events];
+    
+    newEvents[index] = {
+      ...newEvents[index],
+      xOffset: xOffset,
+      yOffset: yOffset,
+      offset: yOffset // Keep for backward compatibility
+    };
+    
+    setTimelineData({
+      ...timelineData,
+      events: newEvents
+    });
+  };
+  
+  // Handle showing event details in the side panel
+  const handleShowEventDetail = (event, index) => {
+    if (showDetailPanel) {
+      setDetailEvent({...event, index});
+    } else {
+      setDetailEvent({...event, index});
+      setShowDetailPanel(true);
+    }
+  };
+  
+  // Handle closing the detail panel
+  const handleCloseDetailPanel = () => {
+    setShowDetailPanel(false);
+  };
+  
+  // Handle event context menu (right-click on events)
+  const handleEventContextMenu = (e, event, index) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Close any existing menus
+    setShowContextMenu(false);
+    setShowDetailPanel(false);
+    
+    // Set up event context menu
+    setContextMenuEvent({ ...event, index });
+    setEventContextMenuPosition({ x: e.clientX, y: e.clientY });
+    setShowEventContextMenu(true);
+    setLastClickedEvent(index);
+  };
+  
+  // Handle edit event from context menu
+  const handleEditEventFromContextMenu = (event) => {
+    setDetailEvent(event);
+    setShowDetailPanel(true);
+    setShowEventContextMenu(false);
+  };
+  
+  // Handle delete event from context menu
+  const handleDeleteEventFromContextMenu = (event) => {
+    setDeleteEventToConfirm(event);
+    setShowDeleteConfirmation(true);
+    setShowEventContextMenu(false);
+  };
+  
+  // Close event context menu
+  const closeEventContextMenu = () => {
+    setShowEventContextMenu(false);
+    setContextMenuEvent(null);
+  };
+  
+  // Confirm delete from new modal
+  const confirmDeleteFromModal = () => {
+    if (!deleteEventToConfirm) return;
+    
+    const index = deleteEventToConfirm.index;
+    if (index === undefined) return;
+    
+    const newEvents = [...timelineData.events];
+    newEvents.splice(index, 1);
+    
+    setTimelineData({
+      ...timelineData,
+      events: newEvents
+    });
+    
+    setShowDeleteConfirmation(false);
+    setDeleteEventToConfirm(null);
+    
+    if (detailEvent && detailEvent.index === index) {
+      setShowDetailPanel(false);
+    }
+    
+    if (lastClickedEvent === index) {
+      setLastClickedEvent(null);
+    } 
+    else if (lastClickedEvent > index) {
+      setLastClickedEvent(lastClickedEvent - 1);
+    }
+  };
+  
+  // Cancel delete from new modal
+  const cancelDeleteFromModal = () => {
+    setShowDeleteConfirmation(false);
+    setDeleteEventToConfirm(null);
+  };
+  
+  // Legacy delete event handler (for existing functionality)
+  const handleDeleteEvent = (event, index) => {
+    setEventToDelete(index);
+    setShowConfirmDelete(true);
+    setLastClickedEvent(index);
+  };
+  
+  // Save edited event from the detail panel
+  const handleSaveEventFromPanel = (updatedEvent) => {
+    if (!detailEvent || detailEvent.index === undefined) return;
+    
+    const newEvents = [...timelineData.events];
+    const eventIndex = detailEvent.index;
+    
+    const currentEvent = newEvents[eventIndex];
+    newEvents[eventIndex] = {
+      ...updatedEvent,
+      xOffset: currentEvent.xOffset || 0,
+      yOffset: currentEvent.yOffset || currentEvent.offset || 0,
+      offset: currentEvent.yOffset || currentEvent.offset || 0
+    };
+    
+    setTimelineData({
+      ...timelineData,
+      events: newEvents
+    });
+    
+    // Update the detail event to reflect changes
+    setDetailEvent({...updatedEvent, index: eventIndex});
+  };
+  
+  // Delete event from detail panel
+  const handleDeleteFromPanel = (event, index) => {
+    setShowDetailPanel(false);
+    setDeleteEventToConfirm(index !== undefined ? { index } : detailEvent);
+    setShowDeleteConfirmation(true);
+  };
+  
+  // Legacy confirm delete event (for existing modals)
+  const confirmDeleteEvent = () => {
+    if (eventToDelete === null) return;
+    
+    const newEvents = [...timelineData.events];
+    newEvents.splice(eventToDelete, 1);
+    
+    setTimelineData({
+      ...timelineData,
+      events: newEvents
+    });
+    
+    setShowConfirmDelete(false);
+    setEventToDelete(null);
+    
+    if (detailEvent && detailEvent.index === eventToDelete) {
+      setShowDetailPanel(false);
+    }
+    
+    if (lastClickedEvent === eventToDelete) {
+      setLastClickedEvent(null);
+    } 
+    else if (lastClickedEvent > eventToDelete) {
+      setLastClickedEvent(lastClickedEvent - 1);
+    }
+  };
   
   // Set up timeline interactions
   useEffect(() => {
@@ -472,103 +573,6 @@ function Timeline({
     };
   }, [isPanning, startPos, translatePos, zoom, timelineData]);
 
-  // Handle event dragging with 2D movement
-  const handleEventDrag = (index, xOffset, yOffset) => {
-    const newEvents = [...timelineData.events];
-    
-    newEvents[index] = {
-      ...newEvents[index],
-      xOffset: xOffset,
-      yOffset: yOffset,
-      offset: yOffset // Keep for backward compatibility
-    };
-    
-    setTimelineData({
-      ...timelineData,
-      events: newEvents
-    });
-  };
-  
-  // Handle showing event details in the side panel (no longer opens edit modal)
-  const handleShowEventDetail = (event, index) => {
-    if (showDetailPanel) {
-      setDetailEvent({...event, index});
-    } else {
-      setDetailEvent({...event, index});
-      setShowDetailPanel(true);
-    }
-  };
-  
-  // Handle closing the detail panel
-  const handleCloseDetailPanel = () => {
-    setShowDetailPanel(false);
-  };
-  
-  // Handle event deletion
-  const handleDeleteEvent = (event, index) => {
-    setEventToDelete(index);
-    setShowConfirmDelete(true);
-    setLastClickedEvent(index);
-  };
-  
-  // Save edited event from the detail panel
-  const handleSaveEventFromPanel = (updatedEvent) => {
-    if (!detailEvent || detailEvent.index === undefined) return;
-    
-    const newEvents = [...timelineData.events];
-    const eventIndex = detailEvent.index;
-    
-    const currentEvent = newEvents[eventIndex];
-    newEvents[eventIndex] = {
-      ...updatedEvent,
-      xOffset: currentEvent.xOffset || 0,
-      yOffset: currentEvent.yOffset || currentEvent.offset || 0,
-      offset: currentEvent.yOffset || currentEvent.offset || 0
-    };
-    
-    setTimelineData({
-      ...timelineData,
-      events: newEvents
-    });
-    
-    // Update the detail event to reflect changes
-    setDetailEvent({...updatedEvent, index: eventIndex});
-  };
-  
-  // Delete event from detail panel
-  const handleDeleteFromPanel = (event, index) => {
-    setShowDetailPanel(false);
-    setEventToDelete(index !== undefined ? index : detailEvent?.index);
-    setShowConfirmDelete(true);
-  };
-  
-  // Confirm delete event
-  const confirmDeleteEvent = () => {
-    if (eventToDelete === null) return;
-    
-    const newEvents = [...timelineData.events];
-    newEvents.splice(eventToDelete, 1);
-    
-    setTimelineData({
-      ...timelineData,
-      events: newEvents
-    });
-    
-    setShowConfirmDelete(false);
-    setEventToDelete(null);
-    
-    if (detailEvent && detailEvent.index === eventToDelete) {
-      setShowDetailPanel(false);
-    }
-    
-    if (lastClickedEvent === eventToDelete) {
-      setLastClickedEvent(null);
-    } 
-    else if (lastClickedEvent > eventToDelete) {
-      setLastClickedEvent(lastClickedEvent - 1);
-    }
-  };
-  
   // Handle right click to show context menu
   const handleContextMenu = (e) => {
     e.preventDefault();
@@ -633,37 +637,28 @@ function Timeline({
   };
   
   // Handle background image selection
-  const handleBackgroundImageSelect = (imageValue) => {
-  if (imageValue) {
-    setBackgroundImage(imageValue);
-    setBackgroundColor(null);
-    
-    // Check if it's an uploaded image (URL) or local image (filename)
-    if (imageValue.startsWith('https://')) {
-      // It's an uploaded image URL - set it directly as backgroundImageUrl
-      setBackgroundImageUrl(imageValue);
+  const handleBackgroundImageSelect = (imageName) => {
+    if (imageName) {
+      setBackgroundImage(imageName);
+      setBackgroundColor(null);
+      
+      setTimelineData({
+        ...timelineData,
+        backgroundImage: imageName,
+        backgroundColor: null
+      });
     } else {
-      // It's a local predefined image - clear backgroundImageUrl so BackgroundManager handles it
+      setBackgroundImage(null);
       setBackgroundImageUrl(null);
+      setBackgroundColor('white');
+      
+      setTimelineData({
+        ...timelineData,
+        backgroundImage: null,
+        backgroundColor: 'white'
+      });
     }
-    
-    setTimelineData({
-      ...timelineData,
-      backgroundImage: imageValue,
-      backgroundColor: null
-    });
-  } else {
-    setBackgroundImage(null);
-    setBackgroundImageUrl(null);
-    setBackgroundColor('white');
-    
-    setTimelineData({
-      ...timelineData,
-      backgroundImage: null,
-      backgroundColor: 'white'
-    });
-  }
-};
+  };
   
   // Handle interval toggle from context menu - UPDATED for consistent state
   const handleIntervalToggle = (shouldShow) => {
@@ -746,27 +741,18 @@ function Timeline({
   
   // Set styling from timelineData when it changes
   useEffect(() => {
-  if (timelineData.backgroundColor) {
-    setBackgroundColor(timelineData.backgroundColor);
-    setBackgroundImage(null);
-    setBackgroundImageUrl(null);
-  } else if (timelineData.backgroundImage) {
-    setBackgroundImage(timelineData.backgroundImage);
-    setBackgroundColor(null);
-    
-    // Check if it's an uploaded image (URL)
-    if (timelineData.backgroundImage.startsWith('https://')) {
-      setBackgroundImageUrl(timelineData.backgroundImage);
+    if (timelineData.backgroundColor) {
+      setBackgroundColor(timelineData.backgroundColor);
+      setBackgroundImage(null);
+      setBackgroundImageUrl(null);
+    } else if (timelineData.backgroundImage) {
+      setBackgroundImage(timelineData.backgroundImage);
+      setBackgroundColor(null);
     } else {
-      // It's a local image, let BackgroundManager handle it
+      setBackgroundColor('white');
+      setBackgroundImage(null);
       setBackgroundImageUrl(null);
     }
-  } else {
-    setBackgroundColor('white');
-    setBackgroundImage(null);
-    setBackgroundImageUrl(null);
-  }
-
     
     if (timelineData.timelineColor) {
       setTimelineColor(timelineData.timelineColor);
@@ -838,7 +824,7 @@ function Timeline({
     
     return duration || '0 mnd';
   };
-  
+
   const getTimelineLineStyle = () => {
     const baseStyle = {
       backgroundColor: timelineColor
@@ -856,28 +842,21 @@ function Timeline({
   };
   
   // Get container style including background color or image
-const getContainerStyle = () => {
-  const baseStyle = {};
-  
-  // Prioriter bakgrunnsbilde fra timelineData først, deretter fra local state
-  const effectiveBackgroundImage = timelineData.backgroundImage || backgroundImage;
-  const effectiveBackgroundImageUrl = backgroundImageUrl;
-  const effectiveBackgroundColor = timelineData.backgroundColor || backgroundColor;
-  
-  if (effectiveBackgroundImage && effectiveBackgroundImageUrl) {
-    baseStyle.backgroundImage = `url(${effectiveBackgroundImageUrl})`;
-    baseStyle.backgroundSize = 'cover';
-    baseStyle.backgroundPosition = 'center';
-    baseStyle.backgroundRepeat = 'no-repeat';
-  } else if (effectiveBackgroundColor) {
-    baseStyle.backgroundColor = effectiveBackgroundColor;
-  } else {
-    baseStyle.backgroundColor = 'white';
-  }
-  
-  return baseStyle;
-};
-
+  const getContainerStyle = () => {
+    const baseStyle = {};
+    
+    if (backgroundImageUrl) {
+      baseStyle.backgroundImage = `url(${backgroundImageUrl})`;
+      baseStyle.backgroundSize = 'cover';
+      baseStyle.backgroundPosition = 'center';
+    } else if (backgroundColor) {
+      baseStyle.backgroundColor = backgroundColor;
+    } else {
+      baseStyle.backgroundColor = 'white';
+    }
+    
+    return baseStyle;
+  };
   
   // Return early if no timeline data
   if (!timelineData.start || !timelineData.end) {
@@ -918,8 +897,7 @@ const getContainerStyle = () => {
             onIntervalCountChange={handleIntervalCountChange}
             onIntervalTypeChange={handleIntervalTypeChange}
             timelineData={timelineData}
-            isVertical={timelineData.orientation === 'vertical'} // Add this
-          
+            isVertical={timelineData.orientation === 'vertical'}
             />
           )}
         </div>
@@ -963,8 +941,7 @@ const getContainerStyle = () => {
             intervalType={localIntervalType}
           />
           
-          {/* Updated events rendering with automatic positioning */}
-          {calculateEventPositions(timelineData.events, timelineData).map((event, index) => {
+          {timelineData.events.map((event, index) => {
             const totalDuration = timelineData.end - timelineData.start;
             const eventPosition = event.date - timelineData.start;
             const positionPercentage = (eventPosition / totalDuration) * 100;
@@ -983,8 +960,7 @@ const getContainerStyle = () => {
                 setLastClickedEvent={setLastClickedEvent}
                 lastClickedEvent={lastClickedEvent}
                 onShowDetail={handleShowEventDetail}
-                autoXOffset={event.autoXOffset || 0}
-                autoYOffset={event.autoYOffset || 0}
+                onContextMenu={handleEventContextMenu}
               />
             );
           })}
@@ -1023,6 +999,17 @@ const getContainerStyle = () => {
           />
         )}
         
+        {/* Event Context Menu */}
+        {showEventContextMenu && contextMenuEvent && (
+          <EventContextMenu
+            position={eventContextMenuPosition}
+            event={contextMenuEvent}
+            onEdit={handleEditEventFromContextMenu}
+            onDelete={handleDeleteEventFromContextMenu}
+            onClose={closeEventContextMenu}
+          />
+        )}
+        
         <EventDetailPanel 
           event={detailEvent}
           isOpen={showDetailPanel}
@@ -1031,6 +1018,15 @@ const getContainerStyle = () => {
           onDelete={handleDeleteFromPanel}
         />
         
+        {/* New Delete Confirmation Modal */}
+        <DeleteConfirmationModal
+          isOpen={showDeleteConfirmation}
+          eventTitle={deleteEventToConfirm?.title || deleteEventToConfirm?.plainTitle}
+          onConfirm={confirmDeleteFromModal}
+          onCancel={cancelDeleteFromModal}
+        />
+        
+        {/* Legacy Delete Confirmation Modal */}
         {showConfirmDelete && (
           <div className="modal-overlay">
             <div className="delete-confirmation-modal">

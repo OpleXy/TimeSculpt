@@ -58,6 +58,8 @@ src
 │   ├── BackgroundSelector.jsx
 │   ├── CreateEventModal.jsx
 │   ├── DateInput.jsx
+│   ├── DeleteConfirmationModal.jsx
+│   ├── EventContextMenu.jsx
 │   ├── EventCreationSelector.jsx
 │   ├── EventDetailPanel.jsx
 │   ├── EventEditModal.jsx
@@ -123,6 +125,7 @@ src
 ├── styles
 │   ├── BackgroundSelector.css
 │   ├── DateInput.css
+│   ├── EventContextMenu.css
 │   ├── EventEditModal.css
 │   ├── EventFormStyles.css
 │   ├── EventFormTransition.css
@@ -168,7 +171,7 @@ src
 └── utils
     └── dateUtils.js
 
-11 directories, 111 files
+11 directories, 114 files
 
 Line Counts Per File:
 12839 public/backgrounds/dino.png
@@ -193,21 +196,21 @@ Line Counts Per File:
 1296 src/styles/topbar.css
 1274 src/components/TimelineContextMenu.jsx
 1193 src/styles/timeline-share-modal.css
-1088 src/components/Timeline.jsx
+1084 src/components/Timeline.jsx
 1046 src/api.js
 993 src/services/timelineCommandProcessor.js
 861 src/components/Topbar.jsx
 852 src/styles/pages/MineTidslinjer.css
 814 src/styles/auth.css
 792 src/components/TimelineStyleMenu.jsx
-722 src/App.jsx
+723 src/App.jsx
 699 src/styles/timeline.css
 619 src/styles/pages/MinProfil.css
 533 src/components/IntervalSettings.jsx
 477 src/components/TimelineIntervals.jsx
 467 src/components/EventDetailPanel.jsx
 449 src/pages/MineTidslinjer.jsx
-435 src/components/TimelineEvent.jsx
+427 src/components/TimelineEvent.jsx
 399 src/styles/BackgroundSelector.css
 388 src/services/aiTimelineService.js
 370 src/components/TimelineShareModal.jsx
@@ -244,6 +247,7 @@ Line Counts Per File:
 187 src/styles/text-to-timeline.css
 167 src/pages/Innstillinger.jsx
 167 src/components/RichTextEditor.jsx
+156 src/styles/EventContextMenu.css
 153 src/styles/background-images.css
 152 src/styles/topbar-privacy.css
 151 src/components/auth/Register.jsx
@@ -251,6 +255,7 @@ Line Counts Per File:
 145 src/styles/content-menu.css
 144 src/components/auth/Login.jsx
 140 src/styles/sidebarinfo.css
+139 src/components/EventContextMenu.jsx
 136 src/pages/PublicTimelines.jsx
 132 src/components/TextToTimelineForm.jsx
 131 src/styles/public-timelines.css
@@ -263,6 +268,7 @@ Line Counts Per File:
 109 src/assets/logo-timesculpt.png
 108 src/styles/mobile-warning.css
 103 src/components/TimelineForm.jsx
+102 src/components/DeleteConfirmationModal.jsx
 94 src/styles/event-creation-selector.css
 92 src/components/auth/AuthCompletion.jsx
 90 src/styles/theme-toggle.css

@@ -12,8 +12,7 @@ function TimelineEvent({
   setLastClickedEvent, 
   lastClickedEvent, 
   onShowDetail,
-  autoXOffset = 0,  // New prop for automatic X positioning
-  autoYOffset = 0   // New prop for automatic Y positioning
+  onContextMenu
 }) {
   const [isDragging, setIsDragging] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
@@ -34,36 +33,34 @@ function TimelineEvent({
     purple: '#6f42c1'
   };
   
-  // Set position based on timeline orientation and 2D offset with auto positioning
+  // Set position based on timeline orientation and 2D offset
   const getPosition = () => {
     const isTopEvent = lastClickedEvent === index;
     
-    // Combine automatic positioning with manual offsets
-    const finalXOffset = autoXOffset + (event.xOffset || 0);
-    const finalYOffset = autoYOffset + (event.yOffset || (event.offset || 0));
+    // Allow for both x and y offsets
+    const xOffset = event.xOffset || 0;
+    const yOffset = event.yOffset || (event.offset || 0); // For backward compatibility
     
     if (orientation === 'horizontal') {
       return {
-        left: `calc(${positionPercentage}% + ${finalXOffset}px)`,
-        top: `calc(50% + ${finalYOffset}px)`,
-        zIndex: isTopEvent ? 30 : 10,
-        transform: 'translate(-50%, -50%)' // Center the event on its position
+        left: `calc(${positionPercentage}% + ${xOffset}px)`,
+        top: `calc(50% + ${yOffset}px)`,
+        zIndex: isTopEvent ? 30 : 10
       };
     } else {
       return {
-        top: `calc(${positionPercentage}% + ${finalYOffset}px)`,
-        left: `calc(50% + ${finalXOffset}px)`,
-        zIndex: isTopEvent ? 30 : 10,
-        transform: 'translate(-50%, -50%)' // Center the event on its position
+        top: `calc(${positionPercentage}% + ${yOffset}px)`,
+        left: `calc(50% + ${xOffset}px)`,
+        zIndex: isTopEvent ? 30 : 10
       };
     }
   };
   
-  // Calculate the path for the connecting line with auto positioning
+  // Calculate the path for the connecting line
   const getLineStyle = () => {
-    // Combine automatic positioning with manual offsets
-    const finalXOffset = autoXOffset + (event.xOffset || 0);
-    const finalYOffset = autoYOffset + (event.yOffset || (event.offset || 0));
+    // Use both x and y offsets for calculating line position
+    const xOffset = event.xOffset || 0;
+    const yOffset = event.yOffset || (event.offset || 0);
     
     // Get event coordinates and timeline coordinates
     let eventX, eventY, timelineX, timelineY;
@@ -72,14 +69,14 @@ function TimelineEvent({
       // Calculate coordinates for horizontal timeline
       timelineX = `${positionPercentage}%`;
       timelineY = '50%';
-      eventX = `calc(${positionPercentage}% + ${finalXOffset}px)`;
-      eventY = `calc(50% + ${finalYOffset}px)`;
+      eventX = `calc(${positionPercentage}% + ${xOffset}px)`;
+      eventY = `calc(50% + ${yOffset}px)`;
     } else {
       // Calculate coordinates for vertical timeline
       timelineX = '50%';
       timelineY = `${positionPercentage}%`;
-      eventX = `calc(50% + ${finalXOffset}px)`;
-      eventY = `calc(${positionPercentage}% + ${finalYOffset}px)`;
+      eventX = `calc(50% + ${xOffset}px)`;
+      eventY = `calc(${positionPercentage}% + ${yOffset}px)`;
     }
     
     // Get the event's color (match the border color to the line color)
@@ -97,6 +94,7 @@ function TimelineEvent({
   };
   
   // We no longer need to apply border color directly as we're using CSS classes
+  // This function is kept for backward compatibility but doesn't need to set any styles
   const getEventStyle = () => {
     return {}; // Empty style object as we're using CSS classes for styling
   };
@@ -120,14 +118,13 @@ function TimelineEvent({
 
     setIsDragging(true);
     
-    // Get both x and y starting positions, accounting for existing manual offsets only
-    // (auto offsets are handled separately)
-    const manualXOffset = event.xOffset || 0;
-    const manualYOffset = event.yOffset || (event.offset || 0);
+    // Get both x and y starting positions, accounting for existing offsets
+    const xOffset = event.xOffset || 0;
+    const yOffset = event.yOffset || (event.offset || 0);
     
     setStartPos({
-      x: e.clientX - (manualXOffset * zoom),
-      y: e.clientY - (manualYOffset * zoom)
+      x: e.clientX - (xOffset * zoom),
+      y: e.clientY - (yOffset * zoom)
     });
     
     e.preventDefault();
@@ -161,14 +158,14 @@ function TimelineEvent({
   const handleMouseMove = (e) => {
     if (!isDragging) return;
     
-    // Calculate new X and Y offsets relative to auto position, adjusting for zoom
+    // Calculate new X and Y offsets, adjusting for zoom
     const newXOffset = (e.clientX - startPos.x) / zoom;
     const newYOffset = (e.clientY - startPos.y) / zoom;
     
     // Check if we should snap to 90 degrees
     const { x: snappedX, y: snappedY } = checkAndApplySnap(newXOffset, newYOffset);
     
-    // Update both x and y offsets (these are manual adjustments on top of auto positioning)
+    // Update both x and y offsets
     onDrag(index, snappedX, snappedY);
   };
   
@@ -262,7 +259,7 @@ function TimelineEvent({
     return processHtmlContent(event.title);
   }, [event.title]);
   
-  // Handle context menu (right click) - opens detail panel for editing
+  // Handle context menu (right click) - triggers the new context menu
   const handleContextMenu = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -272,9 +269,9 @@ function TimelineEvent({
       setLastClickedEvent(index);
     }
     
-    // Open the detail panel for editing
-    if (onShowDetail) {
-      onShowDetail(event, index);
+    // Call the context menu handler passed from Timeline
+    if (onContextMenu) {
+      onContextMenu(e, event, index);
     }
   };
 
@@ -345,9 +342,6 @@ function TimelineEvent({
           strokeWidth={timelineThickness || 2}
           vectorEffect="non-scaling-stroke"
           className={isSnapped ? 'snapped' : ''}
-          style={{
-            opacity: autoXOffset !== 0 || autoYOffset !== 0 ? 0.6 : 0.8 // Slightly more transparent for auto-positioned events
-          }}
         />
       </svg>
       
@@ -358,10 +352,10 @@ function TimelineEvent({
         style={{ display: 'none' }}
       />
       
-      {/* Event box with CSS variable for timeline color and auto-positioning indicator */}
+      {/* Event box with CSS variable for timeline color */}
       <div
         ref={eventRef}
-        className={`event ${isDragging ? 'dragging' : ''} ${event.description ? 'has-description' : ''} ${lastClickedEvent === index ? 'last-clicked' : ''} ${getSizeClass()} ${getColorClass()} ${isSnapped ? 'snapped' : ''} ${(autoXOffset !== 0 || autoYOffset !== 0) ? 'auto-positioned' : ''}`}
+        className={`event ${isDragging ? 'dragging' : ''} ${event.description ? 'has-description' : ''} ${lastClickedEvent === index ? 'last-clicked' : ''} ${getSizeClass()} ${getColorClass()} ${isSnapped ? 'snapped' : ''}`}
         style={{
           ...getPosition(),
           ...getEventStyle(),
@@ -374,9 +368,7 @@ function TimelineEvent({
         onDoubleClick={handleDoubleClick}
         onClick={handleClick}
         data-index={index}
-        data-auto-x={autoXOffset}
-        data-auto-y={autoYOffset}
-        title={event.description ? "Høyreklikk eller dobbelklikk for å redigere" : "Høyreklikk eller dobbelklikk for å redigere"}
+        title={event.description ? "Høyreklikk for kontekstmeny eller dobbelklikk for å redigere" : "Høyreklikk for kontekstmeny eller dobbelklikk for å redigere"}
       >
         <div dangerouslySetInnerHTML={{ __html: processedContent }}></div>
         <br/>

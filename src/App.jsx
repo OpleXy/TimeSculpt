@@ -30,6 +30,7 @@ import './styles/privacy-toggle.css';
 import './styles/topbar-privacy.css';
 import './styles/layout-manager.css';
 import './styles/welcome-screen.css';
+import './styles/EventContextMenu.css';  // Add this line
 
 function App() {
   const { isAuthenticated, authChanged, currentUser, logOut } = useAuth();
