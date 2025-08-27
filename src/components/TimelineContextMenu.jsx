@@ -20,6 +20,10 @@ function TimelineContextMenu({
   intervalType = 'even',
   onIntervalTypeChange,
   timelineData = {},
+  // Auto-layout props
+  autoLayoutEnabled = true,
+  onAutoLayoutToggle,
+  onResetLayout,
   onBackgroundChange
 }) {
   const { currentUser } = useAuth();
@@ -116,6 +120,24 @@ function TimelineContextMenu({
     { name: 'Teal', value: '#20c997' },
     { name: 'Gray', value: '#6c757d' }
   ];
+  
+  // Auto-layout helper functions
+  const eventCount = timelineData?.events?.length || 0;
+  const canUseAutoLayout = eventCount >= 3;
+  const isVertical = timelineData?.orientation === 'vertical';
+
+  // Handle auto-layout toggle
+  const handleAutoLayoutToggleClick = (e) => {
+    e.stopPropagation();
+    onAutoLayoutToggle?.(!autoLayoutEnabled);
+  };
+
+  // Handle reset layout
+  const handleResetLayoutClick = (e) => {
+    e.stopPropagation();
+    onResetLayout?.();
+    onClose();
+  };
   
   // FIXED: Better interval type filtering with proper limits
   const calculateAvailableTypes = useCallback(() => {
@@ -758,6 +780,25 @@ function TimelineContextMenu({
     </svg>
   );
 
+  // Auto-layout icon component
+  const AutoLayoutIcon = () => (
+    <svg 
+      className="context-menu-icon"
+      xmlns="http://www.w3.org/2000/svg" 
+      width="16" 
+      height="16" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <path d="M9 12h6m-6-4h6m-6 8h6"/>
+    </svg>
+  );
+
   return (
     <div 
       ref={menuRef} 
@@ -782,6 +823,7 @@ function TimelineContextMenu({
           {currentView === 'color' && 'Timeline Color'}
           {currentView === 'intervals' && 'Intervallmarkører'}
           {currentView === 'background' && 'Bakgrunn'}
+          {currentView === 'autolayout' && 'Auto-Layout'}
         </span>
       </div>
       
@@ -835,7 +877,120 @@ function TimelineContextMenu({
               Intervallmarkører
               <ChevronIcon />
             </li>
+
+            {/* Auto-Layout Menu Item */}
+            <li 
+              className="context-menu-item"
+              onClick={() => setCurrentView('autolayout')}
+            >
+              <div className="context-menu-icon-wrapper">
+                <AutoLayoutIcon />
+              </div>
+              Auto-Layout
+              {canUseAutoLayout && (
+                <span className="event-count-badge">{eventCount}</span>
+              )}
+              <ChevronIcon />
+            </li>
           </ul>
+        )}
+
+        {/* Auto-Layout Submenu */}
+        {currentView === 'autolayout' && (
+          <div className="context-menu-autolayout">
+            <div className="autolayout-header">
+              <AutoLayoutIcon />
+              <span>Automatisk strukturering</span>
+              {canUseAutoLayout && (
+                <span className="event-count-badge">{eventCount} hendelser</span>
+              )}
+            </div>
+            
+            <div className="toggle-container">
+              <div className="toggle-item">
+                <span className="toggle-label">Aktiver auto-layout</span>
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    checked={autoLayoutEnabled}
+                    onChange={handleAutoLayoutToggleClick}
+                    disabled={!canUseAutoLayout}
+                  />
+                  <span className="slider round"></span>
+                </label>
+              </div>
+              <div className="toggle-description">
+                {canUseAutoLayout ? 
+                  'Strukturerer hendelser automatisk for å unngå overlapping' :
+                  `Krever minst 3 hendelser (har ${eventCount})`
+                }
+              </div>
+            </div>
+
+            {autoLayoutEnabled && canUseAutoLayout && (
+              <>
+                <div className="auto-layout-info">
+                  <div className="auto-layout-status">
+                    <CheckIcon />
+                    <span>Auto-layout aktiv</span>
+                  </div>
+                  <div className="layout-details">
+                    {isVertical ? 
+                      'Bruker høyre/venstre lanes for vertikal tidslinje' : 
+                      'Bruker over/under lanes for horisontal tidslinje'
+                    }
+                  </div>
+                </div>
+
+                <button 
+                  className="context-menu-action"
+                  onClick={handleResetLayoutClick}
+                  title="Tilbakestill alle hendelser og kjør auto-layout på nytt"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="23 4 23 10 17 10"/>
+                    <polyline points="1 20 1 14 7 14"/>
+                    <path d="m3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                  </svg>
+                  <span>Tilbakestill layout</span>
+                </button>
+              </>
+            )}
+
+            {!canUseAutoLayout && (
+              <div className="auto-layout-disabled">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span>Legg til flere hendelser for å bruke auto-layout</span>
+              </div>
+            )}
+
+            <div className="autolayout-info">
+              <svg 
+                className="info-icon"
+                xmlns="http://www.w3.org/2000/svg" 
+                width="14" 
+                height="14" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>
+                Auto-layout organiserer hendelser automatisk i "lanes" for å unngå overlapping. 
+                Hendelser du drar manuelt vil ikke påvirkes av auto-layout.
+              </span>
+            </div>
+          </div>
         )}
 
         {/* Background Submenu */}

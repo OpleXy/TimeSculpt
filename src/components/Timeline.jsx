@@ -8,6 +8,7 @@ import BackgroundManager from './BackgroundManager';
 import TimelineIntervals from './TimelineIntervals';
 import CreateEventModal from './CreateEventModal';
 import { setDocumentTitle } from '../services/documentTitleService';
+import { smartLayout, needsRelayout, resetEventLayout } from '../services/eventLayoutService';
 
 function Timeline({ 
   timelineData, 
@@ -66,6 +67,9 @@ function Timeline({
   // State to track last clicked event for z-index ordering
   const [lastClickedEvent, setLastClickedEvent] = useState(null);
 
+  // Auto-layout state
+  const [autoLayoutEnabled, setAutoLayoutEnabled] = useState(true);
+
   useEffect(() => {
     if (timelineData && timelineData.title) {
       setDocumentTitle(timelineData.title);
@@ -80,6 +84,81 @@ function Timeline({
     setLocalIntervalCount(intervalCount);
     setLocalIntervalType(intervalType);
   }, [showIntervals, intervalCount, intervalType]);
+
+  // Auto-layout function
+  const applyAutoLayout = useCallback(() => {
+    if (!timelineData.events || timelineData.events.length === 0 || !autoLayoutEnabled) {
+      return;
+    }
+    
+    // Sjekk om vi trenger å re-layoute
+    if (!needsRelayout(timelineData.events)) {
+      return;
+    }
+    
+    console.log('🔄 Anvender auto-layout på', timelineData.events.length, 'hendelser...');
+    
+    const layoutedEvents = smartLayout(
+      timelineData.events,
+      timelineData.orientation,
+      timelineData.start,
+      timelineData.end
+    );
+    
+    // Oppdater timeline data med auto-layouted events
+    setTimelineData(prevData => ({
+      ...prevData,
+      events: layoutedEvents
+    }));
+    
+    console.log('✅ Auto-layout anvendt på', layoutedEvents.length, 'hendelser');
+  }, [timelineData.events, timelineData.orientation, timelineData.start, timelineData.end, autoLayoutEnabled, setTimelineData]);
+
+  // Auto-layout effect - kjør når hendelser endres
+  useEffect(() => {
+    // Kun kjør auto-layout hvis vi har minst 3 hendelser
+    if (timelineData.events && timelineData.events.length >= 3 && autoLayoutEnabled) {
+      // Forsinkelse for å unngå å trigge under drag-operasjoner
+      const layoutTimer = setTimeout(() => {
+        applyAutoLayout();
+      }, 500);
+      
+      return () => clearTimeout(layoutTimer);
+    }
+  }, [timelineData.events?.length, applyAutoLayout, autoLayoutEnabled]);
+
+  // Manuell layout-reset funksjon
+  const handleResetLayout = () => {
+    if (!timelineData.events) return;
+    
+    console.log('🔄 Tilbakestiller layout for alle hendelser...');
+    
+    const resetEvents = resetEventLayout(timelineData.events);
+    setTimelineData(prevData => ({
+      ...prevData,
+      events: resetEvents
+    }));
+    
+    // Kjør auto-layout igjen etter reset
+    if (autoLayoutEnabled) {
+      setTimeout(() => {
+        applyAutoLayout();
+      }, 100);
+    }
+  };
+
+  // Toggle for auto-layout
+  const handleAutoLayoutToggle = (enabled) => {
+    console.log('🔧 Auto-layout', enabled ? 'aktivert' : 'deaktivert');
+    setAutoLayoutEnabled(enabled);
+    
+    if (enabled && timelineData.events && timelineData.events.length >= 3) {
+      // Kjør auto-layout umiddelbart når aktivert
+      setTimeout(() => {
+        applyAutoLayout();
+      }, 100);
+    }
+  };
   
   // Funksjon for å formatere dato
   const formatDate = (date) => {
@@ -259,11 +338,14 @@ function Timeline({
   const handleEventDrag = (index, xOffset, yOffset) => {
     const newEvents = [...timelineData.events];
     
+    // Marker event as manually positioned (disable auto-layout for this event)
     newEvents[index] = {
       ...newEvents[index],
       xOffset: xOffset,
       yOffset: yOffset,
-      offset: yOffset // Keep for backward compatibility
+      offset: yOffset, // Keep for backward compatibility
+      autoLayouted: false, // Mark as manually positioned
+      manuallyPositioned: true
     };
     
     setTimelineData({
@@ -378,7 +460,9 @@ function Timeline({
       ...updatedEvent,
       xOffset: currentEvent.xOffset || 0,
       yOffset: currentEvent.yOffset || currentEvent.offset || 0,
-      offset: currentEvent.yOffset || currentEvent.offset || 0
+      offset: currentEvent.yOffset || currentEvent.offset || 0,
+      autoLayouted: currentEvent.autoLayouted || false,
+      manuallyPositioned: currentEvent.manuallyPositioned || false
     };
     
     setTimelineData({
@@ -898,6 +982,10 @@ function Timeline({
             onIntervalTypeChange={handleIntervalTypeChange}
             timelineData={timelineData}
             isVertical={timelineData.orientation === 'vertical'}
+            // Auto-layout props
+            autoLayoutEnabled={autoLayoutEnabled}
+            onAutoLayoutToggle={handleAutoLayoutToggle}
+            onResetLayout={handleResetLayout}
             />
           )}
         </div>
@@ -996,6 +1084,10 @@ function Timeline({
             onIntervalCountChange={handleIntervalCountChange}
             onIntervalTypeChange={handleIntervalTypeChange}
             timelineData={timelineData}
+            // Auto-layout props
+            autoLayoutEnabled={autoLayoutEnabled}
+            onAutoLayoutToggle={handleAutoLayoutToggle}
+            onResetLayout={handleResetLayout}
           />
         )}
         
@@ -1059,12 +1151,18 @@ function Timeline({
             {timelineData.start && timelineData.end && (
               <span>Varighet: {calculateTimelineDuration()}</span>
             )}
+            {autoLayoutEnabled && timelineData.events && timelineData.events.length >= 3 && (
+              <span className="auto-layout-indicator"> • Auto-layout aktiv</span>
+            )}
           </div>
           <div className="timeline-instructions">
             <strong>Klikk og dra</strong> tidslinjen for å endre view • 
             <strong> Dobbelklikk</strong> for å nullstille • 
             <strong> Høyreklikk</strong> på canvas for å redigere tidslinje • 
             <strong> Høyreklikk</strong> på hendelser for å redigere dem
+            {autoLayoutEnabled && (
+              <span> • <strong>Auto-layout</strong> unngår overlapping</span>
+            )}
           </div>
         </div>
         

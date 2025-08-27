@@ -119,6 +119,7 @@ src
 │   ├── aiTimelineService.js
 │   ├── backgroundImageService.js
 │   ├── documentTitleService.js
+│   ├── eventLayoutService.js
 │   ├── historicalEvents.js
 │   ├── openAiService.js
 │   ├── promptTimelineService.js
@@ -172,7 +173,7 @@ src
 └── utils
     └── dateUtils.js
 
-11 directories, 114 files
+11 directories, 115 files
 
 Line Counts Per File:
 12839 public/backgrounds/dino.png
@@ -191,13 +192,13 @@ Line Counts Per File:
 9714 public/backgrounds/kina.png
 2588 public/backgrounds/cctv.png
 2301 public/backgrounds/timesculpt.png
-1865 src/styles/TimelineContextMenu.css
+2161 src/styles/TimelineContextMenu.css
 1698 src/styles/darkMode.css
 1632 src/styles/ui-components.css
+1429 src/components/TimelineContextMenu.jsx
 1296 src/styles/topbar.css
-1274 src/components/TimelineContextMenu.jsx
 1193 src/styles/timeline-share-modal.css
-1084 src/components/Timeline.jsx
+1182 src/components/Timeline.jsx
 1046 src/api.js
 993 src/services/timelineCommandProcessor.js
 861 src/components/Topbar.jsx
@@ -216,7 +217,7 @@ Line Counts Per File:
 388 src/services/aiTimelineService.js
 370 src/components/TimelineShareModal.jsx
 367 src/components/BackgroundSelector.jsx
-357 src/services/openAiService.js
+353 src/services/openAiService.js
 345 src/styles/welcome-screen.css
 339 src/components/TextUploadTimelineGenerator.jsx
 339 src/components/EventEditModal.jsx
@@ -227,6 +228,7 @@ Line Counts Per File:
 311 src/services/backgroundImageService.js
 307 src/components/EventForm.jsx
 291 src/styles/pages/Innstillinger.css
+285 src/services/eventLayoutService.js
 281 src/services/historicalEvents.js
 276 src/styles/timeline-command-input.css
 271 src/styles/EventEditModal.css

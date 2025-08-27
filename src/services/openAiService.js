@@ -122,8 +122,7 @@ export async function generateTimelineFromPrompt(prompt) {
 
 KRITISKE REGLER FOR DATOER:
 - Alle datoer MÅ være i eksakt YYYY-MM-DD format
-- For år ETTER Kristus (1-2024): Bruk positive år som "0800-01-01", "1066-10-14", "1917-02-23"
-- For år FØR Kristus: Bruk negative år som "-0500-01-01", "-1000-01-01", "-8000-01-01"
+- Kun år fra 0001 og oppover er tillatt (ingen negative år eller før-Kristus-datoer)
 - ALDRI bruk områder som "1000-800" eller "10000-8000"
 - ALDRI bruk "f.Kr", "e.Kr", "BC", "AD" i datoene
 - Hvis du er usikker på nøyaktig dato, VELG ALLTID det tidligste året og sett dag/måned til 01-01
@@ -132,10 +131,7 @@ KRITISK: Inkluder MINST 15-20 viktige hendelser fordelt jevnt over hele tidsperi
 Dette er ekstremt viktig - tidslinjen skal være rik på detaljer og hendelser.
 
 EKSEMPLER på riktige datoer:
-- Steinalderen (8000 f.Kr): "-8000-01-01"
-- Bronsealderen (1500 f.Kr): "-1500-01-01"
-- Romerriket (500 f.Kr): "-0500-01-01"
-- Vikingtiden (800 e.Kr): "0800-01-01"
+- Vikingtiden (800): "0800-01-01"
 - Hastings-slaget (1066): "1066-10-14"
 - Oktoberrevolusjonen (1917): "1917-10-25"
 
