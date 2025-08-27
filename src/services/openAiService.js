@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 
 // Initialiser OpenAI-klienten
-const OPENAI_API_KEY = "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";
+const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 
 const openai = new OpenAI({
   apiKey: OPENAI_API_KEY,

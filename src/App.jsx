@@ -665,6 +665,7 @@ function App() {
         timelineData={timelineData}
         onLogin={openAuthModal}
         isSidebarCollapsed={isSidebarCollapsed}
+        onCreateTimeline={createTimeline}  
         sidebar={
           <Sidebar 
             isCollapsed={isSidebarCollapsed}

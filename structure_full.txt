@@ -3,6 +3,7 @@ This is the current filestructure of TimeSculpt, react vite@latest:
 
 .
 ..
+.env
 .eslintignore
 .git
 .gitignore
@@ -203,7 +204,7 @@ Line Counts Per File:
 852 src/styles/pages/MineTidslinjer.css
 814 src/styles/auth.css
 792 src/components/TimelineStyleMenu.jsx
-723 src/App.jsx
+724 src/App.jsx
 699 src/styles/timeline.css
 619 src/styles/pages/MinProfil.css
 533 src/components/IntervalSettings.jsx
