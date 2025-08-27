@@ -362,84 +362,32 @@ function App() {
     setSaveError(''); // Clear any save errors
   };
   
-  // Create timeline with the provided data
-  const createTimeline = async (data) => {
-    // Check for unsaved changes before creating new timeline
-    if (hasUnsavedChanges) {
-      const confirm = window.confirm('Du har ulagrede endringer som lagres automatisk. Er du sikker på at du vil opprette en ny tidslinje?');
-      if (!confirm) {
-        return; // User cancelled, don't create a new timeline
-      }
+// I App.jsx, erstatt createTimeline funksjonen med denne:
+
+const createTimeline = async (data) => {
+  // Check for unsaved changes before creating new timeline
+  if (hasUnsavedChanges) {
+    const confirm = window.confirm('Du har ulagrede endringer som lagres automatisk. Er du sikker på at du vil opprette en ny tidslinje?');
+    if (!confirm) {
+      return; // User cancelled, don't create a new timeline
     }
-    
-    // Reset privacy setting for new timeline (always private by default)
-    setIsPublic(false);
-    
-    // Ensure sidebar is shown by default for new timelines
-    setIsSidebarCollapsed(false);
-    
-    // Check if this timeline was generated from a prompt and needs events
-    if (data.generatedFromPrompt && data.promptText) {
-      try {
-        setIsProcessingPrompt(true);
-        
-        // Create the timeline first without events
-        const newTimelineData = {
-          ...data,
-          showIntervals: showIntervals,
-          intervalCount: intervalCount,
-          intervalType: intervalType,
-          intervalSettings: {
-            show: showIntervals,
-            count: intervalCount,
-            type: intervalType
-          },
-          isPublic: false // Default to private
-        };
-        
-        setTimelineData(newTimelineData);
-        setShowWelcomePopup(false);
-        
-        // Now generate events based on the prompt
-        const generatedEvents = await generateTimelineEvents(data.promptText, data.start, data.end);
-        
-        // Add the generated events to the timeline
-        setTimelineData(prev => ({
-          ...prev,
-          events: generatedEvents
-        }));
-        
-        // Mark as having unsaved changes (auto-save will handle it)
-        setHasUnsavedChanges(true);
-        setSaveError('');
-        
-      } catch (error) {
-        console.error('Error processing prompt timeline:', error);
-        alert('Kunne ikke generere hendelser fra prompten. Tidslinjen er opprettet uten hendelser.');
-        
-        // Still create the timeline but without events
-        const newTimelineData = {
-          ...data,
-          showIntervals: showIntervals,
-          intervalCount: intervalCount,
-          intervalType: intervalType,
-          intervalSettings: {
-            show: showIntervals,
-            count: intervalCount,
-            type: intervalType
-          },
-          isPublic: false // Default to private
-        };
-        
-        setTimelineData(newTimelineData);
-        setShowWelcomePopup(false);
-        setHasUnsavedChanges(false);
-        
-      } finally {
-        setIsProcessingPrompt(false);
-      }
-    } else {
-      // Regular timeline creation
+  }
+  
+  // Reset privacy setting for new timeline (always private by default)
+  setIsPublic(false);
+  
+  // Ensure sidebar is shown by default for new timelines
+  setIsSidebarCollapsed(false);
+  
+  // Check if this timeline was generated from a prompt
+  if (data.generatedFromPrompt && data.promptText) {
+    try {
+      setIsProcessingPrompt(true);
+      
+      console.log('🚀 AI-generert tidslinje mottatt:', data);
+      console.log('📊 Antall events:', data.events?.length);
+      
+      // OpenAI har allerede generert alle events - bare sett dem direkte!
       const newTimelineData = {
         ...data,
         showIntervals: showIntervals,
@@ -454,12 +402,61 @@ function App() {
       };
       
       setTimelineData(newTimelineData);
-      setHasUnsavedChanges(true); // Mark as having unsaved changes
       setShowWelcomePopup(false);
+      setHasUnsavedChanges(true);
       setSaveError('');
+      
+      console.log('✅ Timeline satt med', newTimelineData.events.length, 'events');
+      
+      // IKKE kall generateTimelineEvents igjen - OpenAI har allerede generert alt!
+      
+    } catch (error) {
+      console.error('Error processing prompt timeline:', error);
+      alert('Kunne ikke behandle AI-generert tidslinje: ' + error.message);
+      
+      // Fallback to empty timeline
+      const fallbackTimelineData = {
+        ...data,
+        events: [], // Empty events as fallback
+        showIntervals: showIntervals,
+        intervalCount: intervalCount,
+        intervalType: intervalType,
+        intervalSettings: {
+          show: showIntervals,
+          count: intervalCount,
+          type: intervalType
+        },
+        isPublic: false
+      };
+      
+      setTimelineData(fallbackTimelineData);
+      setShowWelcomePopup(false);
+      setHasUnsavedChanges(false);
+      
+    } finally {
+      setIsProcessingPrompt(false);
     }
-  };
-
+  } else {
+    // Regular timeline creation (non-AI)
+    const newTimelineData = {
+      ...data,
+      showIntervals: showIntervals,
+      intervalCount: intervalCount,
+      intervalType: intervalType,
+      intervalSettings: {
+        show: showIntervals,
+        count: intervalCount,
+        type: intervalType
+      },
+      isPublic: false // Default to private
+    };
+    
+    setTimelineData(newTimelineData);
+    setHasUnsavedChanges(true);
+    setShowWelcomePopup(false);
+    setSaveError('');
+  }
+};
   // Update timeline data (for editing title and dates)
   const updateTimelineData = (updatedTimeline) => {
     // Mark changes as unsaved (auto-save will handle it)
