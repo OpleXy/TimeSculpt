@@ -1,3 +1,4 @@
+
 // src/components/auth/UserProfile.jsx
 import { useAuth } from '../../contexts/AuthContext.jsx';
 import { useTheme } from '../../contexts/ThemeContext.jsx';

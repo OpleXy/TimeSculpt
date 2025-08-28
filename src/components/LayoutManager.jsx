@@ -7,19 +7,16 @@ import '../styles/welcome-screen.css';
 /**
  * LayoutManager handles conditional rendering of UI elements based on 
  * authentication status and timeline state.
- * Updated to always show sidebar when a timeline exists with required fields.
+ * Updated to remove sidebar functionality and show full-width content.
  */
 function LayoutManager({ 
   timelineData, 
   onLogin, 
   onCreateTimeline,
-  isSidebarCollapsed, 
-  sidebar, 
   timelineContent, 
   children 
 }) {
   const { isAuthenticated, currentUser } = useAuth();
-  const [showSidebar, setShowSidebar] = useState(false);
   const [showWelcomeContent, setShowWelcomeContent] = useState(true);
   
   // Determine if there is a valid timeline with basic required fields
@@ -33,26 +30,16 @@ function LayoutManager({
     if (hasValidTimeline) {
       // There is an active timeline with required fields
       setShowWelcomeContent(false);
-      
-      // Always show sidebar for valid timelines, regardless of edit permissions
-      // This ensures editing tools appear immediately when creating a new timeline
-      setShowSidebar(true);
     } else {
       // No active timeline or missing required fields
       setShowWelcomeContent(true);
-      setShowSidebar(false);
     }
   }, [hasValidTimeline, timelineData]);
 
   return (
     <div className="layout-container">
-      {/* Conditional sidebar - shown whenever there's a valid timeline */}
-      {showSidebar && sidebar}
-      
-      {/* Main content area - always takes 100% width */}
-      <div 
-        className={`main-content-area ${showSidebar ? 'with-sidebar' : 'full-width'} ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}
-      >
+      {/* Main content area - always takes 100% width (no sidebar) */}
+      <div className="main-content-area full-width">
         {/* Show welcome screen or timeline content */}
         {showWelcomeContent ? (
           <WelcomeScreen 

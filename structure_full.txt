@@ -55,6 +55,7 @@ src
 │   └── timesculpt_logo_w_text.svg
 ├── components
 │   ├── ActiveLink.jsx
+│   ├── AddEventModal.jsx
 │   ├── BackgroundManager.jsx
 │   ├── BackgroundSelector.jsx
 │   ├── CreateEventModal.jsx
@@ -133,6 +134,7 @@ src
 │   ├── EventFormTransition.css
 │   ├── RichTextEditor.css
 │   ├── TimelineContextMenu.css
+│   ├── add-event-modal.css
 │   ├── auth.css
 │   ├── background-images.css
 │   ├── base.css
@@ -173,7 +175,7 @@ src
 └── utils
     └── dateUtils.js
 
-11 directories, 115 files
+11 directories, 117 files
 
 Line Counts Per File:
 12839 public/backgrounds/dino.png
@@ -203,10 +205,11 @@ Line Counts Per File:
 993 src/services/timelineCommandProcessor.js
 861 src/components/Topbar.jsx
 852 src/styles/pages/MineTidslinjer.css
-814 src/styles/auth.css
 792 src/components/TimelineStyleMenu.jsx
-721 src/App.jsx
-699 src/styles/timeline.css
+791 src/styles/add-event-modal.css
+781 src/styles/auth.css
+751 src/App.jsx
+700 src/styles/timeline.css
 619 src/styles/pages/MinProfil.css
 533 src/components/IntervalSettings.jsx
 477 src/components/TimelineIntervals.jsx
@@ -230,6 +233,7 @@ Line Counts Per File:
 291 src/styles/pages/Innstillinger.css
 285 src/services/eventLayoutService.js
 281 src/services/historicalEvents.js
+278 src/components/AddEventModal.jsx
 276 src/styles/timeline-command-input.css
 271 src/styles/EventEditModal.css
 264 src/components/TimelineCommandInput.jsx
@@ -253,10 +257,10 @@ Line Counts Per File:
 156 src/styles/EventContextMenu.css
 153 src/styles/background-images.css
 152 src/styles/topbar-privacy.css
-151 src/components/auth/Register.jsx
+152 src/components/auth/Register.jsx
 148 src/styles/base.css
 145 src/styles/content-menu.css
-144 src/components/auth/Login.jsx
+145 src/components/auth/Login.jsx
 140 src/styles/sidebarinfo.css
 139 src/components/EventContextMenu.jsx
 136 src/pages/PublicTimelines.jsx
@@ -273,21 +277,21 @@ Line Counts Per File:
 103 src/components/TimelineForm.jsx
 102 src/components/DeleteConfirmationModal.jsx
 94 src/styles/event-creation-selector.css
-92 src/components/auth/AuthCompletion.jsx
+93 src/components/auth/AuthCompletion.jsx
 90 src/styles/theme-toggle.css
 80 src/pages/NotFound.jsx
 79 src/components/auth/AuthModal.jsx
 76 src/styles/prompt-processing.css
 75 src/components/BackgroundManager.jsx
-72 src/components/LayoutManager.jsx
 71 src/themeManager.js
 69 src/styles/RichTextEditor.css
 68 src/utils/dateUtils.js
 65 src/components/auth/GoogleSignIn.jsx
 64 src/components/auth/MicrosoftSignIn.jsx
 62 src/components/auth/FacebookSignIn.jsx
-60 src/components/auth/UserProfile.jsx
+61 src/components/auth/UserProfile.jsx
 60 src/components/auth/AppleSignIn.jsx
+59 src/components/LayoutManager.jsx
 57 src/hooks/useAutoSave.js
 57 src/components/Layout.jsx
 56 src/components/EventCreationSelector.jsx

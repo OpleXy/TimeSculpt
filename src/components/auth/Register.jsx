@@ -1,3 +1,4 @@
+
 // src/components/auth/Register.jsx
 import { useState } from 'react';
 import { sendRegistrationLink, storePasswordTemporarily } from '../../firebase';

@@ -6,7 +6,7 @@
   overflow: hidden;
   cursor: default;
   will-change: transform;
-  height: calc(100vh - 4rem);
+  height: calc(105vh - 4rem);
   background-color: inherit;
   transition: background-color 0.3s ease;
   
@@ -696,4 +696,5 @@
   color: #e1e1e1;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
+
 

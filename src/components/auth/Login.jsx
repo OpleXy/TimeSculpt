@@ -1,3 +1,4 @@
+
 // src/components/auth/Login.jsx
 import { useState } from 'react';
 import { loginWithEmail, sendRegistrationLink } from '../../firebase';

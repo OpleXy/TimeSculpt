@@ -1,0 +1,792 @@
+/* Add Event Modal Styles */
+
+.add-event-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+  animation: fadeInOverlay 0.2s ease-out;
+  padding: 20px;
+}
+
+.add-event-modal {
+  background: rgba(240, 240, 240, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  height: calc(100vh - 120px);
+  max-height: 800px;
+  width: 90vw;
+  max-width: 1000px;
+  min-width: 600px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  animation: fadeIn 0.2s ease-out;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(248, 249, 250, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.close-modal-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-modal-btn:hover {
+  color: #333;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.modal-content {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 123, 255, 0.3) transparent;
+}
+
+.modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 123, 255, 0.3);
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 123, 255, 0.5);
+}
+
+/* New Button Guide in Modal */
+.modal-content .new-button-guide {
+  background-color: rgba(248, 249, 250, 0.8);
+  border: 1px dashed #dee2e6;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.modal-content .new-button-guide h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: #444;
+}
+
+.modal-content .new-button-guide p {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.4;
+}
+
+.modal-content .guide-arrow {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--primary-color, #007bff);
+  animation: bounce 1.5s infinite;
+}
+
+/* Save Button in Modal */
+.save-timeline-btn.modal-save-btn {
+  width: 100%;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+/* Login Prompt in Modal */
+.modal-login-prompt {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: rgba(248, 249, 250, 0.8);
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.modal-login-prompt h4 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  color: #444;
+}
+
+.modal-login-prompt p {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.4;
+}
+
+.login-button-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background-color: var(--primary-color, #007bff);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: background-color 0.2s;
+}
+
+.login-button-modal:hover {
+  background-color: var(--primary-hover, #0056b3);
+}
+
+/* Resize Handle */
+.modal-resize-handle {
+  position: absolute;
+  right: -5px;
+  top: 0;
+  height: 100%;
+  width: 10px;
+  cursor: ew-resize;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.add-event-modal:hover .modal-resize-handle {
+  opacity: 0.5;
+}
+
+.modal-resize-handle:hover {
+  opacity: 1 !important;
+}
+
+.modal-resize-handle::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 5px;
+  width: 1px;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.modal-resize-handle:hover::after {
+  width: 2px;
+  background-color: var(--primary-color, #007bff);
+}
+
+.modal-resize-handle svg {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+.modal-resize-handle:hover svg {
+  color: var(--primary-color, #007bff);
+}
+
+/* Dark Mode Support */
+.dark-mode .add-event-modal {
+  background: rgba(30, 30, 30, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .modal-header {
+  background: rgba(40, 40, 40, 0.8);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .modal-header h2 {
+  color: #e1e1e1;
+}
+
+.dark-mode .close-modal-btn {
+  color: #aaa;
+}
+
+.dark-mode .close-modal-btn:hover {
+  color: #e1e1e1;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .modal-content .new-button-guide {
+  background-color: rgba(40, 40, 40, 0.8);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .modal-content .new-button-guide h4 {
+  color: #e1e1e1;
+}
+
+.dark-mode .modal-content .new-button-guide p {
+  color: #aaa;
+}
+
+.dark-mode .modal-login-prompt {
+  background-color: rgba(40, 40, 40, 0.8);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .modal-login-prompt h4 {
+  color: #e1e1e1;
+}
+
+.dark-mode .modal-login-prompt p {
+  color: #aaa;
+}
+
+/* Animations */
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0) translateX(-50%);
+  }
+  40% {
+    transform: translateY(-10px) translateX(-50%);
+  }
+  60% {
+    transform: translateY(-5px) translateX(-50%);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .add-event-modal-overlay {
+    padding: 15px;
+  }
+  
+  .add-event-modal {
+    width: 100%;
+    min-width: 280px;
+    max-width: none;
+    height: calc(100vh - 30px);
+  }
+  
+  .modal-header {
+    padding: 1rem;
+  }
+  
+  .modal-content {
+    padding: 1rem;
+  }
+  
+  .modal-resize-handle {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .add-event-modal-overlay {
+    padding: 10px;
+  }
+  
+  .add-event-modal {
+    height: calc(100vh - 20px);
+    border-radius: 8px;
+    min-width: 250px;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.1rem;
+  }
+}
+
+/* Focus and Accessibility */
+.add-event-modal:focus {
+  outline: none;
+}
+
+.close-modal-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary-color, #007bff);
+}
+
+.login-button-modal:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Timeline List in Modal - ensure proper spacing */
+.modal-content .timeline-list {
+  margin-top: 1rem;
+}
+
+.modal-content .timeline-list h3 {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Event Creation Selector in Modal */
+.modal-content .event-form {
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dark-mode .modal-content .event-form {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+
+.add-event-floating-btn {
+  position: absolute;
+  bottom: 75px; /* Over timeline-info-bar med mellomrom */
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--primary-color, #007bff);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  z-index: 25; /* Over timeline-info-bar (z-index: 5) */
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.add-event-floating-btn:hover {
+  background: var(--primary-hover, #0056b3);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
+}
+
+.add-event-floating-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.add-event-floating-btn:focus {
+  outline: none;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3), 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.add-event-floating-btn svg {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.add-event-floating-btn:hover svg {
+  transform: rotate(90deg);
+}
+
+/* Dark Mode Support */
+.dark-mode .add-event-floating-btn {
+  background: var(--primary-color, #3a97ff);
+  box-shadow: 0 4px 12px rgba(58, 151, 255, 0.3);
+}
+
+.dark-mode .add-event-floating-btn:hover {
+  background: var(--primary-hover, #2980d1);
+  box-shadow: 0 6px 16px rgba(58, 151, 255, 0.4);
+}
+
+.dark-mode .add-event-floating-btn:active {
+  box-shadow: 0 2px 8px rgba(58, 151, 255, 0.3);
+}
+
+.dark-mode .add-event-floating-btn:focus {
+  box-shadow: 0 4px 12px rgba(58, 151, 255, 0.3), 0 0 0 3px rgba(58, 151, 255, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .add-event-floating-btn {
+    bottom: 65px; /* Juster for mindre skjermer */
+    left: 15px;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .add-event-floating-btn {
+    bottom: 55px; /* Juster for mobile */
+    left: 10px;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    border-radius: 20px;
+  }
+  
+  .add-event-floating-btn span {
+    display: none;
+  }
+  
+  /* Show only icon on very small screens */
+  .add-event-floating-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    justify-content: center;
+    padding: 0;
+  }
+}
+
+/* Animation for button appearance */
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.add-event-floating-btn {
+  animation: slideInFromBottom 0.3s ease-out;
+}
+
+/* Pulse effect when timeline is empty */
+.add-event-floating-btn.pulse {
+  animation: pulseEffect 2s infinite;
+}
+
+@keyframes pulseEffect {
+  0% {
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.6), 0 0 0 8px rgba(0, 123, 255, 0.1);
+  }
+  100% {
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  }
+}
+
+.dark-mode .add-event-floating-btn.pulse {
+  animation: pulseEffectDark 2s infinite;
+}
+
+@keyframes pulseEffectDark {
+  0% {
+    box-shadow: 0 4px 12px rgba(58, 151, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 12px rgba(58, 151, 255, 0.6), 0 0 0 8px rgba(58, 151, 255, 0.1);
+  }
+  100% {
+    box-shadow: 0 4px 12px rgba(58, 151, 255, 0.3);
+  }
+}
+
+/* Ensure button doesn't interfere with timeline interactions */
+.add-event-floating-btn {
+  pointer-events: auto;
+}
+
+/* Hide button when modal is open to avoid confusion */
+.modal-open .add-event-floating-btn {
+  display: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Floating Add Event Button Styles */
+
+/* Fix timeline container height issue - use flexbox for perfect fit */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.main-content-with-topbar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.timeline-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.timeline-container {
+  flex: 1 !important;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  will-change: transform;
+  background-color: inherit;
+  transition: background-color 0.3s ease;
+  height: auto !important; /* Remove fixed height */
+  min-height: 0 !important; /* Allow shrinking */
+}
+
+/* Ensure timeline element inside container also fills space */
+.timeline {
+  height: 100% !important;
+  min-height: 100% !important;
+}
+
+.add-event-floating-btn {
+  position: fixed; /* Endret fra absolute til fixed */
+  bottom: 75px; /* Over timeline-info-bar med mellomrom */
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--primary-color, #007bff);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  z-index: 25; /* Over timeline-info-bar (z-index: 5) */
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.add-event-floating-btn:hover {
+  background: var(--primary-hover, #0056b3);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
+}
+
+.add-event-floating-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.add-event-floating-btn:focus {
+  outline: none;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3), 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.add-event-floating-btn svg {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.add-event-floating-btn:hover svg {
+  transform: rotate(90deg);
+}
+
+/* Dark Mode Support */
+.dark-mode .add-event-floating-btn {
+  background: var(--primary-color, #3a97ff);
+  box-shadow: 0 4px 12px rgba(58, 151, 255, 0.3);
+}
+
+.dark-mode .add-event-floating-btn:hover {
+  background: var(--primary-hover, #2980d1);
+  box-shadow: 0 6px 16px rgba(58, 151, 255, 0.4);
+}
+
+.dark-mode .add-event-floating-btn:active {
+  box-shadow: 0 2px 8px rgba(58, 151, 255, 0.3);
+}
+
+.dark-mode .add-event-floating-btn:focus {
+  box-shadow: 0 4px 12px rgba(58, 151, 255, 0.3), 0 0 0 3px rgba(58, 151, 255, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .add-event-floating-btn {
+    bottom: 65px; /* Juster for mindre skjermer */
+    left: 15px;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .add-event-floating-btn {
+    bottom: 55px; /* Juster for mobile */
+    left: 10px;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    border-radius: 20px;
+  }
+  
+  .add-event-floating-btn span {
+    display: none;
+  }
+  
+  /* Show only icon on very small screens */
+  .add-event-floating-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    justify-content: center;
+    padding: 0;
+  }
+}
+
+/* Animation for button appearance */
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.add-event-floating-btn {
+  animation: slideInFromBottom 0.3s ease-out;
+}
+
+/* Pulse effect when timeline is empty */
+.add-event-floating-btn.pulse {
+  animation: pulseEffect 2s infinite;
+}
+
+@keyframes pulseEffect {
+  0% {
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.6), 0 0 0 8px rgba(0, 123, 255, 0.1);
+  }
+  100% {
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  }
+}
+
+.dark-mode .add-event-floating-btn.pulse {
+  animation: pulseEffectDark 2s infinite;
+}
+
+@keyframes pulseEffectDark {
+  0% {
+    box-shadow: 0 4px 12px rgba(58, 151, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 12px rgba(58, 151, 255, 0.6), 0 0 0 8px rgba(58, 151, 255, 0.1);
+  }
+  100% {
+    box-shadow: 0 4px 12px rgba(58, 151, 255, 0.3);
+  }
+}
+
+/* Ensure button doesn't interfere with timeline interactions */
+.add-event-floating-btn {
+  pointer-events: auto;
+}
+
+/* Hide button when modal is open to avoid confusion */
+.modal-open .add-event-floating-btn {
+  display: none;
+}

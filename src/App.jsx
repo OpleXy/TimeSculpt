@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
 import Timeline from './components/Timeline';
 import LayoutManager from './components/LayoutManager';
+import AddEventModal from './components/AddEventModal'; // Ny import
 import { useAuth } from './contexts/AuthContext.jsx';
 import { useTheme } from './contexts/ThemeContext.jsx';
 import AuthModal from './components/auth/AuthModal';
 import MobileWarning from './components/MobileWarning';
-import useAutoSave from './hooks/useAutoSave'; // Import the new hook
+import useAutoSave from './hooks/useAutoSave';
 
 import { generateTimelineEvents } from './services/aiTimelineService';
 
@@ -20,6 +20,7 @@ import './styles/auth.css';
 import './styles/topbar.css';
 import './styles/mobile-warning.css';
 import './styles/theme-toggle.css';
+import './styles/add-event-modal.css'; // Ny import
 
 import './styles/sidebarinfo.css';
 import './styles/event-colors.css';
@@ -30,7 +31,7 @@ import './styles/privacy-toggle.css';
 import './styles/topbar-privacy.css';
 import './styles/layout-manager.css';
 import './styles/welcome-screen.css';
-import './styles/EventContextMenu.css';  // Add this line
+import './styles/EventContextMenu.css';
 
 function App() {
   const { isAuthenticated, authChanged, currentUser, logOut } = useAuth();
@@ -38,6 +39,7 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isAddEventModalOpen, setIsAddEventModalOpen] = useState(false); // Ny state for modal
   
   // Add state for interval markers
   const [showIntervals, setShowIntervals] = useState(true);
@@ -89,8 +91,6 @@ function App() {
     },
     isPublic: false
   });
-
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Auto-save function
   const autoSaveTimeline = async (data) => {
@@ -167,6 +167,10 @@ function App() {
   // Open and close auth modal
   const openAuthModal = () => setIsAuthModalOpen(true);
   const closeAuthModal = () => setIsAuthModalOpen(false);
+
+  // Open and close add event modal
+  const openAddEventModal = () => setIsAddEventModalOpen(true);
+  const closeAddEventModal = () => setIsAddEventModalOpen(false);
 
   // Close welcome popup
   const closeWelcomePopup = () => {
@@ -322,11 +326,6 @@ function App() {
     }, 2000);
   };
 
-  // Toggle sidebar visibility
-  const toggleSidebar = () => {
-    setIsSidebarCollapsed(!isSidebarCollapsed);
-  };
-
   // Update interval settings
   const updateIntervalSettings = (settings) => {
     // Extract settings from parameter object
@@ -362,32 +361,77 @@ function App() {
     setSaveError(''); // Clear any save errors
   };
   
-// I App.jsx, erstatt createTimeline funksjonen med denne:
-
-const createTimeline = async (data) => {
-  // Check for unsaved changes before creating new timeline
-  if (hasUnsavedChanges) {
-    const confirm = window.confirm('Du har ulagrede endringer som lagres automatisk. Er du sikker på at du vil opprette en ny tidslinje?');
-    if (!confirm) {
-      return; // User cancelled, don't create a new timeline
+  const createTimeline = async (data) => {
+    // Check for unsaved changes before creating new timeline
+    if (hasUnsavedChanges) {
+      const confirm = window.confirm('Du har ulagrede endringer som lagres automatisk. Er du sikker på at du vil opprette en ny tidslinje?');
+      if (!confirm) {
+        return; // User cancelled, don't create a new timeline
+      }
     }
-  }
-  
-  // Reset privacy setting for new timeline (always private by default)
-  setIsPublic(false);
-  
-  // Ensure sidebar is shown by default for new timelines
-  setIsSidebarCollapsed(false);
-  
-  // Check if this timeline was generated from a prompt
-  if (data.generatedFromPrompt && data.promptText) {
-    try {
-      setIsProcessingPrompt(true);
-      
-      console.log('🚀 AI-generert tidslinje mottatt:', data);
-      console.log('📊 Antall events:', data.events?.length);
-      
-      // OpenAI har allerede generert alle events - bare sett dem direkte!
+    
+    // Reset privacy setting for new timeline (always private by default)
+    setIsPublic(false);
+    
+    // Check if this timeline was generated from a prompt
+    if (data.generatedFromPrompt && data.promptText) {
+      try {
+        setIsProcessingPrompt(true);
+        
+        console.log('🚀 AI-generert tidslinje mottatt:', data);
+        console.log('📊 Antall events:', data.events?.length);
+        
+        // OpenAI har allerede generert alle events - bare sett dem direkte!
+        const newTimelineData = {
+          ...data,
+          showIntervals: showIntervals,
+          intervalCount: intervalCount,
+          intervalType: intervalType,
+          intervalSettings: {
+            show: showIntervals,
+            count: intervalCount,
+            type: intervalType
+          },
+          isPublic: false // Default to private
+        };
+        
+        setTimelineData(newTimelineData);
+        setShowWelcomePopup(false);
+        setHasUnsavedChanges(true);
+        setSaveError('');
+        
+        console.log('✅ Timeline satt med', newTimelineData.events.length, 'events');
+        
+        // IKKE kall generateTimelineEvents igjen - OpenAI har allerede generert alt!
+        
+      } catch (error) {
+        console.error('Error processing prompt timeline:', error);
+        alert('Kunne ikke behandle AI-generert tidslinje: ' + error.message);
+        
+        // Fallback to empty timeline
+        const fallbackTimelineData = {
+          ...data,
+          events: [], // Empty events as fallback
+          showIntervals: showIntervals,
+          intervalCount: intervalCount,
+          intervalType: intervalType,
+          intervalSettings: {
+            show: showIntervals,
+            count: intervalCount,
+            type: intervalType
+          },
+          isPublic: false
+        };
+        
+        setTimelineData(fallbackTimelineData);
+        setShowWelcomePopup(false);
+        setHasUnsavedChanges(false);
+        
+      } finally {
+        setIsProcessingPrompt(false);
+      }
+    } else {
+      // Regular timeline creation (non-AI)
       const newTimelineData = {
         ...data,
         showIntervals: showIntervals,
@@ -402,61 +446,12 @@ const createTimeline = async (data) => {
       };
       
       setTimelineData(newTimelineData);
-      setShowWelcomePopup(false);
       setHasUnsavedChanges(true);
-      setSaveError('');
-      
-      console.log('✅ Timeline satt med', newTimelineData.events.length, 'events');
-      
-      // IKKE kall generateTimelineEvents igjen - OpenAI har allerede generert alt!
-      
-    } catch (error) {
-      console.error('Error processing prompt timeline:', error);
-      alert('Kunne ikke behandle AI-generert tidslinje: ' + error.message);
-      
-      // Fallback to empty timeline
-      const fallbackTimelineData = {
-        ...data,
-        events: [], // Empty events as fallback
-        showIntervals: showIntervals,
-        intervalCount: intervalCount,
-        intervalType: intervalType,
-        intervalSettings: {
-          show: showIntervals,
-          count: intervalCount,
-          type: intervalType
-        },
-        isPublic: false
-      };
-      
-      setTimelineData(fallbackTimelineData);
       setShowWelcomePopup(false);
-      setHasUnsavedChanges(false);
-      
-    } finally {
-      setIsProcessingPrompt(false);
+      setSaveError('');
     }
-  } else {
-    // Regular timeline creation (non-AI)
-    const newTimelineData = {
-      ...data,
-      showIntervals: showIntervals,
-      intervalCount: intervalCount,
-      intervalType: intervalType,
-      intervalSettings: {
-        show: showIntervals,
-        count: intervalCount,
-        type: intervalType
-      },
-      isPublic: false // Default to private
-    };
-    
-    setTimelineData(newTimelineData);
-    setHasUnsavedChanges(true);
-    setShowWelcomePopup(false);
-    setSaveError('');
-  }
-};
+  };
+
   // Update timeline data (for editing title and dates)
   const updateTimelineData = (updatedTimeline) => {
     // Mark changes as unsaved (auto-save will handle it)
@@ -630,13 +625,22 @@ const createTimeline = async (data) => {
     setSaveError(''); // Clear any save errors
   };
 
+  // Add class to body when modal is open to prevent scrolling
+  useEffect(() => {
+    if (isAddEventModalOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [isAddEventModalOpen]);
+
   return (
     <div className={`app-container ${darkMode ? 'dark-mode' : ''}`}>
-      {/* Welcome popup is disabled because showWelcomePopup is set to false */}
-      {showWelcomePopup && !isAuthenticated && (
-        <WelcomePopup onClose={closeWelcomePopup} onLogin={openAuthModal} />
-      )}
-      
       {/* Add the Mobile Warning Component */}
       <MobileWarning />
       
@@ -661,33 +665,45 @@ const createTimeline = async (data) => {
       <LayoutManager
         timelineData={timelineData}
         onLogin={openAuthModal}
-        isSidebarCollapsed={isSidebarCollapsed}
         onCreateTimeline={createTimeline}  
-        sidebar={
-          <Sidebar 
-            isCollapsed={isSidebarCollapsed}
-            toggleSidebar={toggleSidebar}
-            createTimeline={createTimeline}
-            addEvent={addEvent}
-            saveTimeline={saveTimeline}
-            timelineData={timelineData}
-            onLogin={openAuthModal}
-            onLoadTimeline={handleLoadTimeline}
-            onCreateTimeline={createTimeline}
-            hasUnsavedChanges={hasUnsavedChanges}
-            timelineListRefreshTrigger={timelineListRefreshTrigger}
-          />
-        }
         timelineContent={
           <main className="main-content main-content-with-topbar">
-            <Timeline 
-              timelineData={timelineData}
-              setTimelineData={setTimelineDataWithTracking}
-              showIntervals={showIntervals}
-              intervalCount={intervalCount}
-              intervalType={intervalType}
-              onUpdateIntervalSettings={updateIntervalSettings}
-            />
+            {/* Timeline Container with Add Event Button */}
+            <div className="timeline-wrapper">
+              <Timeline 
+                timelineData={timelineData}
+                setTimelineData={setTimelineDataWithTracking}
+                showIntervals={showIntervals}
+                intervalCount={intervalCount}
+                intervalType={intervalType}
+                onUpdateIntervalSettings={updateIntervalSettings}
+              />
+              
+              {/* Add Event Button - positioned in bottom left of timeline container */}
+              {timelineData && timelineData.title && timelineData.start && timelineData.end && (
+                <button 
+                  className={`add-event-floating-btn ${timelineData.events.length === 0 ? 'pulse' : ''}`}
+                  onClick={openAddEventModal}
+                  title="Legg til ny hendelse"
+                >
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width="20" 
+                    height="20" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  <span>Legg til ny hendelse</span>
+                </button>
+              )}
+            </div>
           </main>
         }
       >
@@ -695,6 +711,20 @@ const createTimeline = async (data) => {
         <AuthModal 
           isOpen={isAuthModalOpen} 
           onClose={closeAuthModal} 
+        />
+        
+        {/* Add Event Modal - replaces sidebar functionality */}
+        <AddEventModal
+          isOpen={isAddEventModalOpen}
+          onClose={closeAddEventModal}
+          addEvent={addEvent}
+          saveTimeline={saveTimeline}
+          timelineData={timelineData}
+          onLogin={openAuthModal}
+          onLoadTimeline={handleLoadTimeline}
+          onCreateTimeline={createTimeline}
+          hasUnsavedChanges={hasUnsavedChanges}
+          timelineListRefreshTrigger={timelineListRefreshTrigger}
         />
         
         {/* Prompt processing overlay */}

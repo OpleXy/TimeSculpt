@@ -14,9 +14,9 @@ function AuthModal({ isOpen, onClose }) {
   const switchToGoogle = () => setAuthMode('google');
   
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <button className="modal-close" onClick={onClose}>×</button>
+    <div className="modal-overlay-auth">
+      <div className="modal-content-auth">
+        <button className="modal-close-auth" onClick={onClose}>×</button>
         
         {/* Authentication tabs */}
         <div className="auth-tabs">
