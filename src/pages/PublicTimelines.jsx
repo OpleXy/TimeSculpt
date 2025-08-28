@@ -63,7 +63,7 @@ function PublicTimelines() {
       strokeWidth="2" 
       strokeLinecap="round" 
       strokeLinejoin="round"
-      style={{ marginRight: '6px' }}
+      style={{ marginRight: '4px' }}
     >
       <circle cx="12" cy="12" r="10"></circle>
       <line x1="2" y1="12" x2="22" y2="12"></line>
@@ -95,38 +95,28 @@ function PublicTimelines() {
               </div>
             </div>
           ) : (
-            <>
-
-              
-              <div className="timelines-full-grid">
-                {timelines.map(timeline => (
-                  <div key={timeline.id} className="timeline-card public-timeline-card">
-                    <div className="timeline-card-header">
+            <div className="timelines-full-grid">
+              {timelines.map(timeline => (
+                <div 
+                  key={timeline.id} 
+                  className="timeline-card public-timeline-card clickable-card"
+                  onClick={() => handleOpenTimeline(timeline.id)}
+                  title={timeline.title} // Legger til title-attributt for tooltip
+                >
+                  <div className="timeline-card-content">
+                    <div className="timeline-card-top">
                       <h3>{timeline.title}</h3>
                       <div className="privacy-badge public">
                         <GlobeIcon />Offentlig
                       </div>
                     </div>
-                    <div className="timeline-card-body">
-                      <p className="timeline-dates">
-                        {formatDate(timeline.start)} - {formatDate(timeline.end)}
-                      </p>{/*
-                      <p className="timeline-creator">
-                        Laget av: {timeline.userDisplayName}
-                      </p>*/}
-                    </div>
-                    <div className="timeline-card-footer">
-                      <button 
-                        className="view-timeline-btn"
-                        onClick={() => handleOpenTimeline(timeline.id)}
-                      >
-                        Vis tidslinje
-                      </button>
-                    </div>
+                    <p className="timeline-dates">
+                      {formatDate(timeline.start)} - {formatDate(timeline.end)}
+                    </p>
                   </div>
-                ))}
-              </div>
-            </>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>

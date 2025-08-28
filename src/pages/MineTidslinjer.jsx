@@ -26,7 +26,7 @@ function MineTidslinjer() {
 
   // Set document title when component mounts
   useEffect(() => {
-    setDocumentTitle('Mitt arkiv');
+    setDocumentTitle('Mine tidslinjer');
   }, []);
 
   useEffect(() => {
@@ -69,7 +69,8 @@ function MineTidslinjer() {
     }
   };
 
-  const handleDeleteTimeline = async (id) => {
+  const handleDeleteTimeline = async (id, e) => {
+    e.stopPropagation(); // Forhindre at klikket på slett-knappen trigger kortets onClick
     if (window.confirm('Er du sikker på at du vil slette denne tidslinjen? Dette kan ikke angres.')) {
       try {
         await deleteTimeline(id);
@@ -82,13 +83,13 @@ function MineTidslinjer() {
     }
   };
 
-  const handleLoadTimeline = (id) => {
-    // Navigate to the timeline editor with this ID
-    window.location.href = `/?timelineId=${id}`;
+  const handleViewTimeline = (id, view = 'timeline') => {
+    window.location.href = `/?view=${view}&timelineId=${id}`;
   };
 
   // Toggle privacy for a timeline
-  const toggleTimelinePrivacy = async (id, currentPrivacy) => {
+  const toggleTimelinePrivacy = async (id, currentPrivacy, e) => {
+    if (e) e.stopPropagation(); // Forhindre at klikket på personvern-knappen trigger kortets onClick
     try {
       await updateTimelinePrivacy(id, !currentPrivacy);
       // Refresh the timeline list after toggling privacy
@@ -100,7 +101,8 @@ function MineTidslinjer() {
   };
 
   // Copy share URL to clipboard
-  const copyShareUrl = (id) => {
+  const copyShareUrl = (id, e) => {
+    if (e) e.stopPropagation(); // Forhindre at klikket på del-knappen trigger kortets onClick
     const shareUrl = `${window.location.origin}/?timelineId=${id}`;
     
     navigator.clipboard.writeText(shareUrl)
@@ -114,7 +116,8 @@ function MineTidslinjer() {
   };
   
   // Open share modal for a timeline
-  const openShareModal = (timeline) => {
+  const openShareModal = (timeline, e) => {
+    if (e) e.stopPropagation(); // Forhindre at klikket på del-knappen trigger kortets onClick
     setSelectedTimeline(timeline);
     setShareModalOpen(true);
   };
@@ -162,7 +165,7 @@ function MineTidslinjer() {
       strokeWidth="2" 
       strokeLinecap="round" 
       strokeLinejoin="round"
-      style={{ marginRight: '6px' }}
+      style={{ marginRight: '4px' }}
     >
       <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
       <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
@@ -180,7 +183,7 @@ function MineTidslinjer() {
       strokeWidth="2" 
       strokeLinecap="round" 
       strokeLinejoin="round"
-      style={{ marginRight: '6px' }}
+      style={{ marginRight: '4px' }}
     >
       <circle cx="12" cy="12" r="10"></circle>
       <line x1="2" y1="12" x2="22" y2="12"></line>
@@ -208,24 +211,6 @@ function MineTidslinjer() {
     </svg>
   );
 
-  const EditIcon = () => (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="16" 
-      height="16" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-      className="icon-edit"
-    >
-      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-    </svg>
-  );
-
   const DeleteIcon = () => (
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
@@ -243,29 +228,13 @@ function MineTidslinjer() {
       <line x1="6" y1="6" x2="18" y2="18"></line>
     </svg>
   );
-  
-  const ViewIcon = () => (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="14" 
-      height="14" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-      style={{ marginRight: '6px' }}
-    >
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-      <circle cx="12" cy="12" r="3"></circle>
-    </svg>
-  );
 
   return (
     <Layout>
       <div className="page-fullwidth-container">
-        <h1 className="page-subtle-title">🗂️ Mitt arkiv</h1>
+        <div className="page-header-with-action">
+          <h1 className="page-subtle-title">🗂️ Mine tidslinjer</h1>
+        </div>
         
         {!isAuthenticated ? (
           <div className="auth-centered-content">
@@ -277,8 +246,7 @@ function MineTidslinjer() {
           <div className="content-container">
             {/* My Timelines Section */}
             <div className="timelines-section">
-             
-              
+
               {isLoading ? (
                 <div className="loading-indicator">Laster tidslinjer...</div>
               ) : error ? (
@@ -298,64 +266,50 @@ function MineTidslinjer() {
               ) : (
                 <div className="timelines-full-grid">
                   {timelines.map(timeline => (
-                    <div key={timeline.id} className="timeline-card">
-                      <div className="timeline-card-header">
-                        <div className="timeline-title-container">
+                    <div 
+                      key={timeline.id} 
+                      className="timeline-card clickable-card"
+                      onClick={() => handleViewTimeline(timeline.id)}
+                    >
+                      <div className="timeline-card-content">
+                        <div className="timeline-card-top">
                           <h3>{timeline.title}</h3>
-                          <div className={`privacy-badge ${timeline.isPublic ? 'public' : 'private'}`}>
-                            {timeline.isPublic ? <><PublicIcon />Offentlig</> : <><PrivateIcon />Privat</>}
-                          </div>
-                        </div>
-                        <div className="timeline-header-actions">
-                          <button 
-                            className="icon-button edit"
-                            onClick={() => handleLoadTimeline(timeline.id)}
-                            title="Rediger"
-                          >
-                            <EditIcon />
-                          </button>
                           <button 
                             className="icon-button delete"
-                            onClick={() => handleDeleteTimeline(timeline.id)}
+                            onClick={(e) => handleDeleteTimeline(timeline.id, e)}
                             title="Slett"
                           >
                             <DeleteIcon />
                           </button>
                         </div>
-                      </div>
-                      <div className="timeline-card-body">
+                        
                         <p className="timeline-dates">
                           {formatDate(timeline.start)} - {formatDate(timeline.end)}
                         </p>
-                        <button 
-                          className="view-timeline-btn"
-                          onClick={() => window.location.href = `/?view=timeline&timelineId=${timeline.id}`}
-                          title="Vis denne tidslinjen"
-                        >
-                          Gå til tidslinje
-                        </button>
-                      </div>
-                      <div className="timeline-card-footer">
-                        <div className="timeline-card-actions privacy-actions">
+                        
+                        <div className="timeline-card-actions">
                           <button 
                             className={`privacy-toggle-btn ${timeline.isPublic ? 'public' : 'private'}`}
-                            onClick={() => toggleTimelinePrivacy(timeline.id, timeline.isPublic)}
+                            onClick={(e) => toggleTimelinePrivacy(timeline.id, timeline.isPublic, e)}
                           >
-                            {timeline.isPublic ? 'Gjør privat' : 'Gjør offentlig'}
+                            {timeline.isPublic ? (
+                              <><PublicIcon /> Offentlig</>
+                            ) : (
+                              <><PrivateIcon /> Privat</>
+                            )}
                           </button>
                           
-                          {timeline.isPublic && (
-                            <button 
-                              className="share-btn"
-                              onClick={() => openShareModal(timeline)}
-                              title="Del tidslinje"
-                            >
-                              <ShareIcon /> Del
-                            </button>
-                          )}
+                          {/* Share button is now always visible */}
+                          <button 
+                            className="share-btn"
+                            onClick={(e) => openShareModal(timeline, e)}
+                            title="Del tidslinje"
+                          >
+                            <ShareIcon />
+                          </button>
                           
                           {showCopiedNotification === timeline.id && (
-                            <div className="copy-success">Lenke kopiert!</div>
+                            <div className="copy-success">Kopiert!</div>
                           )}
                         </div>
                       </div>
@@ -366,69 +320,44 @@ function MineTidslinjer() {
             </div>
             
             {/* Shared Timelines Section */}
-            {/* Shared Timelines Section */}
-{/* Shared Timelines Section */}
-<div className="timelines-section shared-section">
-  <h2 className="section-title">Tidslinjer delt med meg</h2>
-  
-  {isLoadingShared ? (
-    <div className="loading-indicator">Laster delte tidslinjer...</div>
-  ) : sharedError ? (
-    <div className="error-message">{sharedError}</div>
-  ) : sharedTimelines.length === 0 ? (
-    <div className="empty-state-container">
-      <div className="empty-state">
-        <p>Ingen tidslinjer er delt med deg ennå.</p>
-      </div>
-    </div>
-  ) : (
-    <div className="timelines-full-grid">
-      {sharedTimelines.map(timeline => (
-        <div key={timeline.id} className="timeline-card shared-timeline-card">
-          <div className="timeline-card-header">
-            <div className="timeline-title-container">
-              <h3>{timeline.title} </h3>
-              <div className="role-badge">
-                {timeline.collaboratorRole === "editor" ? (
-                  <><EditIcon /> Kan redigere</>
-                ) : (
-                  <><ViewIcon /> Kun visning</>
-                )}
-              </div>
-              {/* Owner info - show email field directly 
-              <div className="owner-info">
-                Eier: {timeline.userEmail || timeline.userDisplayName || 'Anonym bruker'}
-              </div>*/}
+            <div className="timelines-section shared-section">
+              <h2 className="section-title">Delt med meg</h2>
+              
+              {isLoadingShared ? (
+                <div className="loading-indicator">Laster delte tidslinjer...</div>
+              ) : sharedError ? (
+                <div className="error-message">{sharedError}</div>
+              ) : sharedTimelines.length === 0 ? (
+                <div className="empty-state-container">
+                  <div className="empty-state">
+                    <p>Ingen tidslinjer er delt med deg ennå.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="timelines-full-grid">
+                  {sharedTimelines.map(timeline => (
+                    <div 
+                      key={timeline.id} 
+                      className="timeline-card shared-timeline-card clickable-card"
+                      onClick={() => handleViewTimeline(timeline.id)}
+                    >
+                      <div className="timeline-card-content">
+                        <div className="timeline-card-top">
+                          <h3>{timeline.title}</h3>
+                          <div className="role-badge">
+                            {timeline.collaboratorRole === "editor" ? "Kan redigere" : "Kun visning"}
+                          </div>
+                        </div>
+                        
+                        <p className="timeline-dates">
+                          {formatDate(timeline.start)} - {formatDate(timeline.end)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="timeline-header-actions">
-              {timeline.collaboratorRole === "editor" ? (
-                <button 
-                  className="icon-button edit"
-                  onClick={() => handleLoadTimeline(timeline.id)}
-                  title="Rediger"
-                >
-                  <EditIcon />
-                </button>
-              ) : null}
-            </div>
-          </div>
-          <div className="timeline-card-body">
-            <p className="timeline-dates">
-              {formatDate(timeline.start)} - {formatDate(timeline.end)}
-            </p>
-            <button 
-              className="view-timeline-btn"
-              onClick={() => window.location.href = `/?view=timeline&timelineId=${timeline.id}`}
-              title="Vis denne tidslinjen"
-            >
-              Gå til tidslinje
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
-  )}
-</div>
           </div>
         )}
         

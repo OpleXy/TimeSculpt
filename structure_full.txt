@@ -12,8 +12,8 @@ README.md
 dist
 eslint.config.js
 index.html
-index1.html
 node_modules
+openai_api_test.html
 oppstart timesculpt github.txt
 package-lock.json
 package.json
@@ -204,7 +204,6 @@ Line Counts Per File:
 1046 src/api.js
 993 src/services/timelineCommandProcessor.js
 861 src/components/Topbar.jsx
-852 src/styles/pages/MineTidslinjer.css
 792 src/components/TimelineStyleMenu.jsx
 791 src/styles/add-event-modal.css
 781 src/styles/auth.css
@@ -214,10 +213,11 @@ Line Counts Per File:
 533 src/components/IntervalSettings.jsx
 477 src/components/TimelineIntervals.jsx
 467 src/components/EventDetailPanel.jsx
-449 src/pages/MineTidslinjer.jsx
 427 src/components/TimelineEvent.jsx
+399 src/styles/pages/MineTidslinjer.css
 399 src/styles/BackgroundSelector.css
 388 src/services/aiTimelineService.js
+378 src/pages/MineTidslinjer.jsx
 370 src/components/TimelineShareModal.jsx
 367 src/components/BackgroundSelector.jsx
 353 src/services/openAiService.js
@@ -242,12 +242,12 @@ Line Counts Per File:
 252 src/hooks/useBackgroundManager.js
 238 src/services/promptTimelineService.js
 235 src/components/TimelineList.jsx
-222 src/styles/pages/PublicTimelines.css
 217 src/components/TopbarTimelineForm.jsx
 211 src/components/CreateEventModal.jsx
 209 src/styles/text-upload-timeline-generator.css
 209 src/styles/pages/NotFound.css
 207 src/styles/EventFormStyles.css
+204 src/styles/pages/PublicTimelines.css
 202 src/styles/pages/layout.css
 189 src/components/WelcomeScreen.jsx
 188 src/components/DateInput.jsx
@@ -263,13 +263,13 @@ Line Counts Per File:
 145 src/components/auth/Login.jsx
 140 src/styles/sidebarinfo.css
 139 src/components/EventContextMenu.jsx
-136 src/pages/PublicTimelines.jsx
 132 src/components/TextToTimelineForm.jsx
 131 src/styles/public-timelines.css
 130 src/styles/expandable-menu.css
 129 src/components/PrivacyToggle.jsx
 128 src/styles/layout-manager.css
 126 src/userAPI.js
+126 src/pages/PublicTimelines.jsx
 122 src/styles/DateInput.css
 122 src/contexts/ThemeContext.jsx
 109 src/assets/logo-timesculpt.png
