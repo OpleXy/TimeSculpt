@@ -14,7 +14,6 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
   const [color, setColor] = useState('default');
   const [error, setError] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
-  const [hasImage, setHasImage] = useState(false);
   const [imageFile, setImageFile] = useState(null);
 
   // Utility function to strip HTML for plaintext storage
@@ -72,7 +71,7 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
       offset: 0,
       xOffset: 0,
       yOffset: 0,
-      hasImage,
+      hasImage: !!imageFile,
       imageFile
     };
 
@@ -86,7 +85,6 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
     setSize('medium');
     setColor('default');
     setError('');
-    setHasImage(false);
     setImageFile(null);
   };
 
@@ -104,11 +102,6 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
   // Handle color selection
   const handleColorSelect = (selectedColor) => {
     setColor(selectedColor);
-  };
-
-  // Handle image checkbox change
-  const handleImageCheckChange = (e) => {
-    setHasImage(e.target.checked);
   };
 
   // Handle image file selection
@@ -255,20 +248,10 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
     />
   );
 
-  // Render image upload content
+  // Render image upload content - OPPDATERT: Fjernet checkbox
   const renderImageUpload = () => (
     <div className="image-upload-container">
-      <label className="flex items-center gap-2 cursor-pointer">
-        <input 
-          type="checkbox" 
-          checked={hasImage}
-          onChange={handleImageCheckChange}
-          className="h-4 w-4"
-        />
-        <span className="font-medium">Bilde</span>
-      </label>
-      
-      <div className={`image-upload-wrapper ${hasImage ? 'visible' : 'hidden'}`}>
+      <div className="image-upload-wrapper visible">
         <label htmlFor="bilde" className="image-upload-area">
           <div className="image-upload-content">
             <svg className="image-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -276,6 +259,9 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
                 d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 010 10H7z" />
             </svg>
             <p className="image-upload-text">Last opp eller dra og slipp bildet her</p>
+            {imageFile && (
+              <p className="selected-file-text">Valgt fil: {imageFile.name}</p>
+            )}
           </div>
           <input 
             id="bilde" 
@@ -304,7 +290,7 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
                 setError('');
               }}
               placeholder="Tittel"
-              minHeight="40px"
+              minHeight="42px"
             />
           </div>
 
