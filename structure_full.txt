@@ -10,17 +10,16 @@ This is the current filestructure of TimeSculpt, react vite@latest:
 .vscode
 README.md
 dist
+div
 eslint.config.js
 index.html
 node_modules
-openai_api_test.html
 oppstart timesculpt github.txt
 package-lock.json
 package.json
 public
 src
 structure_full.txt
-timeline_demo.html
 vite.config.js
 watch-structure.sh
 
@@ -89,16 +88,17 @@ src
 │   ├── Topbar.jsx
 │   ├── TopbarTimelineForm.jsx
 │   ├── WelcomeScreen.jsx
-│   └── auth
-│       ├── AppleSignIn.jsx
-│       ├── AuthCompletion.jsx
-│       ├── AuthModal.jsx
-│       ├── FacebookSignIn.jsx
-│       ├── GoogleSignIn.jsx
-│       ├── Login.jsx
-│       ├── MicrosoftSignIn.jsx
-│       ├── Register.jsx
-│       └── UserProfile.jsx
+│   ├── auth
+│   │   ├── AppleSignIn.jsx
+│   │   ├── AuthCompletion.jsx
+│   │   ├── AuthModal.jsx
+│   │   ├── FacebookSignIn.jsx
+│   │   ├── GoogleSignIn.jsx
+│   │   ├── Login.jsx
+│   │   ├── MicrosoftSignIn.jsx
+│   │   ├── Register.jsx
+│   │   └── UserProfile.jsx
+│   └── events
 ├── contexts
 │   ├── AuthContext.jsx
 │   └── ThemeContext.jsx
@@ -173,7 +173,7 @@ src
 └── utils
     └── dateUtils.js
 
-11 directories, 115 files
+12 directories, 115 files
 
 Line Counts Per File:
 12839 public/backgrounds/dino.png
