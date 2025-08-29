@@ -73,7 +73,6 @@ src
 │   ├── MobileWarning.jsx
 │   ├── PrivacyToggle.jsx
 │   ├── RichTextEditor.jsx
-│   ├── Sidebar.jsx
 │   ├── TextToTimelineForm.jsx
 │   ├── TextUploadTimelineGenerator.jsx
 │   ├── ThemeToggle.jsx
@@ -156,7 +155,6 @@ src
 │   ├── privacy-toggle.css
 │   ├── prompt-processing.css
 │   ├── public-timelines.css
-│   ├── sidebar.css
 │   ├── sidebarinfo.css
 │   ├── text-to-timeline.css
 │   ├── text-upload-timeline-generator.css
@@ -175,7 +173,7 @@ src
 └── utils
     └── dateUtils.js
 
-11 directories, 117 files
+11 directories, 115 files
 
 Line Counts Per File:
 12839 public/backgrounds/dino.png
@@ -204,8 +202,8 @@ Line Counts Per File:
 1046 src/api.js
 993 src/services/timelineCommandProcessor.js
 861 src/components/Topbar.jsx
+793 src/styles/add-event-modal.css
 792 src/components/TimelineStyleMenu.jsx
-791 src/styles/add-event-modal.css
 781 src/styles/auth.css
 751 src/App.jsx
 700 src/styles/timeline.css
@@ -213,27 +211,24 @@ Line Counts Per File:
 533 src/components/IntervalSettings.jsx
 477 src/components/TimelineIntervals.jsx
 467 src/components/EventDetailPanel.jsx
+431 src/styles/event-form.css
 427 src/components/TimelineEvent.jsx
 399 src/styles/pages/MineTidslinjer.css
 399 src/styles/BackgroundSelector.css
 388 src/services/aiTimelineService.js
 378 src/pages/MineTidslinjer.jsx
 370 src/components/TimelineShareModal.jsx
+368 src/components/EventForm.jsx
 367 src/components/BackgroundSelector.jsx
 353 src/services/openAiService.js
 345 src/styles/welcome-screen.css
 339 src/components/TextUploadTimelineGenerator.jsx
 339 src/components/EventEditModal.jsx
-325 src/styles/event-form.css
-324 src/components/Sidebar.jsx
 318 src/styles/timeline-cards.css
-314 src/styles/sidebar.css
 311 src/services/backgroundImageService.js
-307 src/components/EventForm.jsx
 291 src/styles/pages/Innstillinger.css
 285 src/services/eventLayoutService.js
 281 src/services/historicalEvents.js
-278 src/components/AddEventModal.jsx
 276 src/styles/timeline-command-input.css
 271 src/styles/EventEditModal.css
 264 src/components/TimelineCommandInput.jsx
@@ -242,6 +237,7 @@ Line Counts Per File:
 252 src/hooks/useBackgroundManager.js
 238 src/services/promptTimelineService.js
 235 src/components/TimelineList.jsx
+235 src/components/AddEventModal.jsx
 217 src/components/TopbarTimelineForm.jsx
 211 src/components/CreateEventModal.jsx
 209 src/styles/text-upload-timeline-generator.css

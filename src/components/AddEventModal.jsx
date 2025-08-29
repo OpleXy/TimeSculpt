@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import EventCreationSelector from './EventCreationSelector';
-import TimelineList from './TimelineList';
+import EventForm from './EventForm';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/add-event-modal.css';
 
@@ -10,11 +9,7 @@ function AddEventModal({
   addEvent, 
   saveTimeline, 
   timelineData, 
-  onLogin, 
-  onLoadTimeline, 
-  onCreateTimeline,
-  hasUnsavedChanges,
-  timelineListRefreshTrigger
+  hasUnsavedChanges
 }) {
   const { isAuthenticated } = useAuth();
   
@@ -41,7 +36,6 @@ function AddEventModal({
   const handleSave = () => {
     if (!isAuthenticated) {
       alert('Du må være logget inn for å lagre tidslinjer');
-      onLogin();
       return;
     }
     
@@ -150,7 +144,7 @@ function AddEventModal({
         {/* Modal Content */}
         <div className="modal-content">
           {/* SECTION 1: New Timeline Guide (Empty State) */}
-          {!hasBasicTimelineData && !isAuthenticated && (
+          {!hasBasicTimelineData && (
             <div className="new-button-guide">
               <div className="guide-arrow">
                 <svg 
@@ -173,15 +167,17 @@ function AddEventModal({
             </div>
           )}
           
-          {/* SECTION 2: Timeline Creation Tools */}
+          {/* SECTION 2: Manual Event Form */}
           {hasBasicTimelineData && (
             <>
-              <EventCreationSelector 
-                onAddEvent={handleEventAdd} 
-                timelineStart={timelineData.start} 
-                timelineEnd={timelineData.end}
-                timelineData={timelineData}
-              />
+              <div className="manual-event-form">
+                <EventForm 
+                  onAddEvent={handleEventAdd} 
+                  timelineStart={timelineData.start} 
+                  timelineEnd={timelineData.end}
+                  showTitle={false}
+                />
+              </div>
                 
               {/* Save button */}
               <button 
@@ -208,45 +204,6 @@ function AddEventModal({
                 <span>Lagre</span>
               </button>
             </>
-          )}
-          
-          {/* SECTION 3: User Timelines */}
-          {isAuthenticated && (
-            <TimelineList 
-              onLoadTimeline={onLoadTimeline}
-              hasUnsavedChanges={hasUnsavedChanges}
-              refreshTrigger={timelineListRefreshTrigger}
-            />
-          )}
-          
-          {/* SECTION 4: Login Prompt */}
-          {!isAuthenticated && !hasBasicTimelineData && (
-            <div className="modal-login-prompt">
-              <h4>🔐 Tilgang til dine tidslinjer</h4>
-              <p><strong>Logg inn</strong> for å lagre, redigere og komme tilbake til tidslinjene dine når som helst.</p>
-              <button 
-                className="login-button-modal" 
-                onClick={onLogin}
-              >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round"
-                  style={{ marginRight: '8px' }}
-                >
-                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-                  <polyline points="10 17 15 12 10 7"/>
-                  <line x1="15" y1="12" x2="3" y2="12"/>
-                </svg>
-                Logg inn
-              </button>
-            </div>
           )}
         </div>
 

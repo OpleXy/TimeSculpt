@@ -11,9 +11,11 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
   const [size, setSize] = useState('medium');
-  const [color, setColor] = useState('default'); // Default color matches timeline color
+  const [color, setColor] = useState('default');
   const [error, setError] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
+  const [hasImage, setHasImage] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
 
   // Utility function to strip HTML for plaintext storage
   const stripHtml = (html) => {
@@ -66,10 +68,12 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
       date: eventDate,
       description: description || '',
       size,
-      color, // Add color to event data
+      color,
       offset: 0,
       xOffset: 0,
-      yOffset: 0
+      yOffset: 0,
+      hasImage,
+      imageFile
     };
 
     // Call parent handler to add event
@@ -82,6 +86,8 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
     setSize('medium');
     setColor('default');
     setError('');
+    setHasImage(false);
+    setImageFile(null);
   };
 
   // Handle date change from DateInput component
@@ -98,6 +104,18 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
   // Handle color selection
   const handleColorSelect = (selectedColor) => {
     setColor(selectedColor);
+  };
+
+  // Handle image checkbox change
+  const handleImageCheckChange = (e) => {
+    setHasImage(e.target.checked);
+  };
+
+  // Handle image file selection
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setImageFile(e.target.files[0]);
+    }
   };
 
   // Render size options content
@@ -166,65 +184,65 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
     </div>
   );
   
-const renderColorOptions = () => (
-  <div className="color-buttons-group">
-    <button
-      type="button"
-      className={`color-button default ${color === 'default' ? 'active' : ''}`}
-      onClick={() => handleColorSelect('default')}
-      title="Standard (Tidslinjefarge)"
-    >
-      <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        width="14" 
-        height="14" 
-        viewBox="0 0 24 24" 
-        fill="none" 
-        stroke="currentColor" 
-        strokeWidth="2" 
-        strokeLinecap="round" 
-        strokeLinejoin="round"
+  const renderColorOptions = () => (
+    <div className="color-buttons-group">
+      <button
+        type="button"
+        className={`color-button default ${color === 'default' ? 'active' : ''}`}
+        onClick={() => handleColorSelect('default')}
+        title="Standard (Tidslinjefarge)"
       >
-        <path d="M7 21L12 17L17 21V3H7V21Z" />
-      </svg>
-    </button>
-    <button
-      type="button"
-      className={`color-button blue ${color === 'blue' ? 'active' : ''}`}
-      onClick={() => handleColorSelect('blue')}
-      title="Blå"
-      style={{ backgroundColor: '#007bff' }}
-    ></button>
-    <button
-      type="button"
-      className={`color-button green ${color === 'green' ? 'active' : ''}`}
-      onClick={() => handleColorSelect('green')}
-      title="Grønn"
-      style={{ backgroundColor: '#28a745' }}
-    ></button>
-    <button
-      type="button"
-      className={`color-button red ${color === 'red' ? 'active' : ''}`}
-      onClick={() => handleColorSelect('red')}
-      title="Rød"
-      style={{ backgroundColor: '#dc3545' }}
-    ></button>
-    <button
-      type="button"
-      className={`color-button orange ${color === 'orange' ? 'active' : ''}`}
-      onClick={() => handleColorSelect('orange')}
-      title="Oransje"
-      style={{ backgroundColor: '#fd7e14' }}
-    ></button>
-    <button
-      type="button"
-      className={`color-button purple ${color === 'purple' ? 'active' : ''}`}
-      onClick={() => handleColorSelect('purple')}
-      title="Lilla"
-      style={{ backgroundColor: '#6f42c1' }}
-    ></button>
-  </div>
-);
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          width="14" 
+          height="14" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+        >
+          <path d="M7 21L12 17L17 21V3H7V21Z" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        className={`color-button blue ${color === 'blue' ? 'active' : ''}`}
+        onClick={() => handleColorSelect('blue')}
+        title="Blå"
+        style={{ backgroundColor: '#007bff' }}
+      ></button>
+      <button
+        type="button"
+        className={`color-button green ${color === 'green' ? 'active' : ''}`}
+        onClick={() => handleColorSelect('green')}
+        title="Grønn"
+        style={{ backgroundColor: '#28a745' }}
+      ></button>
+      <button
+        type="button"
+        className={`color-button red ${color === 'red' ? 'active' : ''}`}
+        onClick={() => handleColorSelect('red')}
+        title="Rød"
+        style={{ backgroundColor: '#dc3545' }}
+      ></button>
+      <button
+        type="button"
+        className={`color-button orange ${color === 'orange' ? 'active' : ''}`}
+        onClick={() => handleColorSelect('orange')}
+        title="Oransje"
+        style={{ backgroundColor: '#fd7e14' }}
+      ></button>
+      <button
+        type="button"
+        className={`color-button purple ${color === 'purple' ? 'active' : ''}`}
+        onClick={() => handleColorSelect('purple')}
+        title="Lilla"
+        style={{ backgroundColor: '#6f42c1' }}
+      ></button>
+    </div>
+  );
 
   // Render description editor content
   const renderDescriptionEditor = () => (
@@ -237,32 +255,75 @@ const renderColorOptions = () => (
     />
   );
 
+  // Render image upload content
+  const renderImageUpload = () => (
+    <div className="image-upload-container">
+      <label className="flex items-center gap-2 cursor-pointer">
+        <input 
+          type="checkbox" 
+          checked={hasImage}
+          onChange={handleImageCheckChange}
+          className="h-4 w-4"
+        />
+        <span className="font-medium">Bilde</span>
+      </label>
+      
+      <div className={`image-upload-wrapper ${hasImage ? 'visible' : 'hidden'}`}>
+        <label htmlFor="bilde" className="image-upload-area">
+          <div className="image-upload-content">
+            <svg className="image-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" 
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 010 10H7z" />
+            </svg>
+            <p className="image-upload-text">Last opp eller dra og slipp bildet her</p>
+          </div>
+          <input 
+            id="bilde" 
+            name="bilde" 
+            type="file" 
+            accept="image/*" 
+            className="image-input" 
+            onChange={handleImageChange}
+          />
+        </label>
+      </div>
+    </div>
+  );
+
   return (
     <div className={`event-form ${!showTitle ? 'no-title' : ''}`}>
       {showTitle && <h3>Legg til hendelse</h3>}
       <form onSubmit={handleSubmit} className="compact-form">
-        <div className="form-group">
-          <label htmlFor="eventTitle">Tittel<span className="required-mark"> *</span></label>
-          <RichTextEditor 
-            value={title}
-            onChange={(val) => {
-              setTitle(val);
-              setError('');
-            }}
-            placeholder="Tittel"
-            minHeight="40px"
-          />
-        </div>
+        <div className="form-row">
+          <div className="form-group title-group">
+            <label htmlFor="eventTitle">Tittel<span className="required-mark"> *</span></label>
+            <RichTextEditor 
+              value={title}
+              onChange={(val) => {
+                setTitle(val);
+                setError('');
+              }}
+              placeholder="Tittel"
+              minHeight="40px"
+            />
+          </div>
 
-        <DateInput 
-          value={date}
-          onChange={handleDateChange}
-          label="Dato"
-          required={true}
-          key={date}
-        />
+          <div className="form-group date-group">
+            <DateInput 
+              value={date}
+              onChange={handleDateChange}
+              label="Dato"
+              required={true}
+              key={date}
+            />
+          </div>
+        </div>
         
         <div className="expandable-group">
+          <ExpandableMenu title="Bilde">
+            {renderImageUpload()}
+          </ExpandableMenu>
+          
           <ExpandableMenu title="Beskrivelse">
             {renderDescriptionEditor()}
           </ExpandableMenu>

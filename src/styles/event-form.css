@@ -23,8 +23,26 @@
   flex-direction: column;
 }
 
-.form-group {
+/* New form row for side-by-side layout */
+.form-row {
+  display: flex;
+  gap: 0.5rem;
   margin-bottom: 0.5rem;
+}
+
+.form-group {
+  margin-bottom: 0;
+  flex: 1;
+}
+
+/* Title group takes more space */
+.title-group {
+  flex: 2;
+}
+
+/* Date group takes less space */
+.date-group {
+  flex: 1;
 }
 
 /* Required field marker */
@@ -39,6 +57,84 @@
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-color);
+}
+
+/* Image upload container */
+.image-upload-container {
+  padding: 0.5rem;
+}
+
+.image-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+
+.image-checkbox {
+  width: 1rem;
+  height: 1rem;
+}
+
+.image-checkbox-text {
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.image-upload-wrapper {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.image-upload-wrapper.hidden {
+  display: none;
+}
+
+.image-upload-wrapper.visible {
+  display: block;
+}
+
+.image-upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 8rem;
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.image-upload-area:hover {
+  background-color: var(--hover-background);
+  border-color: var(--button-primary);
+}
+
+.image-upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-upload-icon {
+  width: 2rem;
+  height: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.image-upload-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.image-input {
+  display: none;
 }
 
 /* Checkbox Options Row */
@@ -300,9 +396,6 @@
   margin-top: 0.25rem;
 }
 
-
-/* Add to existing event-form.css */
-
 /* When the form is displayed without a title */
 .event-form.no-title {
   border-top: none;
@@ -323,4 +416,17 @@
 
 .manual-event-form .event-form h3 {
   display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .title-group,
+  .date-group {
+    flex: 1;
+  }
 }
