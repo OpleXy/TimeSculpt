@@ -20,7 +20,7 @@ function Topbar({
   onSaveTimeline,
   isPublic, 
   onPrivacyChange,
-  lastSaved // Ny prop for timestamp
+  lastSaved // Prop for timestamp
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -59,12 +59,16 @@ function Topbar({
     if (diffInMinutes < 1) {
       return 'Nettopp lagret';
     } else if (diffInMinutes < 60) {
-      return `Lagret for ${diffInMinutes} min siden`;
+      return `${diffInMinutes} min siden`;
     } else if (diffInMinutes < 1440) { // Less than 24 hours
       const hours = Math.floor(diffInMinutes / 60);
-      return `Lagret for ${hours} time${hours > 1 ? 'r' : ''} siden`;
+      return `${hours} time${hours > 1 ? 'r' : ''} siden`;
     } else {
-      return `Lagret ${savedTime.toLocaleDateString('no-NO')}`;
+      return savedTime.toLocaleDateString('no-NO', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
     }
   };
   
@@ -395,101 +399,65 @@ function Topbar({
             {/* Timeline Actions Container */}
             <div className="timeline-actions-container" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: '15px' }}>
               
-              {/* Auto-save status indicator - erstatter manual lagre knappen */}
+              {/* Lagre knapp - vises bare for timeline owner med hendelser */}
               {isTimelineActive && timelineData.events && timelineData.events.length > 0 && isTimelineOwner && (
-                <div
-                  className="autosave-status"
-                  title={lastSaved ? `Sist lagret: ${new Date(lastSaved).toLocaleString('no-NO')}` : "Automatisk lagring aktivert"}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '0 12px',
-                    height: '36px',
-                    backgroundColor: hasUnsavedChanges ? 'rgba(255, 193, 7, 0.1)' : 'rgba(40, 167, 69, 0.1)',
-                    border: hasUnsavedChanges ? '1px solid rgba(255, 193, 7, 0.3)' : '1px solid rgba(40, 167, 69, 0.3)',
-                    borderRadius: '18px',
-                    fontSize: '13px',
-                    color: hasUnsavedChanges ? '#856404' : '#155724',
-                    fontWeight: '500',
-                    gap: '6px',
-                    transition: 'all 0.3s ease',
-                    cursor: 'default',
-                    userSelect: 'none'
-                  }}
-                >
-                  {hasUnsavedChanges ? (
-                    <>
-                      <div 
-                        style={{
-                          width: '6px',
-                          height: '6px',
-                          backgroundColor: '#ffc107',
-                          borderRadius: '50%',
-                          animation: 'pulse 1.5s infinite'
-                        }}
-                      />
-                      <span>Lagrer...</span>
-                    </>
-                  ) : (
-                    <>
-                      <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        width="16" 
-                        height="16" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round"
-                      >
-                        <path d="M20 6L9 17l-5-5"/>
-                      </svg>
-                      <span>{formatLastSaved(lastSaved) || 'Auto-lagring aktiv'}</span>
-                    </>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <button
+                    className="save-timeline-btn topbar-save-btn"
+                    onClick={handleSaveTimeline}
+                    disabled={!hasUnsavedChanges}
+                    title={hasUnsavedChanges ? "Lagre endringer" : "Ingen endringer å lagre"}
+                    style={{
+                      width: 'auto',
+                      padding: '0 16px',
+                      height: '36px',
+                      backgroundColor: hasUnsavedChanges ? '#007bff' : '#6c757d',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: hasUnsavedChanges ? 'pointer' : 'default',
+                      display: 'flex',
+                      alignItems: 'center',
+                      fontWeight: '500',
+                      fontSize: '14px',
+                      opacity: hasUnsavedChanges ? 1 : 0.7,
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      width="18" 
+                      height="18" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+                      style={{ marginRight: '8px' }}
+                    >
+                      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                      <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                      <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    Lagre
+                  </button>
+
+                  {/* Subtil "sist lagret" merking */}
+                  {lastSaved && !hasUnsavedChanges && (
+                    <span 
+                      style={{
+                        fontSize: '12px',
+                        color: '#6c757d',
+                        fontStyle: 'italic',
+                        whiteSpace: 'nowrap'
+                      }}
+                      title={`Sist lagret: ${new Date(lastSaved).toLocaleString('no-NO')}`}
+                    >
+                      {formatLastSaved(lastSaved)}
+                    </span>
                   )}
                 </div>
-              )}
-
-              {/* Fallback manual save button for new timelines without ID */}
-              {isTimelineActive && timelineData.events && timelineData.events.length > 0 && isTimelineOwner && !timelineData.id && (
-                <button
-                  className="save-timeline-btn topbar-save-btn"
-                  onClick={handleSaveTimeline}
-                  title="Lagre tidslinje første gang"
-                  style={{
-                    width: 'auto',
-                    padding: '0 16px',
-                    height: '36px',
-                    backgroundColor: '#007bff',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    fontWeight: '500',
-                    fontSize: '14px'
-                  }}
-                >
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    width="18" 
-                    height="18" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                    style={{ marginRight: '8px' }}
-                  >
-                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                    <polyline points="7 3 7 8 15 8"></polyline>
-                  </svg>
-                  Lagre
-                </button>
               )}
               
               {/* Share Button */}
