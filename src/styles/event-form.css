@@ -550,3 +550,57 @@
     transform: scale(1);
   }
 }
+
+/* Legg til disse stilene til den eksisterende event-form.css filen */
+
+/* Drag-over styling for image upload area */
+.image-upload-area.drag-over {
+  background-color: var(--button-primary-hover, #0056b3);
+  border-color: var(--button-primary, #007bff);
+  border-style: solid;
+  border-width: 3px;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0, 123, 255, 0.3);
+}
+
+.image-upload-area.drag-over .image-upload-icon {
+  color: white;
+  transform: scale(1.1);
+}
+
+.image-upload-area.drag-over .image-upload-text,
+.image-upload-area.drag-over .image-upload-subtitle {
+  color: white;
+  font-weight: 600;
+}
+
+/* Smooth transitions for drag states */
+.image-upload-area {
+  transition: all 0.3s ease;
+}
+
+.image-upload-icon {
+  transition: all 0.3s ease;
+}
+
+.image-upload-text,
+.image-upload-subtitle {
+  transition: all 0.3s ease;
+}
+
+/* Additional hover enhancements */
+.image-upload-area:hover:not(.drag-over) {
+  background-color: var(--hover-background);
+  border-color: var(--button-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.image-upload-area:hover:not(.drag-over) .image-upload-icon {
+  color: var(--button-primary);
+}
+
+.image-upload-area:hover:not(.drag-over) .image-upload-text,
+.image-upload-area:hover:not(.drag-over) .image-upload-subtitle {
+  color: var(--button-primary);
+}

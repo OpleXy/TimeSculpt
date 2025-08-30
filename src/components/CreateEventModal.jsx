@@ -146,7 +146,7 @@ function CreateEventModal({
   );
 }
 
-// Create Event Form component
+// Create Event Form component with drag-and-drop
 function CreateEventForm({ date, onDateChange, onSaveEvent, timelineColor }) {
   const [title, setTitle] = useState('');
   const [eventDate, setEventDate] = useState(date);
@@ -156,6 +156,8 @@ function CreateEventForm({ date, onDateChange, onSaveEvent, timelineColor }) {
   const [error, setError] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
   const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [isDragOver, setIsDragOver] = useState(false);
 
   // Update local state when prop changes
   useEffect(() => {
@@ -171,11 +173,53 @@ function CreateEventForm({ date, onDateChange, onSaveEvent, timelineColor }) {
     setIsFormValid(hasTitle && hasDate);
   }, [title, eventDate]);
 
+  // Cleanup preview URL on unmount
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
+
   // Utility function to strip HTML for plaintext storage
   const stripHtml = (html) => {
     const tmp = document.createElement('DIV');
     tmp.innerHTML = html;
     return tmp.textContent || tmp.innerText || '';
+  };
+
+  // Validate image file
+  const validateImageFile = (file) => {
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setError('Ugyldig filtype. Kun JPEG, PNG, GIF og WebP bilder er tillatt.');
+      return false;
+    }
+
+    // Validate file size (5MB limit)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      setError('Filen er for stor. Maksimal størrelse er 5MB.');
+      return false;
+    }
+
+    return true;
+  };
+
+  // Process image file (common function for both file input and drag-drop)
+  const processImageFile = (file) => {
+    if (!validateImageFile(file)) {
+      return;
+    }
+
+    setImageFile(file);
+    setError(''); // Clear any existing errors
+
+    // Create preview URL
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
   };
 
   const handleSubmit = (e) => {
@@ -224,8 +268,65 @@ function CreateEventForm({ date, onDateChange, onSaveEvent, timelineColor }) {
 
   // Handle image file selection
   const handleImageChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0]);
+    const file = e.target.files?.[0];
+    if (file) {
+      processImageFile(file);
+    }
+  };
+
+  // Handle drag events
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Only set dragOver to false if we're leaving the drag area completely
+    const dragArea = e.currentTarget;
+    const relatedTarget = e.relatedTarget;
+    
+    if (!dragArea.contains(relatedTarget)) {
+      setIsDragOver(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+
+    const files = Array.from(e.dataTransfer.files);
+    const imageFile = files.find(file => file.type.startsWith('image/'));
+    
+    if (imageFile) {
+      processImageFile(imageFile);
+    } else if (files.length > 0) {
+      setError('Kun bildefiler er tillatt.');
+    }
+  };
+
+  // Handle image removal
+  const handleImageRemove = () => {
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImageFile(null);
+    setImagePreview(null);
+    
+    // Reset the file input
+    const fileInput = document.getElementById('bilde-create');
+    if (fileInput) {
+      fileInput.value = '';
     }
   };
 
@@ -366,32 +467,62 @@ function CreateEventForm({ date, onDateChange, onSaveEvent, timelineColor }) {
     />
   );
 
-  // Render image upload content
+  // Render image upload content with drag-and-drop
   const renderImageUpload = () => (
     <div className="image-upload-container">
       <div className="image-upload-wrapper visible">
-        <label htmlFor="bilde-create" className="image-upload-area">
-          <div className="image-upload-content">
-            <svg className="image-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" 
-                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 010 10H7z" />
-            </svg>
-            <p className="image-upload-text">Last opp eller dra og slipp bildet her</p>
-            {imageFile && (
-              <p className="selected-file-text">
-                Valgt fil: {typeof imageFile === 'string' ? 'Eksisterende bilde' : imageFile.name}
-              </p>
-            )}
+        {/* Image preview */}
+        {imagePreview && (
+          <div className="image-preview">
+            <img src={imagePreview} alt="Forhåndsvisning" className="preview-image" />
+            <button 
+              type="button"
+              className="remove-image-btn"
+              onClick={handleImageRemove}
+              title="Fjern bilde"
+            >
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <div className="image-info">
+              <span className="file-name">{imageFile?.name}</span>
+              <span className="file-size">{imageFile ? `${(imageFile.size / 1024 / 1024).toFixed(1)} MB` : ''}</span>
+            </div>
           </div>
-          <input 
-            id="bilde-create" 
-            name="bilde-create" 
-            type="file" 
-            accept="image/*" 
-            className="image-input" 
-            onChange={handleImageChange}
-          />
-        </label>
+        )}
+        
+        {/* Upload area with drag-and-drop */}
+        {!imagePreview && (
+          <label 
+            htmlFor="bilde-create" 
+            className={`image-upload-area ${isDragOver ? 'drag-over' : ''}`}
+            onDragOver={handleDragOver}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <div className="image-upload-content">
+              <svg className="image-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" 
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 010 10H7z" />
+              </svg>
+              <p className="image-upload-text">
+                {isDragOver ? 'Slipp bildet her' : 'Last opp eller dra og slipp bildet her'}
+              </p>
+              <p className="image-upload-subtitle">JPEG, PNG, GIF, WebP (maks 5MB)</p>
+            </div>
+          </label>
+        )}
+        
+        <input 
+          id="bilde-create" 
+          name="bilde-create" 
+          type="file" 
+          accept="image/*" 
+          className="image-input" 
+          onChange={handleImageChange}
+        />
       </div>
     </div>
   );

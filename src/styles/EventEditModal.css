@@ -270,3 +270,409 @@
       gap: 10px;
     }
   }
+
+  /* Legg til disse stilene til den eksisterende EventEditModal.css filen */
+
+/* Image upload styles for EventEditModal */
+.event-edit-modal .image-upload-container {
+  padding: 0.5rem 0;
+}
+
+.event-edit-modal .image-upload-wrapper {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.event-edit-modal .image-upload-wrapper.visible {
+  display: block;
+}
+
+.event-edit-modal .image-upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 6rem;
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: var(--section-background);
+}
+
+.event-edit-modal .image-upload-area:hover {
+  background-color: var(--hover-background);
+  border-color: var(--button-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.event-edit-modal .image-upload-area.drag-over {
+  background-color: var(--button-primary-hover, #0056b3);
+  border-color: var(--button-primary, #007bff);
+  border-style: solid;
+  border-width: 3px;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0, 123, 255, 0.3);
+}
+
+.event-edit-modal .image-upload-area.drag-over .image-upload-icon {
+  color: white;
+  transform: scale(1.1);
+}
+
+.event-edit-modal .image-upload-area.drag-over .image-upload-text,
+.event-edit-modal .image-upload-area.drag-over .image-upload-subtitle {
+  color: white;
+  font-weight: 600;
+}
+
+.event-edit-modal .image-upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.event-edit-modal .image-upload-icon {
+  width: 2rem;
+  height: 2rem;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+}
+
+.event-edit-modal .image-upload-area:hover:not(.drag-over) .image-upload-icon {
+  color: var(--button-primary);
+}
+
+.event-edit-modal .image-upload-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin: 0;
+  transition: all 0.3s ease;
+}
+
+.event-edit-modal .image-upload-subtitle {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  opacity: 0.8;
+  margin: 0;
+  transition: all 0.3s ease;
+}
+
+.event-edit-modal .image-upload-area:hover:not(.drag-over) .image-upload-text,
+.event-edit-modal .image-upload-area:hover:not(.drag-over) .image-upload-subtitle {
+  color: var(--button-primary);
+}
+
+.event-edit-modal .image-input {
+  display: none;
+}
+
+/* Image preview styles for EventEditModal */
+.event-edit-modal .image-preview {
+  position: relative;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--section-background);
+  margin-bottom: 0.5rem;
+  animation: fadeInScale 0.3s ease-out;
+}
+
+.event-edit-modal .preview-image {
+  width: 100%;
+  height: auto;
+  max-height: 150px;
+  object-fit: cover;
+  display: block;
+}
+
+.event-edit-modal .remove-image-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  background-color: rgba(220, 53, 69, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.event-edit-modal .remove-image-btn:hover {
+  background-color: rgba(220, 53, 69, 1);
+  transform: scale(1.1);
+}
+
+.event-edit-modal .image-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  color: white;
+  padding: 6px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+
+.event-edit-modal .file-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
+}
+
+.event-edit-modal .file-size {
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+/* Animation for image upload */
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Dark mode support for EventEditModal image upload */
+.dark-mode .event-edit-modal .image-preview {
+  border-color: var(--border-color, #718096);
+  background-color: var(--section-background, #4a5568);
+}
+
+.dark-mode .event-edit-modal .image-upload-area {
+  border-color: var(--border-color, #718096);
+  background-color: var(--section-background, #4a5568);
+}
+
+.dark-mode .event-edit-modal .image-upload-area:hover {
+  background-color: var(--hover-background, #5a6578);
+  border-color: var(--button-primary, #3a97ff);
+}
+
+.dark-mode .event-edit-modal .image-info {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+}/* EventEditModal image upload stiler - Legg til i EventEditModal.css eller som separat fil */
+
+/* Image upload container */
+.event-edit-modal .image-upload-container {
+  padding: 0.5rem 0;
+}
+
+.event-edit-modal .image-upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 6rem;
+  border: 2px dashed var(--border-color, #ccc);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: var(--section-background, #f8f9fa);
+}
+
+.event-edit-modal .image-upload-area:hover {
+  background-color: var(--hover-background, #e9ecef);
+  border-color: var(--button-primary, #007bff);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.event-edit-modal .image-upload-area.drag-over {
+  background-color: var(--button-primary, #007bff) !important;
+  border-color: var(--button-primary, #007bff) !important;
+  border-style: solid !important;
+  border-width: 3px !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 16px rgba(0, 123, 255, 0.3) !important;
+}
+
+.event-edit-modal .image-upload-area.drag-over .image-upload-icon {
+  color: white !important;
+  transform: scale(1.1);
+}
+
+.event-edit-modal .image-upload-area.drag-over .image-upload-text,
+.event-edit-modal .image-upload-area.drag-over .image-upload-subtitle {
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+.event-edit-modal .image-upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.event-edit-modal .image-upload-icon {
+  width: 2rem;
+  height: 2rem;
+  color: var(--text-secondary, #6c757d);
+  transition: all 0.3s ease;
+}
+
+.event-edit-modal .image-upload-area:hover:not(.drag-over) .image-upload-icon {
+  color: var(--button-primary, #007bff);
+}
+
+.event-edit-modal .image-upload-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #6c757d);
+  font-weight: 500;
+  margin: 0;
+  transition: all 0.3s ease;
+}
+
+.event-edit-modal .image-upload-subtitle {
+  font-size: 0.7rem;
+  color: var(--text-secondary, #6c757d);
+  opacity: 0.8;
+  margin: 0;
+  transition: all 0.3s ease;
+}
+
+.event-edit-modal .image-upload-area:hover:not(.drag-over) .image-upload-text,
+.event-edit-modal .image-upload-area:hover:not(.drag-over) .image-upload-subtitle {
+  color: var(--button-primary, #007bff);
+}
+
+.event-edit-modal .image-input {
+  display: none;
+}
+
+/* Image preview styles */
+.event-edit-modal .image-preview {
+  position: relative;
+  border: 2px solid var(--border-color, #ccc);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--section-background, #f8f9fa);
+  margin-bottom: 0.5rem;
+  animation: fadeInScale 0.3s ease-out;
+}
+
+.event-edit-modal .preview-image {
+  width: 100%;
+  height: auto;
+  max-height: 150px;
+  object-fit: cover;
+  display: block;
+}
+
+.event-edit-modal .remove-image-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  background-color: rgba(220, 53, 69, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.event-edit-modal .remove-image-btn:hover {
+  background-color: rgba(220, 53, 69, 1);
+  transform: scale(1.1);
+}
+
+.event-edit-modal .image-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  color: white;
+  padding: 6px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+
+.event-edit-modal .file-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
+}
+
+.event-edit-modal .file-size {
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+/* Animation */
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Dark mode fallbacks */
+.dark-mode .event-edit-modal .image-preview {
+  border-color: #718096;
+  background-color: #4a5568;
+}
+
+.dark-mode .event-edit-modal .image-upload-area {
+  border-color: #718096;
+  background-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.dark-mode .event-edit-modal .image-upload-area:hover {
+  background-color: #5a6578;
+  border-color: #3a97ff;
+}
+
+.dark-mode .event-edit-modal .image-upload-icon {
+  color: #a0aec0;
+}
+
+.dark-mode .event-edit-modal .image-upload-text,
+.dark-mode .event-edit-modal .image-upload-subtitle {
+  color: #a0aec0;
+}
+
+.dark-mode .event-edit-modal .image-info {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+}

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import RichTextEditor from './RichTextEditor';
 import DateInput from './DateInput';
 import '../styles/EventEditModal.css';
+import '../styles/event-form.css';
 
 function EventEditModal({ event, onSave, onClose, onDelete }) {
   const [title, setTitle] = useState('');
@@ -10,6 +11,9 @@ function EventEditModal({ event, onSave, onClose, onDelete }) {
   const [size, setSize] = useState('medium');
   const [color, setColor] = useState('default');
   const [error, setError] = useState('');
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [isDragOver, setIsDragOver] = useState(false);
   const modalRef = useRef(null);
 
   // Format date for input field (YYYY-MM-DD)
@@ -38,8 +42,26 @@ function EventEditModal({ event, onSave, onClose, onDelete }) {
       setDescription(event.description || '');
       setSize(event.size || 'medium');
       setColor(event.color || 'default');
+      
+      // Handle existing image
+      if (event.hasImage && event.imageUrl) {
+        setImagePreview(event.imageUrl);
+        setImageFile(event.imageUrl); // For existing images, keep the URL
+      } else {
+        setImageFile(null);
+        setImagePreview(null);
+      }
     }
   }, [event]);
+
+  // Cleanup preview URL on unmount (only for new files, not existing URLs)
+  useEffect(() => {
+    return () => {
+      if (imagePreview && typeof imagePreview === 'string' && imagePreview.startsWith('blob:')) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
 
   // Prevent wheel events from propagating to the timeline
   useEffect(() => {
@@ -60,6 +82,39 @@ function EventEditModal({ event, onSave, onClose, onDelete }) {
     };
   }, []);
 
+  // Validate image file
+  const validateImageFile = (file) => {
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setError('Ugyldig filtype. Kun JPEG, PNG, GIF og WebP bilder er tillatt.');
+      return false;
+    }
+
+    // Validate file size (5MB limit)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      setError('Filen er for stor. Maksimal størrelse er 5MB.');
+      return false;
+    }
+
+    return true;
+  };
+
+  // Process image file (common function for both file input and drag-drop)
+  const processImageFile = (file) => {
+    if (!validateImageFile(file)) {
+      return;
+    }
+
+    setImageFile(file);
+    setError(''); // Clear any existing errors
+
+    // Create preview URL
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
@@ -77,7 +132,9 @@ function EventEditModal({ event, onSave, onClose, onDelete }) {
       date: new Date(date),
       description,
       size,
-      color
+      color,
+      hasImage: !!imageFile,
+      imageFile: imageFile
     };
 
     onSave(updatedEvent);
@@ -101,6 +158,77 @@ function EventEditModal({ event, onSave, onClose, onDelete }) {
   // Handle date change from DateInput component
   const handleDateChange = (e) => {
     setDate(e.target.value);
+  };
+
+  // Handle image file selection
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      processImageFile(file);
+    }
+  };
+
+  // Handle drag events
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Drag over - EventEditModal');
+    setIsDragOver(true);
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Drag enter - EventEditModal');
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Drag leave - EventEditModal');
+    
+    // Only set dragOver to false if we're leaving the drag area completely
+    const dragArea = e.currentTarget;
+    const relatedTarget = e.relatedTarget;
+    
+    if (!dragArea.contains(relatedTarget)) {
+      setIsDragOver(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Drop - EventEditModal', e.dataTransfer.files);
+    setIsDragOver(false);
+
+    const files = Array.from(e.dataTransfer.files);
+    const imageFile = files.find(file => file.type.startsWith('image/'));
+    
+    if (imageFile) {
+      console.log('Processing image file:', imageFile.name);
+      processImageFile(imageFile);
+    } else if (files.length > 0) {
+      console.log('No image files found');
+      setError('Kun bildefiler er tillatt.');
+    }
+  };
+
+  // Handle image removal
+  const handleImageRemove = () => {
+    // Only revoke URL if it's a blob URL (new upload)
+    if (imagePreview && typeof imagePreview === 'string' && imagePreview.startsWith('blob:')) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImageFile(null);
+    setImagePreview(null);
+    
+    // Reset the file input
+    const fileInput = document.getElementById('image-edit');
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
   return (
@@ -158,6 +286,72 @@ function EventEditModal({ event, onSave, onClose, onDelete }) {
               required={true}
             />
           </div>
+
+          {/* Image Upload Section */}
+          <div className="form-group" style={{ marginBottom: '12px' }}>
+            <label>Bilde</label>
+            <div className="image-upload-container">
+              <div className="image-upload-wrapper visible">
+                {/* Image preview */}
+                {imagePreview && (
+                  <div className="image-preview">
+                    <img src={imagePreview} alt="Forhåndsvisning" className="preview-image" />
+                    <button 
+                      type="button"
+                      className="remove-image-btn"
+                      onClick={handleImageRemove}
+                      title="Fjern bilde"
+                    >
+                      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                    <div className="image-info">
+                      <span className="file-name">
+                        {typeof imageFile === 'string' ? 'Eksisterende bilde' : imageFile?.name}
+                      </span>
+                      <span className="file-size">
+                        {typeof imageFile === 'object' && imageFile?.size ? `${(imageFile.size / 1024 / 1024).toFixed(1)} MB` : ''}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Upload area with drag-and-drop */}
+                {!imagePreview && (
+                  <label 
+                    htmlFor="image-edit" 
+                    className={`image-upload-area ${isDragOver ? 'drag-over' : ''}`}
+                    onDragOver={handleDragOver}
+                    onDragEnter={handleDragEnter}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  >
+                    <div className="image-upload-content">
+                      <svg className="image-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" 
+                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 010 10H7z" />
+                      </svg>
+                      <p className="image-upload-text">
+                        {isDragOver ? 'Slipp bildet her' : 'Last opp eller dra og slipp bildet her'}
+                      </p>
+                      <p className="image-upload-subtitle">JPEG, PNG, GIF, WebP (maks 5MB)</p>
+                    </div>
+                  </label>
+                )}
+                
+                <input 
+                  id="image-edit" 
+                  name="image-edit" 
+                  type="file" 
+                  accept="image/*" 
+                  className="image-input" 
+                  onChange={handleImageChange}
+                />
+              </div>
+            </div>
+          </div>
+          
           <div className="form-group" style={{ marginBottom: '16px' }}>
             <label htmlFor="eventDescription">Beskrivelse</label>
             <RichTextEditor 

@@ -16,6 +16,7 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
   const [isFormValid, setIsFormValid] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [isDragOver, setIsDragOver] = useState(false);
 
   // Utility function to strip HTML for plaintext storage
   const stripHtml = (html) => {
@@ -106,31 +107,86 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
     setColor(selectedColor);
   };
 
+  // Validate image file
+  const validateImageFile = (file) => {
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setError('Ugyldig filtype. Kun JPEG, PNG, GIF og WebP bilder er tillatt.');
+      return false;
+    }
+
+    // Validate file size (5MB limit)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      setError('Filen er for stor. Maksimal størrelse er 5MB.');
+      return false;
+    }
+
+    return true;
+  };
+
+  // Process image file (common function for both file input and drag-drop)
+  const processImageFile = (file) => {
+    if (!validateImageFile(file)) {
+      return;
+    }
+
+    setImageFile(file);
+    setError(''); // Clear any existing errors
+
+    // Create preview URL
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+  };
+
   // Handle image file selection with preview
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
-    
     if (file) {
-      // Validate file type
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-      if (!allowedTypes.includes(file.type)) {
-        setError('Ugyldig filtype. Kun JPEG, PNG, GIF og WebP bilder er tillatt.');
-        return;
-      }
+      processImageFile(file);
+    }
+  };
 
-      // Validate file size (5MB limit)
-      const maxSize = 5 * 1024 * 1024; // 5MB
-      if (file.size > maxSize) {
-        setError('Filen er for stor. Maksimal størrelse er 5MB.');
-        return;
-      }
+  // Handle drag events
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
 
-      setImageFile(file);
-      setError(''); // Clear any existing errors
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
 
-      // Create preview URL
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Only set dragOver to false if we're leaving the drag area completely
+    // Check if the related target is not a child of the drag area
+    const dragArea = e.currentTarget;
+    const relatedTarget = e.relatedTarget;
+    
+    if (!dragArea.contains(relatedTarget)) {
+      setIsDragOver(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+
+    const files = Array.from(e.dataTransfer.files);
+    const imageFile = files.find(file => file.type.startsWith('image/'));
+    
+    if (imageFile) {
+      processImageFile(imageFile);
+    } else if (files.length > 0) {
+      setError('Kun bildefiler er tillatt.');
     }
   };
 
@@ -320,15 +376,24 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
           </div>
         )}
         
-        {/* Upload area */}
+        {/* Upload area with drag-and-drop */}
         {!imagePreview && (
-          <label htmlFor="bilde" className="image-upload-area">
+          <label 
+            htmlFor="bilde" 
+            className={`image-upload-area ${isDragOver ? 'drag-over' : ''}`}
+            onDragOver={handleDragOver}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
             <div className="image-upload-content">
               <svg className="image-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" 
                   d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 010 10H7z" />
               </svg>
-              <p className="image-upload-text">Last opp eller dra og slipp bildet her</p>
+              <p className="image-upload-text">
+                {isDragOver ? 'Slipp bildet her' : 'Last opp eller dra og slipp bildet her'}
+              </p>
               <p className="image-upload-subtitle">JPEG, PNG, GIF, WebP (maks 5MB)</p>
             </div>
           </label>
