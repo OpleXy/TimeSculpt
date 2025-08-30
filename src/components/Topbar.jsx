@@ -358,8 +358,9 @@ function Topbar({
             {/* Timeline Actions Container */}
             <div className="timeline-actions-container" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: '15px' }}>
               
-              {/* Lagre knapp - vises bare for timeline owner med hendelser */}
-              {isTimelineActive && timelineData.events && timelineData.events.length > 0 && isTimelineOwner && (
+              {/* Lagre knapp - vises for timeline owner med hendelser eller nye tidslinjer */}
+{isTimelineActive && timelineData.events && timelineData.events.length > 0 && 
+ (isTimelineOwner || !timelineData.id) && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <button
                     className="save-timeline-btn topbar-save-btn"

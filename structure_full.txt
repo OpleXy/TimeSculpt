@@ -205,7 +205,7 @@ Line Counts Per File:
 838 src/App.jsx
 793 src/styles/add-event-modal.css
 792 src/components/TimelineStyleMenu.jsx
-788 src/components/Topbar.jsx
+789 src/components/Topbar.jsx
 781 src/styles/auth.css
 700 src/styles/timeline.css
 619 src/styles/pages/MinProfil.css
