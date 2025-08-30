@@ -3,7 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Topbar from './components/Topbar';
 import Timeline from './components/Timeline';
 import LayoutManager from './components/LayoutManager';
-import AddEventModal from './components/AddEventModal'; // Ny import
+import AddEventModal from './components/AddEventModal';
+import EditEventModal from './components/EditEventModal';
 import { useAuth } from './contexts/AuthContext.jsx';
 import { useTheme } from './contexts/ThemeContext.jsx';
 import AuthModal from './components/auth/AuthModal';
@@ -20,7 +21,7 @@ import './styles/auth.css';
 import './styles/topbar.css';
 import './styles/mobile-warning.css';
 import './styles/theme-toggle.css';
-import './styles/add-event-modal.css'; // Ny import
+import './styles/add-event-modal.css';
 
 import './styles/sidebarinfo.css';
 import './styles/event-colors.css';
@@ -39,7 +40,11 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isAddEventModalOpen, setIsAddEventModalOpen] = useState(false); // Ny state for modal
+  const [isAddEventModalOpen, setIsAddEventModalOpen] = useState(false);
+  
+  // Edit Event Modal states - handled globally if needed (usually handled in Timeline)
+  const [isEditEventModalOpen, setIsEditEventModalOpen] = useState(false);
+  const [eventToEdit, setEventToEdit] = useState(null);
   
   // Add state for interval markers
   const [showIntervals, setShowIntervals] = useState(true);
@@ -172,6 +177,86 @@ function App() {
   const openAddEventModal = () => setIsAddEventModalOpen(true);
   const closeAddEventModal = () => setIsAddEventModalOpen(false);
 
+  // Edit Event Modal handlers (if needed globally - usually Timeline handles its own)
+  const openEditEventModal = (event) => {
+    setEventToEdit(event);
+    setIsEditEventModalOpen(true);
+  };
+  
+  const closeEditEventModal = () => {
+    setIsEditEventModalOpen(false);
+    setEventToEdit(null);
+  };
+
+  // Function to show shortcut notification
+  const showShortcutNotification = (message) => {
+    setShortcutNotification(message);
+    
+    // Auto-hide the notification after 2 seconds
+    setTimeout(() => {
+      setShortcutNotification(null);
+    }, 2000);
+  };
+
+  // Handle saving and deleting edited events (if handled globally)
+  const handleSaveEditedEvent = (updatedEvent) => {
+    if (!eventToEdit || eventToEdit.index === undefined) return;
+    
+    const newEvents = [...timelineData.events];
+    const eventIndex = eventToEdit.index;
+    
+    // Update the event while preserving positioning and metadata
+    newEvents[eventIndex] = {
+      ...updatedEvent,
+      // Preserve existing positioning
+      xOffset: eventToEdit.xOffset || 0,
+      yOffset: eventToEdit.yOffset || eventToEdit.offset || 0,
+      offset: eventToEdit.yOffset || eventToEdit.offset || 0,
+      autoLayouted: eventToEdit.autoLayouted || false,
+      manuallyPositioned: eventToEdit.manuallyPositioned || false
+    };
+    
+    setTimelineData({
+      ...timelineData,
+      events: newEvents
+    });
+    
+    // Mark as having unsaved changes
+    setHasUnsavedChanges(true);
+    setSaveError('');
+    
+    // Close the modal
+    setIsEditEventModalOpen(false);
+    setEventToEdit(null);
+    
+    // Show success notification
+    showShortcutNotification('Hendelse oppdatert');
+  };
+
+  const handleDeleteEditedEvent = (event, index) => {
+    const eventIndex = typeof index === 'number' ? index : eventToEdit?.index;
+    if (eventIndex === undefined) return;
+    
+    const newEvents = [...timelineData.events];
+    newEvents.splice(eventIndex, 1);
+    
+    setTimelineData({
+      ...timelineData,
+      events: newEvents
+    });
+    
+    // Mark as having unsaved changes
+    setHasUnsavedChanges(true);
+    setSaveError('');
+    
+    // Close the modal
+    setIsEditEventModalOpen(false);
+    setEventToEdit(null);
+    
+    // Show success notification
+    showShortcutNotification('Hendelse slettet');
+  };
+
   // Close welcome popup
   const closeWelcomePopup = () => {
     setShowWelcomePopup(false);
@@ -236,6 +321,8 @@ function App() {
       }
     }
   };
+
+  
 
   // Reset timeline when user logs out
   useEffect(() => {
@@ -314,16 +401,6 @@ function App() {
       .catch(err => {
         console.error('Could not copy text: ', err);
       });
-  };
-
-  // Function to show shortcut notification
-  const showShortcutNotification = (message) => {
-    setShortcutNotification(message);
-    
-    // Auto-hide the notification after 2 seconds
-    setTimeout(() => {
-      setShortcutNotification(null);
-    }, 2000);
   };
 
   // Update interval settings
@@ -627,7 +704,7 @@ function App() {
 
   // Add class to body when modal is open to prevent scrolling
   useEffect(() => {
-    if (isAddEventModalOpen) {
+    if (isAddEventModalOpen || isEditEventModalOpen) {
       document.body.classList.add('modal-open');
     } else {
       document.body.classList.remove('modal-open');
@@ -637,7 +714,7 @@ function App() {
     return () => {
       document.body.classList.remove('modal-open');
     };
-  }, [isAddEventModalOpen]);
+  }, [isAddEventModalOpen, isEditEventModalOpen]);
 
   return (
     <div className={`app-container ${darkMode ? 'dark-mode' : ''}`}>
@@ -725,6 +802,16 @@ function App() {
           onCreateTimeline={createTimeline}
           hasUnsavedChanges={hasUnsavedChanges}
           timelineListRefreshTrigger={timelineListRefreshTrigger}
+        />
+        
+        {/* Edit Event Modal - global handler (usually Timeline handles its own) */}
+        <EditEventModal
+          isOpen={isEditEventModalOpen}
+          onClose={closeEditEventModal}
+          onSave={handleSaveEditedEvent}
+          onDelete={handleDeleteEditedEvent}
+          event={eventToEdit}
+          timelineData={timelineData}
         />
         
         {/* Prompt processing overlay */}

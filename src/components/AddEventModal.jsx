@@ -11,14 +11,6 @@ function AddEventModal({
 }) {
   const { isAuthenticated } = useAuth();
   
-  // State for resizable modal
-  const [modalWidth, setModalWidth] = useState(() => {
-    const saved = localStorage.getItem('addEventModalWidth');
-    return saved ? parseInt(saved) : 350;
-  });
-  
-  const [isResizing, setIsResizing] = useState(false);
-  
   // Check if the timeline has the required fields to show event creation tools
   const hasBasicTimelineData = timelineData && 
                               timelineData.title && 
@@ -54,47 +46,12 @@ function AddEventModal({
     }
   };
 
-  // Handle resize
-  const handleMouseDown = (e) => {
-    e.preventDefault();
-    setIsResizing(true);
-  };
-
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (!isResizing) return;
-      
-      const newWidth = Math.max(300, Math.min(600, e.clientX));
-      setModalWidth(newWidth);
-    };
-
-    const handleMouseUp = () => {
-      if (isResizing) {
-        setIsResizing(false);
-        localStorage.setItem('addEventModalWidth', modalWidth.toString());
-      }
-    };
-
-    if (isResizing) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      document.body.style.userSelect = 'none';
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-      document.body.style.userSelect = 'auto';
-    };
-  }, [isResizing, modalWidth]);
-
   if (!isOpen) return null;
 
   return (
     <div className="add-event-modal-overlay" onClick={handleBackdropClick}>
       <div 
         className="add-event-modal"
-        style={{ width: `${modalWidth}px` }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
@@ -156,28 +113,6 @@ function AddEventModal({
               />
             </div>
           )}
-        </div>
-
-        {/* Resize handle */}
-        <div 
-          className="modal-resize-handle"
-          onMouseDown={handleMouseDown}
-          title="Dra for å endre bredde"
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="12" cy="12" r="1" />
-            <circle cx="12" cy="5" r="1" />
-            <circle cx="12" cy="19" r="1" />
-          </svg>
         </div>
       </div>
     </div>

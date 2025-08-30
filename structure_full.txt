@@ -60,6 +60,7 @@ src
 │   ├── CreateEventModal.jsx
 │   ├── DateInput.jsx
 │   ├── DeleteConfirmationModal.jsx
+│   ├── EditEventModal.jsx
 │   ├── EventContextMenu.jsx
 │   ├── EventCreationSelector.jsx
 │   ├── EventDetailPanel.jsx
@@ -173,7 +174,7 @@ src
 └── utils
     └── dateUtils.js
 
-12 directories, 115 files
+12 directories, 116 files
 
 Line Counts Per File:
 12839 public/backgrounds/dino.png
@@ -196,19 +197,20 @@ Line Counts Per File:
 1698 src/styles/darkMode.css
 1634 src/styles/ui-components.css
 1429 src/components/TimelineContextMenu.jsx
-1296 src/styles/topbar.css
+1248 src/components/Timeline.jsx
 1193 src/styles/timeline-share-modal.css
-1182 src/components/Timeline.jsx
+1072 src/styles/topbar.css
 1046 src/api.js
 993 src/services/timelineCommandProcessor.js
+838 src/App.jsx
 829 src/components/Topbar.jsx
 793 src/styles/add-event-modal.css
 792 src/components/TimelineStyleMenu.jsx
 781 src/styles/auth.css
-751 src/App.jsx
 700 src/styles/timeline.css
 619 src/styles/pages/MinProfil.css
 533 src/components/IntervalSettings.jsx
+520 src/components/EditEventModal.jsx
 477 src/components/TimelineIntervals.jsx
 467 src/components/EventDetailPanel.jsx
 431 src/styles/event-form.css
@@ -247,7 +249,6 @@ Line Counts Per File:
 189 src/components/WelcomeScreen.jsx
 188 src/components/DateInput.jsx
 187 src/styles/text-to-timeline.css
-186 src/components/AddEventModal.jsx
 167 src/pages/Innstillinger.jsx
 156 src/styles/EventContextMenu.css
 153 src/styles/background-images.css
@@ -267,6 +268,7 @@ Line Counts Per File:
 126 src/pages/PublicTimelines.jsx
 122 src/styles/DateInput.css
 122 src/contexts/ThemeContext.jsx
+121 src/components/AddEventModal.jsx
 109 src/assets/logo-timesculpt.png
 108 src/styles/mobile-warning.css
 103 src/components/TimelineForm.jsx

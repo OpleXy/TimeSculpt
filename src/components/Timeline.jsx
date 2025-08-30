@@ -7,6 +7,7 @@ import DeleteConfirmationModal from './DeleteConfirmationModal';
 import BackgroundManager from './BackgroundManager';
 import TimelineIntervals from './TimelineIntervals';
 import CreateEventModal from './CreateEventModal';
+import EditEventModal from './EditEventModal'; // NEW IMPORT
 import { setDocumentTitle } from '../services/documentTitleService';
 import { smartLayout, needsRelayout, resetEventLayout } from '../services/eventLayoutService';
 
@@ -33,6 +34,10 @@ function Timeline({
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createModalPosition, setCreateModalPosition] = useState({ x: 0, y: 0 });
   const [createEventDate, setCreateEventDate] = useState(null);
+  
+  // NEW STATES FOR EDIT MODAL
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [eventToEdit, setEventToEdit] = useState(null);
   
   // States for hover date display
   const [showHoverDate, setShowHoverDate] = useState(false);
@@ -329,6 +334,62 @@ function Timeline({
     });
   };
   
+  // NEW FUNCTION: Handle opening edit modal
+  const handleEditEvent = (event, index) => {
+    setEventToEdit({...event, index});
+    setShowEditModal(true);
+    setShowDetailPanel(false); // Close detail panel if open
+  };
+  
+  // NEW FUNCTION: Handle saving edited event from modal
+  const handleSaveEventFromModal = (updatedEvent) => {
+    if (!eventToEdit || eventToEdit.index === undefined) return;
+    
+    const newEvents = [...timelineData.events];
+    const eventIndex = eventToEdit.index;
+    
+    newEvents[eventIndex] = {
+      ...updatedEvent,
+      // Preserve positioning and other metadata
+      xOffset: eventToEdit.xOffset || 0,
+      yOffset: eventToEdit.yOffset || eventToEdit.offset || 0,
+      offset: eventToEdit.yOffset || eventToEdit.offset || 0,
+      autoLayouted: eventToEdit.autoLayouted || false,
+      manuallyPositioned: eventToEdit.manuallyPositioned || false
+    };
+    
+    setTimelineData({
+      ...timelineData,
+      events: newEvents
+    });
+    
+    setShowEditModal(false);
+    setEventToEdit(null);
+  };
+  
+  // NEW FUNCTION: Handle deleting event from modal
+  const handleDeleteEventFromModal = (event, index) => {
+    const eventIndex = typeof index === 'number' ? index : eventToEdit?.index;
+    if (eventIndex === undefined) return;
+    
+    const newEvents = [...timelineData.events];
+    newEvents.splice(eventIndex, 1);
+    
+    setTimelineData({
+      ...timelineData,
+      events: newEvents
+    });
+    
+    setShowEditModal(false);
+    setEventToEdit(null);
+    
+    if (lastClickedEvent === eventIndex) {
+      setLastClickedEvent(null);
+    } else if (lastClickedEvent > eventIndex) {
+      setLastClickedEvent(lastClickedEvent - 1);
+    }
+  };
+  
   // Callback for when a background image is loaded
   const handleBackgroundLoaded = useCallback((imageUrl) => {
     setBackgroundImageUrl(imageUrl);
@@ -354,14 +415,10 @@ function Timeline({
     });
   };
   
-  // Handle showing event details in the side panel
+  // Handle showing event details in the side panel - UPDATED to use edit modal
   const handleShowEventDetail = (event, index) => {
-    if (showDetailPanel) {
-      setDetailEvent({...event, index});
-    } else {
-      setDetailEvent({...event, index});
-      setShowDetailPanel(true);
-    }
+    // Use edit modal instead of detail panel
+    handleEditEvent(event, index);
   };
   
   // Handle closing the detail panel
@@ -385,10 +442,9 @@ function Timeline({
     setLastClickedEvent(index);
   };
   
-  // Handle edit event from context menu
+  // Handle edit event from context menu - UPDATED to use edit modal
   const handleEditEventFromContextMenu = (event) => {
-    setDetailEvent(event);
-    setShowDetailPanel(true);
+    handleEditEvent(event, event.index);
     setShowEventContextMenu(false);
   };
   
@@ -1101,6 +1157,16 @@ function Timeline({
             onClose={closeEventContextMenu}
           />
         )}
+        
+        {/* NEW: EditEventModal */}
+        <EditEventModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onSave={handleSaveEventFromModal}
+          onDelete={handleDeleteEventFromModal}
+          event={eventToEdit}
+          timelineData={timelineData}
+        />
         
         <EventDetailPanel 
           event={detailEvent}
