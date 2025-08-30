@@ -698,3 +698,241 @@
 }
 
 
+/* Timeline Event Image Support - Add to src/styles/timeline.css */
+
+/* Event image container */
+.event .event-image-container {
+  margin: 8px 0;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: #f8f9fa;
+  position: relative;
+}
+
+.event .event-image {
+  width: 100%;
+  height: auto;
+  max-height: 120px;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+.event .event-image.loaded {
+  opacity: 1;
+}
+
+.event .event-image.error {
+  display: none;
+}
+
+/* Image loading state */
+.event .event-image-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  min-height: 60px;
+}
+
+.event .loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e9ecef;
+  border-top: 2px solid var(--timeline-color, #007bff);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Image error state */
+.event .event-image-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  color: #6c757d;
+  background-color: #f8f9fa;
+  min-height: 60px;
+  font-size: 11px;
+  text-align: center;
+}
+
+.event .event-image-error svg {
+  margin-bottom: 4px;
+  width: 16px;
+  height: 16px;
+}
+
+.event .event-image-error span {
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+/* Event content structure improvements */
+.event .event-title-content {
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.event .event-date-content {
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: normal;
+  margin-top: 4px;
+}
+
+/* Event with image adjustments */
+.event.has-image {
+  min-height: auto;
+}
+
+.event.has-image .event-image-container {
+  margin: 6px 0;
+}
+
+/* Size-specific image adjustments */
+.event.small .event-image {
+  max-height: 80px;
+}
+
+.event.medium .event-image {
+  max-height: 120px;
+}
+
+.event.large .event-image {
+  max-height: 160px;
+}
+
+.event.small .event-image-loading,
+.event.small .event-image-error {
+  min-height: 40px;
+}
+
+.event.medium .event-image-loading,
+.event.medium .event-image-error {
+  min-height: 60px;
+}
+
+.event.large .event-image-loading,
+.event.large .event-image-error {
+  min-height: 80px;
+}
+
+/* Dark mode support */
+.dark-mode .event .event-image-container {
+  background-color: #4a5568;
+}
+
+.dark-mode .event .event-image-loading {
+  background-color: #4a5568;
+}
+
+.dark-mode .event .loading-spinner {
+  border-color: #718096;
+  border-top-color: var(--timeline-color, #3a97ff);
+}
+
+.dark-mode .event .event-image-error {
+  background-color: #4a5568;
+  color: #a0aec0;
+}
+
+.dark-mode .event .event-date-content {
+  color: #a0aec0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .event .event-image {
+    max-height: 100px;
+  }
+  
+  .event.small .event-image {
+    max-height: 60px;
+  }
+  
+  .event.medium .event-image {
+    max-height: 100px;
+  }
+  
+  .event.large .event-image {
+    max-height: 140px;
+  }
+  
+  .event .event-image-error {
+    padding: 10px;
+    font-size: 10px;
+  }
+  
+  .event .event-image-error svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .event .event-image {
+    max-height: 80px;
+  }
+  
+  .event.small .event-image {
+    max-height: 50px;
+  }
+  
+  .event.medium .event-image {
+    max-height: 80px;
+  }
+  
+  .event.large .event-image {
+    max-height: 120px;
+  }
+  
+  .event .event-image-loading,
+  .event .event-image-error {
+    min-height: 40px;
+    padding: 8px;
+  }
+  
+  .event .loading-spinner {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .event .event-image-error svg {
+    width: 12px;
+    height: 12px;
+  }
+  
+  .event .event-image-error span {
+    font-size: 9px;
+  }
+}
+
+/* Animation for image appearance */
+.event .event-image-container {
+  animation: fadeInImage 0.3s ease-out;
+}
+
+@keyframes fadeInImage {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

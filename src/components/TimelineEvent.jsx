@@ -17,6 +17,9 @@ function TimelineEvent({
   const [isDragging, setIsDragging] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [isSnapped, setIsSnapped] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [imageUrl, setImageUrl] = useState(null);
   const eventRef = useRef(null);
   const lineRef = useRef(null);
   
@@ -31,6 +34,42 @@ function TimelineEvent({
     red: '#dc3545',
     orange: '#fd7e14',
     purple: '#6f42c1'
+  };
+
+  // Process image file - handle both File objects and URL strings
+  useEffect(() => {
+    if (event.imageFile || event.imageUrl) {
+      // Prioritize imageUrl if available, fallback to imageFile
+      const imageSource = event.imageUrl || event.imageFile;
+      
+      if (imageSource instanceof File) {
+        // If it's a File object (newly uploaded)
+        const url = URL.createObjectURL(imageSource);
+        setImageUrl(url);
+        
+        // Cleanup URL when component unmounts or imageFile changes
+        return () => URL.revokeObjectURL(url);
+      } else if (typeof imageSource === 'string') {
+        // If it's already a string URL (existing image)
+        setImageUrl(imageSource);
+      }
+    } else {
+      setImageUrl(null);
+      setImageLoaded(false);
+      setImageError(false);
+    }
+  }, [event.imageFile, event.imageUrl]);
+
+  // Handle image load
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+    setImageError(false);
+  };
+
+  // Handle image error
+  const handleImageError = () => {
+    setImageError(true);
+    setImageLoaded(false);
   };
   
   // Set position based on timeline orientation and 2D offset
@@ -355,7 +394,7 @@ function TimelineEvent({
       {/* Event box with CSS variable for timeline color */}
       <div
         ref={eventRef}
-        className={`event ${isDragging ? 'dragging' : ''} ${event.description ? 'has-description' : ''} ${lastClickedEvent === index ? 'last-clicked' : ''} ${getSizeClass()} ${getColorClass()} ${isSnapped ? 'snapped' : ''}`}
+        className={`event ${isDragging ? 'dragging' : ''} ${event.description ? 'has-description' : ''} ${lastClickedEvent === index ? 'last-clicked' : ''} ${getSizeClass()} ${getColorClass()} ${isSnapped ? 'snapped' : ''} ${imageUrl ? 'has-image' : ''}`}
         style={{
           ...getPosition(),
           ...getEventStyle(),
@@ -370,26 +409,57 @@ function TimelineEvent({
         data-index={index}
         title={event.description ? "Høyreklikk for kontekstmeny eller dobbelklikk for å redigere" : "Høyreklikk for kontekstmeny eller dobbelklikk for å redigere"}
       >
-        <div dangerouslySetInnerHTML={{ __html: processedContent }}></div>
-        <br/>
-        {formatDate(event.date)}
+        {/* Event title */}
+        <div className="event-title-content" dangerouslySetInnerHTML={{ __html: processedContent }}></div>
+        
+        {/* Event image - displayed between title and date */}
+        {imageUrl && (
+          <div className="event-image-container">
+            <img 
+              src={imageUrl}
+              alt="Event illustration"
+              className={`event-image ${imageLoaded ? 'loaded' : ''} ${imageError ? 'error' : ''}`}
+              onLoad={handleImageLoad}
+              onError={handleImageError}
+              draggable={false}
+            />
+            {!imageLoaded && !imageError && (
+              <div className="event-image-loading">
+                <div className="loading-spinner"></div>
+              </div>
+            )}
+            {imageError && (
+              <div className="event-image-error">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <span>Bilde ikke tilgjengelig</span>
+              </div>
+            )}
+          </div>
+        )}
+        
+        {/* Event date */}
+        <div className="event-date-content">
+          {formatDate(event.date)}
+        </div>
         
         {/* Small indicator if event has description */}
         {event.description && (
           <div className="event-description-indicator">
             <svg 
-  xmlns="http://www.w3.org/2000/svg" 
-  width="12" 
-  height="12" 
-  viewBox="0 0 24 24" 
-  fill="none" 
-  stroke="currentColor" 
-  strokeWidth="2" 
-  strokeLinecap="round" 
-  strokeLinejoin="round"
->
-  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z"/>
-</svg>
+              xmlns="http://www.w3.org/2000/svg" 
+              width="12" 
+              height="12" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            >
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z"/>
+            </svg>
           </div>
         )}
       </div>

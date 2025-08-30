@@ -16,6 +16,7 @@ import {
   updateProfile
 } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage'; // Add Storage import
 
 const firebaseConfig = {
     apiKey: "AIzaSyCXIIMOjxdjNo4g9A9SVSWENvrXfLv4fyw",
@@ -31,6 +32,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app); // Initialize Storage
 
 // IMPORTANT: The URL here must be whitelisted in the Firebase Console
 // Go to: Authentication > Settings > Authorized domains and add your domain
@@ -255,4 +257,5 @@ export const authStateListener = (callback) => {
   return onAuthStateChanged(auth, callback);
 };
 
-export { auth, db };
+// Export Storage instance along with auth and db
+export { auth, db, storage };

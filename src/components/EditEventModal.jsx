@@ -37,9 +37,12 @@ function EditEventModal({
       offset: event.yOffset || event.offset || 0,
       autoLayouted: event.autoLayouted || false,
       manuallyPositioned: event.manuallyPositioned || false,
-      // Preserve image properties if they exist
-      hasImage: eventData.hasImage || event.hasImage,
-      imageFile: eventData.imageFile || event.imageFile
+      // Handle image properties
+      hasImage: eventData.hasImage || false,
+      imageFile: eventData.imageFile || null, // This could be a File or URL
+      imageUrl: eventData.imageUrl || null,
+      imageStoragePath: eventData.imageStoragePath || event.imageStoragePath || null,
+      imageFileName: eventData.imageFileName || event.imageFileName || null
     };
 
     onSave(updatedEvent);
@@ -125,7 +128,7 @@ function EditEventModal({
   );
 }
 
-// Special EventForm component for editing that pre-fills values
+// Special EventForm component for editing that pre-fills values with image support
 function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
@@ -135,6 +138,8 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
   const [error, setError] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
   const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [existingImageUrl, setExistingImageUrl] = useState(null);
 
   // Format date for input field (YYYY-MM-DD)
   const formatDateForInput = (date) => {
@@ -155,7 +160,19 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
       setDescription(event.description || '');
       setSize(event.size || 'medium');
       setColor(event.color || 'default');
-      setImageFile(event.imageFile || null);
+      
+      // Handle existing image
+      if (event.imageFile || event.imageUrl) {
+        const imageUrl = event.imageUrl || event.imageFile;
+        if (typeof imageUrl === 'string') {
+          setExistingImageUrl(imageUrl);
+          setImagePreview(imageUrl);
+        }
+      } else {
+        setImageFile(null);
+        setImagePreview(null);
+        setExistingImageUrl(null);
+      }
     }
   }, [event]);
 
@@ -211,8 +228,11 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
       description: description || '',
       size,
       color,
-      hasImage: !!imageFile,
-      imageFile
+      hasImage: !!(imageFile || existingImageUrl),
+      imageFile: imageFile || existingImageUrl, // File object or existing URL
+      imageUrl: existingImageUrl, // Keep existing URL if no new file
+      imageStoragePath: event.imageStoragePath || null,
+      imageFileName: event.imageFileName || null
     };
 
     // Call parent handler to update event
@@ -235,12 +255,63 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
     setColor(selectedColor);
   };
 
-  // Handle image file selection
+  // Handle image file selection with preview
   const handleImageChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0]);
+    const file = e.target.files?.[0];
+    
+    if (file) {
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        setError('Ugyldig filtype. Kun JPEG, PNG, GIF og WebP bilder er tillatt.');
+        return;
+      }
+
+      // Validate file size (5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        setError('Filen er for stor. Maksimal størrelse er 5MB.');
+        return;
+      }
+
+      setImageFile(file);
+      setError(''); // Clear any existing errors
+      
+      // Clear existing image
+      setExistingImageUrl(null);
+
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
     }
   };
+
+  // Handle image removal
+  const handleImageRemove = () => {
+    // Clean up preview URLs
+    if (imagePreview && imagePreview !== existingImageUrl) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    
+    setImageFile(null);
+    setImagePreview(null);
+    setExistingImageUrl(null);
+    
+    // Reset the file input
+    const fileInput = document.getElementById('bilde-edit');
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  };
+
+  // Cleanup preview URL on unmount
+  useEffect(() => {
+    return () => {
+      if (imagePreview && imagePreview !== existingImageUrl) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview, existingImageUrl]);
 
   // Render size options content
   const renderSizeOptions = () => (
@@ -379,32 +450,57 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
     />
   );
 
-  // Render image upload content
+  // Render image upload content with preview and existing image support
   const renderImageUpload = () => (
     <div className="image-upload-container">
       <div className="image-upload-wrapper visible">
-        <label htmlFor="bilde-edit" className="image-upload-area">
-          <div className="image-upload-content">
-            <svg className="image-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" 
-                d="M7 16a4 4 0 01-.88-7.903A5 5 0 11115.9 6h.1a5 5 0 010 10H7z" />
-            </svg>
-            <p className="image-upload-text">Last opp eller dra og slipp bildet her</p>
-            {imageFile && (
-              <p className="selected-file-text">
-                Valgt fil: {typeof imageFile === 'string' ? 'Eksisterende bilde' : imageFile.name}
-              </p>
-            )}
+        {/* Image preview */}
+        {imagePreview && (
+          <div className="image-preview">
+            <img src={imagePreview} alt="Forhåndsvisning" className="preview-image" />
+            <button 
+              type="button"
+              className="remove-image-btn"
+              onClick={handleImageRemove}
+              title="Fjern bilde"
+            >
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <div className="image-info">
+              <span className="file-name">
+                {imageFile?.name || 'Eksisterende bilde'}
+              </span>
+              <span className="file-size">
+                {imageFile ? `${(imageFile.size / 1024 / 1024).toFixed(1)} MB` : ''}
+              </span>
+            </div>
           </div>
-          <input 
-            id="bilde-edit" 
-            name="bilde-edit" 
-            type="file" 
-            accept="image/*" 
-            className="image-input" 
-            onChange={handleImageChange}
-          />
-        </label>
+        )}
+        
+        {/* Upload area */}
+        {!imagePreview && (
+          <label htmlFor="bilde-edit" className="image-upload-area">
+            <div className="image-upload-content">
+              <svg className="image-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" 
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 010 10H7z" />
+              </svg>
+              <p className="image-upload-text">Last opp eller dra og slipp bildet her</p>
+              <p className="image-upload-subtitle">JPEG, PNG, GIF, WebP (maks 5MB)</p>
+            </div>
+          </label>
+        )}
+        
+        <input 
+          id="bilde-edit" 
+          name="bilde-edit" 
+          type="file" 
+          accept="image/*" 
+          className="image-input" 
+          onChange={handleImageChange}
+        />
       </div>
     </div>
   );

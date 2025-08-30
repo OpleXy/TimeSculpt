@@ -311,3 +311,242 @@
     flex: 1;
   }
 }
+/* Image Upload Styles for EventForm - Add to src/styles/event-form.css */
+
+/* Image preview styles */
+.image-preview {
+  position: relative;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--section-background);
+  margin-bottom: 0.5rem;
+}
+
+.preview-image {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  background-color: rgba(220, 53, 69, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.remove-image-btn:hover {
+  background-color: rgba(220, 53, 69, 1);
+  transform: scale(1.1);
+}
+
+.image-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  color: white;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.file-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
+}
+
+.file-size {
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+/* Upload area improvements */
+.image-upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 8rem;
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: var(--section-background);
+}
+
+.image-upload-area:hover {
+  background-color: var(--hover-background);
+  border-color: var(--button-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.image-upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.image-upload-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+}
+
+.image-upload-area:hover .image-upload-icon {
+  color: var(--button-primary);
+}
+
+.image-upload-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin: 0;
+}
+
+.image-upload-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  opacity: 0.8;
+  margin: 0;
+}
+
+.image-upload-area:hover .image-upload-text,
+.image-upload-area:hover .image-upload-subtitle {
+  color: var(--button-primary);
+}
+
+.image-input {
+  display: none;
+}
+
+/* Dark mode support for image upload */
+.dark-mode .image-preview {
+  border-color: var(--border-color, #718096);
+  background-color: var(--section-background, #4a5568);
+}
+
+.dark-mode .image-upload-area {
+  border-color: var(--border-color, #718096);
+  background-color: var(--section-background, #4a5568);
+}
+
+.dark-mode .image-upload-area:hover {
+  background-color: var(--hover-background, #5a6578);
+  border-color: var(--button-primary, #3a97ff);
+}
+
+.dark-mode .image-info {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+}
+
+/* Responsive adjustments for image upload */
+@media (max-width: 768px) {
+  .image-upload-area {
+    height: 6rem;
+  }
+  
+  .preview-image {
+    max-height: 150px;
+  }
+  
+  .image-upload-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+  
+  .image-upload-text {
+    font-size: 0.8rem;
+  }
+  
+  .image-upload-subtitle {
+    font-size: 0.7rem;
+  }
+  
+  .remove-image-btn {
+    width: 24px;
+    height: 24px;
+    top: 6px;
+    right: 6px;
+  }
+  
+  .image-info {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .image-upload-area {
+    height: 5rem;
+  }
+  
+  .preview-image {
+    max-height: 120px;
+  }
+  
+  .image-upload-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  
+  .image-upload-text {
+    font-size: 0.75rem;
+  }
+  
+  .image-upload-subtitle {
+    font-size: 0.65rem;
+  }
+  
+  .image-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  
+  .file-name {
+    max-width: 100%;
+  }
+}
+
+/* Animation for image upload */
+.image-preview {
+  animation: fadeInScale 0.3s ease-out;
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
