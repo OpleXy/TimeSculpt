@@ -357,25 +357,22 @@ function TimelineContextMenu({
       handleFileUpload(files[0]);
     }
   };
+const handleColorSelect = (color) => {
+  if (onColorSelect) {
+    onColorSelect(color);
+  }
+  setShowColorPicker(false); // Denne er allerede riktig
+};
 
-  // Handle color selection
-  const handleColorSelect = (color) => {
-    if (onColorSelect) {
-      onColorSelect(color);
-    }
-    setShowColorPicker(false);
-  };
-
-  // Handle custom color picker
   const handleCustomColorClick = (e) => {
-    e.stopPropagation();
-    const rect = e.currentTarget.getBoundingClientRect();
-    setColorPickerPosition({
-      x: rect.right + 10,
-      y: rect.top
-    });
-    setShowColorPicker(true);
-  };
+  e.stopPropagation();
+  const rect = e.currentTarget.getBoundingClientRect();
+  setColorPickerPosition({
+    x: rect.right + 10,
+    y: rect.top
+  });
+  setShowColorPicker(true); // Denne er allerede riktig
+};
 
   // Handle color picker change with live preview
   const handleColorPickerChange = (e) => {
@@ -887,9 +884,6 @@ function TimelineContextMenu({
                 <AutoLayoutIcon />
               </div>
               Auto-Layout
-              {canUseAutoLayout && (
-                <span className="event-count-badge">{eventCount}</span>
-              )}
               <ChevronIcon />
             </li>
           </ul>
@@ -898,14 +892,8 @@ function TimelineContextMenu({
         {/* Auto-Layout Submenu */}
         {currentView === 'autolayout' && (
           <div className="context-menu-autolayout">
-            <div className="autolayout-header">
-              <AutoLayoutIcon />
-              <span>Automatisk strukturering</span>
-              {canUseAutoLayout && (
-                <span className="event-count-badge">{eventCount} hendelser</span>
-              )}
-            </div>
-            
+
+          
             <div className="toggle-container">
               <div className="toggle-item">
                 <span className="toggle-label">Aktiver auto-layout</span>
@@ -921,7 +909,7 @@ function TimelineContextMenu({
               </div>
               <div className="toggle-description">
                 {canUseAutoLayout ? 
-                  'Strukturerer hendelser automatisk for å unngå overlapping' :
+                  'Strukturerer hendelser automatisk' :
                   `Krever minst 3 hendelser (har ${eventCount})`
                 }
               </div>
@@ -929,18 +917,7 @@ function TimelineContextMenu({
 
             {autoLayoutEnabled && canUseAutoLayout && (
               <>
-                <div className="auto-layout-info">
-                  <div className="auto-layout-status">
-                    <CheckIcon />
-                    <span>Auto-layout aktiv</span>
-                  </div>
-                  <div className="layout-details">
-                    {isVertical ? 
-                      'Bruker høyre/venstre lanes for vertikal tidslinje' : 
-                      'Bruker over/under lanes for horisontal tidslinje'
-                    }
-                  </div>
-                </div>
+                
 
                 <button 
                   className="context-menu-action"
@@ -968,28 +945,7 @@ function TimelineContextMenu({
               </div>
             )}
 
-            <div className="autolayout-info">
-              <svg 
-                className="info-icon"
-                xmlns="http://www.w3.org/2000/svg" 
-                width="14" 
-                height="14" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="16" x2="12" y2="12"></line>
-                <line x1="12" y1="8" x2="12.01" y2="8"></line>
-              </svg>
-              <span>
-                Auto-layout organiserer hendelser automatisk i "lanes" for å unngå overlapping. 
-                Hendelser du drar manuelt vil ikke påvirkes av auto-layout.
-              </span>
-            </div>
+            
           </div>
         )}
 
@@ -1013,42 +969,39 @@ function TimelineContextMenu({
 
             <div className="background-content">
               {/* Combined colors (with custom color picker as first option) */}
+              
               {activeBackgroundTab === 'colors' && (
-                <div className="background-color-palette">
-                  {/* Custom color picker as first "color" with pencil icon */}
-                  <button
-                    className={`background-color-option custom-color-option ${
-                      !predefinedColors.find(c => c.value === currentBackgroundColor) ? 'selected' : ''
-                    }`}
-                    style={{ backgroundColor: customColor }}
-                    onClick={handleCustomColorClick}
-                    title="Egendefinert farge"
-                  >
-                    <div className="custom-color-pencil">✏️</div>
-                    {!predefinedColors.find(c => c.value === currentBackgroundColor) && (
-                      <span className="background-checkmark">✓</span>
-                    )}
-                  </button>
+  <div className="background-color-palette">
+    {/* Erstatt denne knappen med en color input */}
+    <label className="custom-color-input-wrapper">
+      <input
+        type="color"
+        value={customColor}
+        onChange={handleColorPickerChange}
+        className="custom-color-input"
+        title="Egendefinert farge"
+      />
+    </label>
 
-                  {/* Predefined colors */}
-                  {predefinedColors.map((color) => (
-                    <button
-                      key={color.value}
-                      className={`background-color-option ${
-                        currentBackgroundColor === color.value ? 'selected' : ''
-                      }`}
-                      style={{ backgroundColor: color.value }}
-                      onClick={() => handleColorSelect(color.value)}
-                      title={color.name}
-                    >
-                      {currentBackgroundColor === color.value && (
-                        <span className="background-checkmark">✓</span>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
-
+    {/* Predefined colors */}
+    {predefinedColors.map((color) => (
+      <button
+        key={color.value}
+        className={`background-color-option ${
+          currentBackgroundColor === color.value ? 'selected' : ''
+        }`}
+        style={{ backgroundColor: color.value }}
+        onClick={() => handleColorSelect(color.value)}
+        title={color.name}
+      >
+        {currentBackgroundColor === color.value && (
+          <span className="background-checkmark">✓</span>
+        )}
+      </button>
+    ))}
+  </div>
+)}
+     
               {/* Combined images and upload */}
               {activeBackgroundTab === 'images' && (
                 <div className="background-images-section">
@@ -1242,7 +1195,7 @@ function TimelineContextMenu({
                 <line x1="12" y1="16" x2="12" y2="12"></line>
                 <line x1="12" y1="8" x2="12.01" y2="8"></line>
               </svg>
-              <span>Dra for å justere tykkelsen på tidslinjen fra 1px til 10px. Klikk på verdien for å skrive inn et tall.</span>
+              <span>Klikk på verdien for å skrive inn et tall.</span>
             </div>
           </div>
         )}
@@ -1363,7 +1316,7 @@ function TimelineContextMenu({
                   </svg>
                   <span>
                     {localIntervalType === 'even' 
-                      ? 'Jevnt fordelte intervaller viser punkter med lik avstand over hele tidslinjen. Maks 20 intervaller tillatt. Klikk på verdien for å skrive inn et tall.'
+                      ? 'Jevnt fordelte intervaller. Maks 20 intervaller. Klikk på verdien for å skrive inn et tall.'
                       : localIntervalType === 'daily'
                         ? 'Daglige intervaller markerer hver dag på tidslinjen. Tilgjengelig for tidslinjer med opptil 30 dager.'
                         : localIntervalType === 'weekly'
@@ -1384,45 +1337,6 @@ function TimelineContextMenu({
         )}
       </div>
       
-      {/* Custom Color Picker Overlay */}
-      {showColorPicker && (
-        <div 
-          className="custom-color-picker-overlay"
-          style={{
-            position: 'fixed',
-            top: `${colorPickerPosition.y}px`,
-            left: `${colorPickerPosition.x}px`,
-            zIndex: 10000
-          }}
-        >
-          <div className="custom-color-picker-container">
-            <div className="custom-color-picker-header">
-              <span>Velg bakgrunnsfarge</span>
-              <button 
-                className="custom-color-picker-close"
-                onClick={() => setShowColorPicker(false)}
-              >
-                ×
-              </button>
-            </div>
-            <div className="custom-color-picker-content">
-              <div className="color-preview-row">
-                <div 
-                  className="color-preview-current"
-                  style={{ backgroundColor: customColor }}
-                />
-                <span className="color-preview-text">{customColor}</span>
-              </div>
-              <input
-                type="color"
-                value={customColor}
-                onChange={handleColorPickerChange}
-                className="custom-color-input"
-              />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

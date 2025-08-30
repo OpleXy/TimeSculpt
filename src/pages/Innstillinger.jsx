@@ -4,8 +4,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { updateUserTheme } from '../userAPI';
 import Layout from '../components/Layout';
 import { setDocumentTitle } from '../services/documentTitleService';
-import '../styles/pages/Innstillinger.css'; // CSS import
-import '../styles/pages/layout.css'; // Common layout styles
+import '../styles/pages/Innstillinger.css';
 
 function Innstillinger() {
   const { isAuthenticated, currentUser } = useAuth();
@@ -14,51 +13,25 @@ function Innstillinger() {
     language: 'no'
   });
   const [savedMessage, setSavedMessage] = useState('');
-  const [saveAttempt, setSaveAttempt] = useState(0);
 
-  // Set document title when component mounts
   useEffect(() => {
     setDocumentTitle('Innstillinger');
-    
-    // This ensures settings reflect any stored preferences
-  }, [darkMode]);
-
-  // Debug: Let's verify the toggle is actually working
-  useEffect(() => {
-    console.log('Innstillinger render state:', { 
-      isAuthenticated, 
-      hasCurrentUser: !!currentUser,
-      currentUserId: currentUser?.uid,
-      darkMode, 
-      synced,
-      saveAttempt
-    });
-  }, [isAuthenticated, currentUser, darkMode, synced, saveAttempt]);
+  }, []);
 
   const handleToggleChange = async (setting) => {
     if (setting === 'darkMode') {
-      console.log('Toggle clicked, current state:', darkMode);
-      
-      // Use the context's toggle function
       toggleDarkMode();
       
-      // Also force a direct update to Firebase for debugging
       if (isAuthenticated && currentUser) {
         try {
-          console.log('Directly saving theme to Firebase:', !darkMode);
           await updateUserTheme(!darkMode, currentUser.uid);
-          console.log('Direct save successful');
+          showSavedMessage('Tema-innstilling lagret til din profil');
         } catch (err) {
-          console.error('Direct save failed:', err);
+          console.error('Kunne ikke lagre tema:', err);
+          showSavedMessage('Kunne ikke lagre til profil, bruker lokal innstilling');
         }
-      }
-      
-      setSaveAttempt(prev => prev + 1);
-      
-      if (isAuthenticated) {
-        showSavedMessage('Tema-innstilling oppdatert og lagret til din profil');
       } else {
-        showSavedMessage('Tema-innstilling oppdatert');
+        showSavedMessage('Tema-innstilling oppdatert (lokal)');
       }
     }
   };
@@ -71,13 +44,9 @@ function Innstillinger() {
     showSavedMessage('Språk oppdatert');
   };
 
-  const showSavedMessage = (message = 'Innstillinger oppdatert') => {
+  const showSavedMessage = (message) => {
     setSavedMessage(message);
-    
-    // Clear message after 3 seconds
-    setTimeout(() => {
-      setSavedMessage('');
-    }, 3000);
+    setTimeout(() => setSavedMessage(''), 3000);
   };
 
   return (
@@ -89,11 +58,11 @@ function Innstillinger() {
           {!isAuthenticated && (
             <div className="auth-notification-message">
               <p>
-                <strong>Merk:</strong> Du er ikke logget inn. Endringer i innstillinger vil kun gjelde for denne enheten og denne nettleseren.
+                <strong>Merk:</strong> Du er ikke logget inn. Endringer vil kun gjelde for denne enheten.
                 <br />
                 <a href="#" onClick={() => document.querySelector('[data-testid="login-button"]')?.click()}>
                   Logg inn
-                </a> for å lagre dine preferanser på tvers av enheter.
+                </a> for å lagre preferanser på tvers av enheter.
               </p>
             </div>
           )}
@@ -101,13 +70,11 @@ function Innstillinger() {
           <div className="settings-container">
             <div className="settings-form">
               <div className="settings-section">
-                <h2>🌓 Utseende</h2>
-                
                 <div className="setting-item">
                   <div className="setting-label">
-                    <label htmlFor="darkMode">Mørk modus</label>
+                    <label htmlFor="darkMode">🌓 Mørk modus</label>
                     <p className="setting-description">
-                      Bytt til mørkt tema for applikasjonen
+                      Aktiver mørkt tema for applikasjonen
                     </p>
                   </div>
                   <div className="setting-control">
@@ -125,11 +92,10 @@ function Innstillinger() {
               </div>
               
               <div className="settings-section">
-                <h2>🌍 Språk</h2>
                 
                 <div className="setting-item">
                   <div className="setting-label">
-                    <label htmlFor="language">Velg språk</label>
+                    <label htmlFor="language">🌍 Velg språk</label>
                     <p className="setting-description">
                       Endre språket for brukergrensesnittet
                     </p>

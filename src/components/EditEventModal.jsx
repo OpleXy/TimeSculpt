@@ -9,7 +9,6 @@ function EditEventModal({
   isOpen,
   onClose,
   onSave,
-  onDelete,
   event,
   timelineData
 }) {
@@ -54,14 +53,6 @@ function EditEventModal({
     return tmp.textContent || tmp.innerText || '';
   };
 
-  // Handle delete
-  const handleDelete = () => {
-    if (window.confirm('Er du sikker på at du vil slette denne hendelsen? Denne handlingen kan ikke angres.')) {
-      onDelete(event, event.index);
-      onClose();
-    }
-  };
-
   // Close modal on ESC key
   useEffect(() => {
     const handleEsc = (event) => {
@@ -97,48 +88,23 @@ function EditEventModal({
         {/* Modal Header */}
         <div className="modal-header">
           <h2>Rediger hendelse</h2>
-          <div className="modal-header-actions">
-            <button 
-              className="delete-btn-modal"
-              onClick={handleDelete}
-              title="Slett hendelse"
+          <button 
+            className="close-modal-btn"
+            onClick={onClose}
+            aria-label="Lukk modal"
+          >
+            <svg 
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2"
             >
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="16" 
-                height="16" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
-                <polyline points="3 6 5 6 21 6" />
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                <line x1="10" y1="11" x2="10" y2="17" />
-                <line x1="14" y1="11" x2="14" y2="17" />
-              </svg>
-              Slett
-            </button>
-            <button 
-              className="close-modal-btn"
-              onClick={onClose}
-              aria-label="Lukk modal"
-            >
-              <svg 
-                width="20" 
-                height="20" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2"
-              >
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-          </div>
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
 
         {/* Modal Content */}
@@ -421,7 +387,7 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
           <div className="image-upload-content">
             <svg className="image-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" 
-                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 010 10H7z" />
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 11115.9 6h.1a5 5 0 010 10H7z" />
             </svg>
             <p className="image-upload-text">Last opp eller dra og slipp bildet her</p>
             {imageFile && (
@@ -444,7 +410,7 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
   );
 
   return (
-    
+    <div className="event-form no-title">
       <form onSubmit={handleSubmit} className="compact-form">
         <div className="form-row">
           <div className="form-group title-group">
@@ -514,7 +480,7 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
           <span>Oppdater hendelse</span>
         </button>
       </form>
-
+    </div>
   );
 }
 

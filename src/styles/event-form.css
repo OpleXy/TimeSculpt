@@ -8,22 +8,12 @@
   margin-bottom: 1rem;
 }
 
-.event-form h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-color);
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.25rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
 .compact-form {
   display: flex;
   flex-direction: column;
 }
 
-/* New form row for side-by-side layout */
+/* Form row for side-by-side layout */
 .form-row {
   display: flex;
   gap: 0.5rem;
@@ -64,31 +54,9 @@
   padding: 0.5rem;
 }
 
-.image-checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  margin-bottom: 0.5rem;
-}
-
-.image-checkbox {
-  width: 1rem;
-  height: 1rem;
-}
-
-.image-checkbox-text {
-  font-weight: 500;
-  color: var(--text-color);
-}
-
 .image-upload-wrapper {
   transition: all 0.3s ease;
   overflow: hidden;
-}
-
-.image-upload-wrapper.hidden {
-  display: none;
 }
 
 .image-upload-wrapper.visible {
@@ -137,72 +105,6 @@
   display: none;
 }
 
-/* Checkbox Options Row */
-.form-options {
-  display: flex;
-  justify-content: flex-start;
-  margin: 0.25rem 0;
-}
-
-.checkbox-option {
-  display: flex;
-  align-items: center;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
-  font-size: 0.875rem;
-  color: var(--text-color);
-}
-
-.option-checkbox {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 1rem;
-  height: 1rem;
-  border: 1.5px solid var(--input-border);
-  border-radius: 4px;
-  outline: none;
-  cursor: pointer;
-  position: relative;
-  background-color: var(--input-background);
-  transition: all 0.2s;
-}
-
-.option-checkbox:checked {
-  background-color: var(--button-primary);
-  border-color: var(--button-primary);
-}
-
-.option-checkbox:checked::after {
-  content: "";
-  position: absolute;
-  width: 4px;
-  height: 8px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  top: 1px;
-  left: 5px;
-  transform: rotate(45deg);
-  display: block;
-}
-
-.option-checkbox:hover {
-  border-color: var(--button-primary);
-}
-
-/* Size Selection Container */
-.size-selection-container {
-  border-radius: 6px;
-  padding: 0.5rem;
-  border: 1px solid var(--border-color);
-  animation: fadeIn 0.2s ease-out;
-  margin-bottom: 0.5rem;
-}
-
 /* Size Buttons */
 .size-buttons-group {
   display: flex;
@@ -247,15 +149,6 @@
 
 .size-button.active svg {
   stroke: var(--button-primary);
-}
-
-/* Description Container */
-.description-container {
-  padding: 0.5rem;
-  border-radius: 6px;
-  margin-bottom: 0.5rem;
-  border: 1px solid var(--border-color);
-  animation: fadeIn 0.2s ease-out;
 }
 
 /* Color buttons group */
@@ -350,18 +243,6 @@
 
 .add-event-btn span {
   line-height: 1.2;
-}
-
-/* Animation for Fade-in - works for both light and dark modes */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* Expandable Group - Container for expandable menus */
