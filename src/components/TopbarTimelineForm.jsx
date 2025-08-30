@@ -119,14 +119,12 @@ function TopbarTimelineForm({ onCreateTimeline, hasUnsavedChanges, buttonHeight 
         >
           <path d="M12 5v14M5 12h14" />
         </svg>
-        Opprett
+        Ny tidslinje
       </button>
 
       {isExpanded && (
         <div className="topbar-form-dropdown">
-          <div className="form-header">
-            <h3>Opprett tidslinje manuelt</h3>
-          </div>
+
           <form onSubmit={handleSubmit}>
             
             <div className="form-group">
@@ -183,15 +181,13 @@ function TopbarTimelineForm({ onCreateTimeline, hasUnsavedChanges, buttonHeight 
                 />
               </div>
             </div>
-            
-            <div className="form-footer">
-              <button 
+            <button 
                 type="submit" 
                 className="create-btn"
               >
                 Opprett
               </button>
-            </div>
+
           </form>
         </div>
       )}

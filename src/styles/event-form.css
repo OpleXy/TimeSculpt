@@ -271,7 +271,7 @@
 }
 
 /* Remove spacing between form groups */
-.form-group + .form-group,
+
 .form-group + .expandable-group,
 .expandable-group + .form-group {
   margin-top: 0.25rem;

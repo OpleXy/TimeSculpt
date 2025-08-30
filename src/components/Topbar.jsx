@@ -263,48 +263,7 @@ function Topbar({
     <div className="topbar">
       <div className="topbar-left">
         {/* Back to main site button */}
-        <div 
-          className="back-to-main-button" 
-          onClick={handleBackToMainSite}
-          title="Tilbake til TimeSculpt hovedside"
-          style={{ 
-            display: 'flex',
-            alignItems: 'center',
-            padding: '0 10px',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-            marginRight: '12px',
-            height: consistentHeight,
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(0, 123, 255, 0.05)';
-            e.currentTarget.querySelector('svg').style.transform = 'translateX(-3px)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-            e.currentTarget.querySelector('svg').style.transform = 'translateX(0)';
-          }}
-        >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="22" 
-            height="22" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-            style={{ 
-              color: '#666',
-              transition: 'transform 0.2s ease',
-            }}
-          >
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-        </div>
+        
         
         <div 
           className="app-brand" 
