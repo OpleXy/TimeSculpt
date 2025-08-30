@@ -140,10 +140,10 @@ function WelcomeScreen({ onLogin, onCreateTimeline }) {
                 <button 
                   type="button" 
                   className="example-btn"
-                  onClick={() => handleExampleClick('Russisk revolusjon')}
+                  onClick={() => handleExampleClick('Norges historie')}
                   disabled={isGenerating}
                 >
-                  Russisk revolusjon
+                  Norges historie
                 </button>
                 <button 
                   type="button" 
@@ -156,10 +156,10 @@ function WelcomeScreen({ onLogin, onCreateTimeline }) {
                 <button 
                   type="button" 
                   className="example-btn"
-                  onClick={() => handleExampleClick('Klassisismen')}
+                  onClick={() => handleExampleClick('Vikingtiden')}
                   disabled={isGenerating}
                 >
-                  Klassisismen
+                  Vikingtiden
                 </button>
               </div>
             </div>

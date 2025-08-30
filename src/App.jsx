@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Topbar from './components/Topbar';
 import Timeline from './components/Timeline';
@@ -57,10 +57,11 @@ function App() {
   // Add state for privacy setting
   const [isPublic, setIsPublic] = useState(false);
   
-  // Auto-save states
+  // Auto-save states with better tracking
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
   
   // Add state for tracking save errors (like reaching limit)
   const [saveError, setSaveError] = useState('');
@@ -77,6 +78,10 @@ function App() {
   // State for timeline list refresh trigger
   const [timelineListRefreshTrigger, setTimelineListRefreshTrigger] = useState(0);
   
+  // Refs for tracking operations
+  const saveInProgressRef = useRef(false);
+  const lastDataHashRef = useRef('');
+
   const [timelineData, setTimelineData] = useState({
     start: null,
     end: null,
@@ -97,15 +102,55 @@ function App() {
     isPublic: false
   });
 
-  // Auto-save function
-  const autoSaveTimeline = async (data) => {
+  // Generate a simple hash for timeline data to detect actual changes
+  const generateDataHash = (data) => {
+    const relevantData = {
+      id: data.id,
+      title: data.title,
+      start: data.start?.getTime?.() || data.start,
+      end: data.end?.getTime?.() || data.end,
+      events: data.events?.map(event => ({
+        title: event.title,
+        date: event.date?.getTime?.() || event.date,
+        description: event.description,
+        size: event.size,
+        color: event.color,
+        hasImage: event.hasImage,
+        imageUrl: event.imageUrl,
+        xOffset: event.xOffset,
+        yOffset: event.yOffset
+      })),
+      showIntervals,
+      intervalCount,
+      intervalType,
+      isPublic
+    };
+    return JSON.stringify(relevantData);
+  };
+
+  // Optimized auto-save function with deduplication
+  const autoSaveTimeline = async () => {
     // Don't save if there's no meaningful data or if it's not saved initially
-    if (!data || !data.title || !data.id || data.events.length === 0) {
+    if (!timelineData || !timelineData.title || !timelineData.id || timelineData.events.length === 0) {
+      return;
+    }
+
+    // Don't auto-save if manual save is in progress
+    if (saveInProgressRef.current || isUploadingImages) {
+      console.log('Save operation in progress, skipping auto-save');
+      return;
+    }
+
+    // Generate hash to check for actual changes
+    const currentDataHash = generateDataHash(timelineData);
+    if (currentDataHash === lastDataHashRef.current) {
+      console.log('No actual changes detected, skipping auto-save');
       return;
     }
 
     try {
       setIsSaving(true);
+      saveInProgressRef.current = true;
       
       // Make sure interval settings are included
       const intervalSettings = {
@@ -115,7 +160,7 @@ function App() {
       };
       
       const dataToSave = {
-        ...data,
+        ...timelineData,
         showIntervals: intervalSettings.show,
         intervalCount: intervalSettings.count,
         intervalType: intervalSettings.type,
@@ -131,6 +176,7 @@ function App() {
         setLastSaved(Date.now());
         setHasUnsavedChanges(false);
         setSaveError('');
+        lastDataHashRef.current = currentDataHash;
         console.log('Auto-saved timeline at:', new Date().toLocaleTimeString());
       }
     } catch (error) {
@@ -139,6 +185,7 @@ function App() {
       setHasUnsavedChanges(true);
     } finally {
       setIsSaving(false);
+      saveInProgressRef.current = false;
     }
   };
 
@@ -146,7 +193,7 @@ function App() {
   useAutoSave(
     timelineData, 
     autoSaveTimeline, 
-    2000, // 2 second delay
+    3000, // Increased to 3 second delay to reduce conflicts
     [
       timelineData?.events, 
       timelineData?.title, 
@@ -311,6 +358,9 @@ function App() {
         if (timeline.updatedAt) {
           setLastSaved(new Date(timeline.updatedAt).getTime());
         }
+        
+        // Update data hash after loading
+        lastDataHashRef.current = generateDataHash(timeline);
       }
     } catch (error) {
       console.error('Error loading timeline:', error);
@@ -321,8 +371,6 @@ function App() {
       }
     }
   };
-
-  
 
   // Reset timeline when user logs out
   useEffect(() => {
@@ -359,6 +407,7 @@ function App() {
       // Also reset unsaved changes
       setHasUnsavedChanges(false);
       setLastSaved(null);
+      lastDataHashRef.current = '';
     }
   }, [isAuthenticated, authChanged]);
 
@@ -539,6 +588,11 @@ function App() {
 
   // Add event to the timeline
   const addEvent = (event) => {
+    // Track if event has image file for upload monitoring
+    if (event.imageFile && event.imageFile instanceof File) {
+      setIsUploadingImages(true);
+    }
+    
     // Mark changes as unsaved (auto-save will handle it)
     setHasUnsavedChanges(true);
     setTimelineData(prevData => ({
@@ -546,10 +600,21 @@ function App() {
       events: [...prevData.events, event]
     }));
     setSaveError(''); // Clear any save errors
+    
+    // Reset upload state after a brief delay
+    if (event.imageFile && event.imageFile instanceof File) {
+      setTimeout(() => setIsUploadingImages(false), 1000);
+    }
   };
   
   // Manual save function (for initial save when timeline doesn't have ID yet)
   const saveTimeline = async () => {
+    // Prevent concurrent saves
+    if (saveInProgressRef.current || isSaving) {
+      console.log('Save already in progress, skipping manual save');
+      return;
+    }
+
     try {
       // Basic validation
       if (!timelineData.title || !timelineData.start || !timelineData.end) {
@@ -563,6 +628,16 @@ function App() {
       }
       
       setIsSaving(true);
+      saveInProgressRef.current = true;
+      
+      // Check for images being uploaded
+      const hasNewImages = timelineData.events.some(event => 
+        event.imageFile && event.imageFile instanceof File
+      );
+      
+      if (hasNewImages) {
+        setIsUploadingImages(true);
+      }
       
       // Make sure interval settings are included in the data as a single object
       const intervalSettings = {
@@ -596,6 +671,9 @@ function App() {
           setLastSaved(Date.now());
           setSaveError('');
           
+          // Update data hash after successful save
+          lastDataHashRef.current = generateDataHash(dataToSave);
+          
           // Show success notification
           showShortcutNotification('Tidslinjen ble lagret');
           
@@ -607,13 +685,17 @@ function App() {
         result = await api.saveTimeline(dataToSave);
         if (result.success) {
           // Update the timeline data with the new ID
-          setTimelineData(prevData => ({
-            ...prevData,
+          const updatedTimeline = {
+            ...dataToSave,
             id: result.timelineId
-          }));
+          };
+          setTimelineData(updatedTimeline);
           setHasUnsavedChanges(false);
           setLastSaved(Date.now());
           setSaveError('');
+          
+          // Update data hash after successful save
+          lastDataHashRef.current = generateDataHash(updatedTimeline);
           
           // Show success notification
           showShortcutNotification('Tidslinjen ble opprettet og auto-lagring aktivert');
@@ -637,6 +719,8 @@ function App() {
       }
     } finally {
       setIsSaving(false);
+      setIsUploadingImages(false);
+      saveInProgressRef.current = false;
     }
   };
 
@@ -687,6 +771,9 @@ function App() {
       
       // Update URL with the timeline ID
       navigate(`/?timelineId=${timeline.id}`, { replace: true });
+      
+      // Update data hash after loading
+      lastDataHashRef.current = generateDataHash(timeline);
     } else {
       console.error('Lastet tidslinje mangler ID');
       setTimelineData(timeline); // Still load but log warning
@@ -695,6 +782,18 @@ function App() {
   
   // Modified timeline data setter to track changes
   const setTimelineDataWithTracking = (newData) => {
+    // Check for image uploads in new data
+    if (newData.events) {
+      const hasNewImages = newData.events.some(event => 
+        event.imageFile && event.imageFile instanceof File
+      );
+      if (hasNewImages) {
+        setIsUploadingImages(true);
+        // Reset upload state after processing
+        setTimeout(() => setIsUploadingImages(false), 2000);
+      }
+    }
+    
     // Mark as having unsaved changes (auto-save will handle it)
     setHasUnsavedChanges(true);
     // Update the timeline data

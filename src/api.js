@@ -103,6 +103,9 @@ const deleteEventImage = async (storagePath) => {
  * @param {boolean} isUpdate - Whether this is an update operation
  * @returns {Promise<Array>} Processed events
  */
+/**
+ * Optimalisert processEventsWithImages funksjon som forhindrer duplikate uploads
+ */
 const processEventsWithImages = async (events, timelineId, isUpdate = false) => {
   const processedEvents = [];
   
@@ -113,29 +116,38 @@ const processEventsWithImages = async (events, timelineId, isUpdate = false) => 
     // Handle image upload if there's a new image file
     if (event.imageFile && event.imageFile instanceof File) {
       try {
-        // Generate unique event ID for image naming
-        const eventId = `event_${i}_${Date.now()}`;
-        
-        // Upload image and get URL
-        const imageData = await uploadEventImage(event.imageFile, timelineId, eventId);
-        
-        // If this is an update and we had an old image, delete it
-        if (isUpdate && event.imageStoragePath) {
-          await deleteEventImage(event.imageStoragePath);
+        // Sjekk om bildet allerede er lastet opp
+        if (event.imageUrl && event.imageStoragePath && typeof event.imageFile === 'object') {
+          // Bildet er allerede prosessert og lastet opp - ikke last opp igjen
+          console.log('Image already uploaded, reusing existing URL');
+          processedEvent.imageUrl = event.imageUrl;
+          processedEvent.imageStoragePath = event.imageStoragePath;
+          processedEvent.imageFileName = event.imageFileName;
+          processedEvent.hasImage = true;
+          delete processedEvent.imageFile;
+        } else {
+          // Generer stabilt event ID basert på innhold og posisjon
+          const eventId = event.id || `event_${i}`;
+          
+          // Upload image og få URL
+          const imageData = await uploadEventImage(event.imageFile, timelineId, eventId);
+          
+          // Hvis dette er en oppdatering og vi hadde et gammelt bilde, slett det
+          if (isUpdate && event.imageStoragePath && event.imageStoragePath !== imageData.storagePath) {
+            await deleteEventImage(event.imageStoragePath);
+          }
+          
+          // Erstatt File objekt med bildedata
+          processedEvent.imageUrl = imageData.url;
+          processedEvent.imageStoragePath = imageData.storagePath;
+          processedEvent.imageFileName = imageData.fileName;
+          processedEvent.hasImage = true;
+          delete processedEvent.imageFile;
         }
-        
-        // Replace File object with image data
-        processedEvent.imageUrl = imageData.url;
-        processedEvent.imageStoragePath = imageData.storagePath;
-        processedEvent.imageFileName = imageData.fileName;
-        processedEvent.hasImage = true;
-        
-        // Remove the File object (can't be serialized)
-        delete processedEvent.imageFile;
         
       } catch (error) {
         console.error('Error processing image for event:', error);
-        // Remove image properties if upload failed
+        // Fjern bildeegenskaper hvis opplasting feilet
         delete processedEvent.imageFile;
         processedEvent.hasImage = false;
       }

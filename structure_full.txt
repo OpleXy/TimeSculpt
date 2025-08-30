@@ -201,9 +201,9 @@ Line Counts Per File:
 1193 src/styles/timeline-share-modal.css
 1072 src/styles/topbar.css
 993 src/services/timelineCommandProcessor.js
-944 src/api.js
+956 src/api.js
 937 src/styles/timeline.css
-838 src/App.jsx
+937 src/App.jsx
 793 src/styles/add-event-modal.css
 792 src/components/TimelineStyleMenu.jsx
 789 src/components/Topbar.jsx
@@ -283,6 +283,7 @@ Line Counts Per File:
 71 src/themeManager.js
 69 src/styles/RichTextEditor.css
 68 src/utils/dateUtils.js
+66 src/hooks/useAutoSave.js
 65 src/components/auth/GoogleSignIn.jsx
 64 src/components/auth/MicrosoftSignIn.jsx
 64 src/components/RichTextEditor.jsx
@@ -290,7 +291,6 @@ Line Counts Per File:
 61 src/components/auth/UserProfile.jsx
 60 src/components/auth/AppleSignIn.jsx
 59 src/components/LayoutManager.jsx
-57 src/hooks/useAutoSave.js
 57 src/components/Layout.jsx
 56 src/components/EventCreationSelector.jsx
 53 src/styles/EventFormTransition.css
