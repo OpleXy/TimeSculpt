@@ -20,7 +20,7 @@ function EditEventModal({
                               timelineData.start && 
                               timelineData.end;
 
-  // Handle event update - FIXED to preserve all image properties
+  // Handle event update - FIXED to preserve all image properties and hyperlinks
   const handleEventUpdate = (eventData) => {
     // Create updated event object with existing properties preserved
     const updatedEvent = {
@@ -46,7 +46,10 @@ function EditEventModal({
       imageFile: eventData.imageFile !== undefined ? eventData.imageFile : event.imageFile,
       imageUrl: eventData.imageUrl !== undefined ? eventData.imageUrl : event.imageUrl,
       imageStoragePath: eventData.imageStoragePath !== undefined ? eventData.imageStoragePath : event.imageStoragePath,
-      imageFileName: eventData.imageFileName !== undefined ? eventData.imageFileName : event.imageFileName
+      imageFileName: eventData.imageFileName !== undefined ? eventData.imageFileName : event.imageFileName,
+      
+      // Hyperlinks - use new hyperlinks if provided, otherwise keep existing
+      hyperlinks: eventData.hyperlinks !== undefined ? eventData.hyperlinks : event.hyperlinks || []
     };
 
     onSave(updatedEvent);
@@ -152,7 +155,7 @@ function EditEventModal({
   );
 }
 
-// Special EventForm component for editing that pre-fills values with FIXED image support
+// Special EventForm component for editing that pre-fills values with FIXED image support and hyperlinks
 function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
@@ -167,6 +170,10 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
   // State for drag and drop
   const [imageChanged, setImageChanged] = useState(false); // Track if image was changed
   const [isDragOver, setIsDragOver] = useState(false);
+  
+  // Hyperlinks state
+  const [hyperlinks, setHyperlinks] = useState(['']);
+  const [hyperlinksChanged, setHyperlinksChanged] = useState(false); // Track if hyperlinks were changed
 
   // Format date for input field (YYYY-MM-DD)
   const formatDateForInput = (date) => {
@@ -179,7 +186,7 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
     return date.toISOString().split('T')[0];
   };
 
-  // FIXED: Initialize form with event data including proper image handling
+  // FIXED: Initialize form with event data including proper image handling and hyperlinks
   useEffect(() => {
     if (event) {
       setTitle(event.title || '');
@@ -188,6 +195,11 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
       setSize(event.size || 'medium');
       setColor(event.color || 'default');
       setImageChanged(false); // Reset image changed flag
+      setHyperlinksChanged(false); // Reset hyperlinks changed flag
+      
+      // Initialize hyperlinks - ensure at least one empty field for adding new ones
+      const eventHyperlinks = event.hyperlinks || [];
+      setHyperlinks(eventHyperlinks.length > 0 ? [...eventHyperlinks, ''] : ['']);
       
       // FIXED: Handle existing image with better logic
       if (event.hasImage && (event.imageFile || event.imageUrl)) {
@@ -232,7 +244,7 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
     }
 
     setIsFormValid(true);
-  }, [title, date, timelineStart, timelineEnd]); // FIXED: Added missing dependencies
+  }, [title, date, timelineStart, timelineEnd]);
 
   // Cleanup preview URL on unmount
   useEffect(() => {
@@ -242,6 +254,26 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
       }
     };
   }, [imagePreview, existingImageUrl]);
+
+  // Enhanced hyperlink functions to match EventForm pattern
+  const addHyperlink = () => {
+    setHyperlinks(prev => [...prev, '']);
+    setHyperlinksChanged(true);
+  };
+
+  const removeHyperlink = (index) => {
+    setHyperlinks(prev => prev.filter((_, i) => i !== index));
+    setHyperlinksChanged(true);
+  };
+
+  const updateHyperlink = (index, value) => {
+    setHyperlinks(prev => {
+      const updated = [...prev];
+      updated[index] = value;
+      return updated;
+    });
+    setHyperlinksChanged(true);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -259,7 +291,18 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
     // Create event object
     const eventDate = new Date(date);
     
-    // FIXED: Proper image handling logic
+    // Filter out empty hyperlinks and validate URLs
+    const validHyperlinks = hyperlinks
+      .filter(link => link && link.trim())
+      .map(link => {
+        // Add https:// if no protocol specified
+        if (link && !link.match(/^https?:\/\//)) {
+          return `https://${link}`;
+        }
+        return link;
+      });
+    
+    // FIXED: Proper image and hyperlinks handling logic
     const eventData = {
       title,
       plainTitle: stripHtml(title),
@@ -277,6 +320,14 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
         // Let them be preserved from the original event
       } : {
         // If image wasn't changed, don't specify any image properties
+        // This will let the handleEventUpdate function preserve existing values
+      }),
+      
+      // Only update hyperlinks if they were changed
+      ...(hyperlinksChanged ? {
+        hyperlinks: validHyperlinks
+      } : {
+        // If hyperlinks weren't changed, don't specify hyperlinks property
         // This will let the handleEventUpdate function preserve existing values
       })
     };
@@ -402,6 +453,46 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
       setImagePreview(previewUrl);
     }
   };
+
+  // Render hyperlinks section
+  const renderHyperlinks = () => (
+    <div className="hyperlinks-container">
+      {hyperlinks.map((link, index) => (
+        <div key={index} className="hyperlink-input-group">
+          <input
+            type="text"
+            value={link}
+            onChange={(e) => updateHyperlink(index, e.target.value)}
+            placeholder="https://example.com"
+            className="hyperlink-input"
+          />
+          <div className="hyperlink-buttons">
+            <button
+              type="button"
+              onClick={() => removeHyperlink(index)}
+              className="remove-hyperlink-btn"
+              title="Fjern lenke"
+            >
+              <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={addHyperlink}
+        className="add-hyperlink-btn"
+        title="Legg til lenke"
+      >
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+        <span>Legg til lenke</span>
+      </button>
+    </div>
+  );
 
   // Render size options content
   const renderSizeOptions = () => (
@@ -784,6 +875,10 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
           
           <ExpandableMenu title="Beskrivelse">
             {renderDescriptionEditor()}
+          </ExpandableMenu>
+          
+          <ExpandableMenu title="Lenker">
+            {renderHyperlinks()}
           </ExpandableMenu>
           
           <ExpandableMenu title="Farge">

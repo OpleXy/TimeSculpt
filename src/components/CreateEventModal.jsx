@@ -69,7 +69,9 @@ function CreateEventModal({
       manuallyPositioned: false,
       // Image properties
       hasImage: !!eventData.imageFile,
-      imageFile: eventData.imageFile
+      imageFile: eventData.imageFile,
+      // Hyperlink properties
+      hyperlinks: eventData.hyperlinks || []
     };
 
     onSave(newEvent);
@@ -146,7 +148,7 @@ function CreateEventModal({
   );
 }
 
-// Create Event Form component with drag-and-drop
+// Create Event Form component with drag-and-drop and hyperlinks
 function CreateEventForm({ date, onDateChange, onSaveEvent, timelineColor }) {
   const [title, setTitle] = useState('');
   const [eventDate, setEventDate] = useState(date);
@@ -158,6 +160,9 @@ function CreateEventForm({ date, onDateChange, onSaveEvent, timelineColor }) {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [isDragOver, setIsDragOver] = useState(false);
+  
+  // Hyperlinks state
+  const [hyperlinks, setHyperlinks] = useState(['']);
 
   // Update local state when prop changes
   useEffect(() => {
@@ -222,6 +227,23 @@ function CreateEventForm({ date, onDateChange, onSaveEvent, timelineColor }) {
     setImagePreview(previewUrl);
   };
 
+  // Enhanced hyperlink functions to match EventForm pattern
+  const addHyperlink = () => {
+    setHyperlinks(prev => [...prev, '']);
+  };
+
+  const removeHyperlink = (index) => {
+    setHyperlinks(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const updateHyperlink = (index, value) => {
+    setHyperlinks(prev => {
+      const updated = [...prev];
+      updated[index] = value;
+      return updated;
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
@@ -230,6 +252,17 @@ function CreateEventForm({ date, onDateChange, onSaveEvent, timelineColor }) {
       setError('Vennligst fyll ut alle påkrevde feltene');
       return;
     }
+
+    // Filter out empty hyperlinks and validate URLs
+    const validHyperlinks = hyperlinks
+      .filter(link => link.trim())
+      .map(link => {
+        // Add https:// if no protocol specified
+        if (link && !link.match(/^https?:\/\//)) {
+          return `https://${link}`;
+        }
+        return link;
+      });
 
     // Create event object
     const eventData = {
@@ -240,7 +273,8 @@ function CreateEventForm({ date, onDateChange, onSaveEvent, timelineColor }) {
       size,
       color,
       hasImage: !!imageFile,
-      imageFile
+      imageFile,
+      hyperlinks: validHyperlinks
     };
 
     // Call parent handler to create event
@@ -329,6 +363,46 @@ function CreateEventForm({ date, onDateChange, onSaveEvent, timelineColor }) {
       fileInput.value = '';
     }
   };
+
+  // Render hyperlinks section
+  const renderHyperlinks = () => (
+    <div className="hyperlinks-container">
+      {hyperlinks.map((link, index) => (
+        <div key={index} className="hyperlink-input-group">
+          <input
+            type="text"
+            value={link}
+            onChange={(e) => updateHyperlink(index, e.target.value)}
+            placeholder="https://example.com"
+            className="hyperlink-input"
+          />
+          <div className="hyperlink-buttons">
+            <button
+              type="button"
+              onClick={() => removeHyperlink(index)}
+              className="remove-hyperlink-btn"
+              title="Fjern lenke"
+            >
+              <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={addHyperlink}
+        className="add-hyperlink-btn"
+        title="Legg til lenke"
+      >
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+        <span>Legg til lenke</span>
+      </button>
+    </div>
+  );
 
   // Render size options content
   const renderSizeOptions = () => (
@@ -561,6 +635,10 @@ function CreateEventForm({ date, onDateChange, onSaveEvent, timelineColor }) {
           
           <ExpandableMenu title="Beskrivelse">
             {renderDescriptionEditor()}
+          </ExpandableMenu>
+          
+          <ExpandableMenu title="Lenker">
+            {renderHyperlinks()}
           </ExpandableMenu>
           
           <ExpandableMenu title="Farge">

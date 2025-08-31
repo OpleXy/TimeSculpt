@@ -18,7 +18,7 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
   const [imagePreview, setImagePreview] = useState(null);
   const [isDragOver, setIsDragOver] = useState(false);
   
-  // New hyperlinks state
+  // Enhanced hyperlinks state
   const [hyperlinks, setHyperlinks] = useState(['']);
 
   // Utility function to strip HTML for plaintext storage
@@ -50,35 +50,21 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
     setIsFormValid(true);
   }, [title, date, timelineStart, timelineEnd]);
 
-  // Handle hyperlink input changes
-  const handleHyperlinkChange = (index, value) => {
-    const newHyperlinks = [...hyperlinks];
-    newHyperlinks[index] = value;
-    setHyperlinks(newHyperlinks);
+  // Enhanced hyperlink functions to match modal pattern
+  const addHyperlink = () => {
+    setHyperlinks(prev => [...prev, '']);
   };
 
-  // Add new hyperlink field
-  const addHyperlinkField = () => {
-    setHyperlinks([...hyperlinks, '']);
+  const removeHyperlink = (index) => {
+    setHyperlinks(prev => prev.filter((_, i) => i !== index));
   };
 
-  // Remove hyperlink field
-  const removeHyperlinkField = (index) => {
-    if (hyperlinks.length > 1) {
-      const newHyperlinks = hyperlinks.filter((_, i) => i !== index);
-      setHyperlinks(newHyperlinks);
-    }
-  };
-
-  // Validate URL format
-  const isValidUrl = (url) => {
-    if (!url.trim()) return true; // Empty URLs are allowed
-    try {
-      new URL(url);
-      return true;
-    } catch {
-      return false;
-    }
+  const updateHyperlink = (index, value) => {
+    setHyperlinks(prev => {
+      const updated = [...prev];
+      updated[index] = value;
+      return updated;
+    });
   };
 
   const handleSubmit = (e) => {
@@ -94,16 +80,16 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
       return;
     }
 
-    // Validate hyperlinks
+    // Filter out empty hyperlinks and validate URLs
     const validHyperlinks = hyperlinks
-      .filter(url => url.trim() !== '')
-      .map(url => url.trim());
-    
-    const invalidUrls = validHyperlinks.filter(url => !isValidUrl(url));
-    if (invalidUrls.length > 0) {
-      setError('En eller flere URL-er er ugyldig formatert. Sørg for at URL-ene starter med http:// eller https://');
-      return;
-    }
+      .filter(link => link && link.trim())
+      .map(link => {
+        // Add https:// if no protocol specified
+        if (link && !link.match(/^https?:\/\//)) {
+          return `https://${link}`;
+        }
+        return link;
+      });
 
     // Create event object
     const eventDate = new Date(date);
@@ -135,7 +121,7 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
     setError('');
     setImageFile(null);
     setImagePreview(null);
-    setHyperlinks(['']); // Reset hyperlinks
+    setHyperlinks(['']); // Reset hyperlinks to single empty field
   };
 
   // Handle date change from DateInput component
@@ -398,44 +384,42 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
     />
   );
 
-  // Render hyperlinks section
+  // Enhanced hyperlinks section to match modal pattern
   const renderHyperlinks = () => (
     <div className="hyperlinks-container">
       {hyperlinks.map((link, index) => (
         <div key={index} className="hyperlink-input-group">
           <input
-            type="url"
+            type="text"
             value={link}
-            onChange={(e) => handleHyperlinkChange(index, e.target.value)}
+            onChange={(e) => updateHyperlink(index, e.target.value)}
             placeholder="https://example.com"
             className="hyperlink-input"
           />
           <div className="hyperlink-buttons">
-            {hyperlinks.length > 1 && (
-              <button
-                type="button"
-                onClick={() => removeHyperlinkField(index)}
-                className="remove-hyperlink-btn"
-                title="Fjern hyperlenke"
-              >
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => removeHyperlink(index)}
+              className="remove-hyperlink-btn"
+              title="Fjern lenke"
+            >
+              <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
         </div>
       ))}
       <button
         type="button"
-        onClick={addHyperlinkField}
+        onClick={addHyperlink}
         className="add-hyperlink-btn"
-        title="Legg til ny hyperlenke"
+        title="Legg til lenke"
       >
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>
-        <span>Legg til hyperlenke</span>
+        <span>Legg til lenke</span>
       </button>
     </div>
   );
@@ -530,16 +514,16 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
         </div>
         
         <div className="expandable-group">
-          <ExpandableMenu title="Hyperlenker">
-            {renderHyperlinks()}
-          </ExpandableMenu>
-          
           <ExpandableMenu title="Bilde">
             {renderImageUpload()}
           </ExpandableMenu>
           
           <ExpandableMenu title="Beskrivelse">
             {renderDescriptionEditor()}
+          </ExpandableMenu>
+          
+          <ExpandableMenu title="Lenker">
+            {renderHyperlinks()}
           </ExpandableMenu>
           
           <ExpandableMenu title="Farge">
