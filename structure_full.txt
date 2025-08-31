@@ -199,7 +199,7 @@ Line Counts Per File:
 1698 src/styles/darkMode.css
 1634 src/styles/ui-components.css
 1343 src/components/TimelineContextMenu.jsx
-1253 src/styles/timeline.css
+1254 src/styles/timeline.css
 1248 src/components/Timeline.jsx
 1193 src/styles/timeline-share-modal.css
 1072 src/styles/topbar.css
@@ -216,7 +216,7 @@ Line Counts Per File:
 619 src/styles/pages/MinProfil.css
 603 src/components/CreateEventModal.jsx
 582 src/components/EventForm.jsx
-573 src/components/TimelineEvent.jsx
+566 src/components/TimelineEvent.jsx
 533 src/components/IntervalSettings.jsx
 533 src/components/EventEditModal.jsx
 477 src/components/TimelineIntervals.jsx

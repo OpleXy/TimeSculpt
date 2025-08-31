@@ -77,7 +77,7 @@ function TimelineEvent({
   // Check if event has hyperlinks
   const hasHyperlinks = event.hyperlinks && event.hyperlinks.length > 0;
 
-  // Handle hyperlink clicks
+  // Handle hyperlink clicks - only triggered by clicking on the indicator
   const handleHyperlinkClick = (e) => {
     e.stopPropagation();
     
@@ -359,20 +359,14 @@ function TimelineEvent({
     }
   };
   
-  // Handle regular click - hyperlinks or just set as last clicked
+  // Handle regular click - just set as last clicked (no longer handles hyperlinks)
   const handleClick = (e) => {
     // If we're dragging, don't do anything
     if (isDragging) return;
     
-    // Check if event has hyperlinks
-    if (hasHyperlinks) {
-      // Handle hyperlink click
-      handleHyperlinkClick(e);
-    } else {
-      // Set this event as the last clicked event (for z-index ordering)
-      if (setLastClickedEvent) {
-        setLastClickedEvent(index);
-      }
+    // Set this event as the last clicked event (for z-index ordering)
+    if (setLastClickedEvent) {
+      setLastClickedEvent(index);
     }
     
     // Stop propagation to prevent timeline interactions
@@ -392,11 +386,8 @@ function TimelineEvent({
   // Calculate the line coordinates for the SVG line
   const lineStyle = getLineStyle();
   
-  // Generate cursor style based on event capabilities
+  // Generate cursor style - always move since hyperlinks are handled by indicator
   const getCursorStyle = () => {
-    if (hasHyperlinks) {
-      return 'pointer';
-    }
     return 'move';
   };
   
@@ -452,9 +443,7 @@ function TimelineEvent({
         onDoubleClick={handleDoubleClick}
         onClick={handleClick}
         data-index={index}
-        title={hasHyperlinks ? 
-          `Klikk for å åpne ${event.hyperlinks.length === 1 ? 'hyperlenke' : 'hyperlenkemeny'} • Høyreklikk for kontekstmeny • Dobbelklikk for å redigere` : 
-          event.description ? "Høyreklikk for kontekstmeny eller dobbelklikk for å redigere" : "Høyreklikk for kontekstmeny eller dobbelklikk for å redigere"}
+        title={event.description ? "Høyreklikk for kontekstmeny eller dobbelklikk for å redigere" : "Høyreklikk for kontekstmeny eller dobbelklikk for å redigere"}
       >
         {/* Event title */}
         <div className="event-title-content" dangerouslySetInnerHTML={{ __html: processedContent }}></div>
@@ -510,9 +499,13 @@ function TimelineEvent({
           </div>
         )}
         
-        {/* Hyperlink indicator if event has hyperlinks */}
+        {/* Hyperlink indicator if event has hyperlinks - now positioned next to description indicator */}
         {hasHyperlinks && (
-          <div className="event-hyperlink-indicator">
+          <div 
+            className="event-hyperlink-indicator"
+            onClick={handleHyperlinkClick}
+            
+          >
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
               width="12" 

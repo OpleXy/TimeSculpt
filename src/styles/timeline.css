@@ -937,32 +937,21 @@
   }
 }
 
-/* Timeline Event Hyperlink Styles - Add to src/styles/timeline.css */
+/* Timeline Event Hyperlink Styles - Updated positioning */
 
-/* Event with hyperlinks styling */
+/* Event with hyperlinks styling - removed pointer cursor and hover effects */
 .event.has-hyperlinks {
-  cursor: pointer;
   transition: 
     box-shadow 0.2s, 
     border-color 0.3s ease, 
-    transform 0.1s ease,
-    filter 0.2s ease;
+    transform 0.1s ease;
 }
 
-.event.has-hyperlinks:hover {
-  filter: brightness(1.05);
-  box-shadow: var(--shadow-hover), 0 0 0 2px rgba(0, 123, 255, 0.2);
-}
-
-.event.has-hyperlinks:active {
-  transform: translate(-50%, -50%) scale(0.98);
-}
-
-/* Hyperlink indicator */
+/* Hyperlink indicator - positioned on the right side next to description indicator */
 .event-hyperlink-indicator {
   position: absolute;
   bottom: 3px;
-  left: 3px;
+  right: 20px; /* Positioned to the left of the description indicator */
   display: flex;
   align-items: center;
   gap: 2px;
@@ -976,9 +965,10 @@
   transition: all 0.2s;
   min-width: 18px;
   justify-content: center;
+  cursor: pointer; /* Only the indicator is clickable */
 }
 
-.event:hover .event-hyperlink-indicator {
+.event-hyperlink-indicator:hover {
   opacity: 1;
   background: rgba(0, 123, 255, 0.2);
   transform: scale(1.1);
@@ -997,21 +987,39 @@
   text-align: center;
 }
 
-/* Adjust description indicator position when hyperlink indicator is present */
-.event.has-hyperlinks .event-description-indicator {
-  right: 3px;
+/* Description indicator positioning - remains on the far right */
+.event-description-indicator {
+  position: absolute;
   bottom: 3px;
+  right: 3px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--primary-color);
+  opacity: 0.7;
+  transition: transform 0.2s, opacity 0.2s;
 }
 
-/* Ensure both indicators don't overlap */
+.event:hover .event-description-indicator {
+  transform: scale(1.2);
+  opacity: 1;
+}
+
+/* When both indicators are present, adjust positioning */
 .event.has-hyperlinks.has-description .event-hyperlink-indicator {
-  left: 3px;
-  bottom: 3px;
+  right: 20px; /* Position to the left of description indicator */
 }
 
 .event.has-hyperlinks.has-description .event-description-indicator {
-  right: 3px;
-  bottom: 3px;
+  right: 3px; /* Keep description indicator on the far right */
+}
+
+/* When only hyperlink indicator is present, center it more */
+.event.has-hyperlinks:not(.has-description) .event-hyperlink-indicator {
+  right: 10px; /* Center it better when alone */
 }
 
 /* Color variations for hyperlink indicator based on event color */
@@ -1020,7 +1028,7 @@
   color: #007bff;
 }
 
-.event.blue:hover .event-hyperlink-indicator {
+.event.blue .event-hyperlink-indicator:hover {
   background: rgba(0, 123, 255, 0.2);
 }
 
@@ -1029,7 +1037,7 @@
   color: #28a745;
 }
 
-.event.green:hover .event-hyperlink-indicator {
+.event.green .event-hyperlink-indicator:hover {
   background: rgba(40, 167, 69, 0.2);
 }
 
@@ -1038,7 +1046,7 @@
   color: #dc3545;
 }
 
-.event.red:hover .event-hyperlink-indicator {
+.event.red .event-hyperlink-indicator:hover {
   background: rgba(220, 53, 69, 0.2);
 }
 
@@ -1047,7 +1055,7 @@
   color: #fd7e14;
 }
 
-.event.orange:hover .event-hyperlink-indicator {
+.event.orange .event-hyperlink-indicator:hover {
   background: rgba(253, 126, 20, 0.2);
 }
 
@@ -1056,7 +1064,7 @@
   color: #6f42c1;
 }
 
-.event.purple:hover .event-hyperlink-indicator {
+.event.purple .event-hyperlink-indicator:hover {
   background: rgba(111, 66, 193, 0.2);
 }
 
@@ -1065,22 +1073,18 @@
   color: var(--timeline-color, #007bff);
 }
 
-.event.default:hover .event-hyperlink-indicator {
+.event.default .event-hyperlink-indicator:hover {
   background: rgba(0, 123, 255, 0.2);
   color: var(--timeline-color-dark, #0062cc);
 }
 
 /* Dark mode support */
-.dark-mode .event.has-hyperlinks:hover {
-  box-shadow: var(--shadow-hover), 0 0 0 2px rgba(58, 151, 255, 0.3);
-}
-
 .dark-mode .event-hyperlink-indicator {
   background: rgba(58, 151, 255, 0.2);
   color: #3a97ff;
 }
 
-.dark-mode .event:hover .event-hyperlink-indicator {
+.dark-mode .event-hyperlink-indicator:hover {
   background: rgba(58, 151, 255, 0.3);
 }
 
@@ -1089,7 +1093,7 @@
   color: #3a97ff;
 }
 
-.dark-mode .event.blue:hover .event-hyperlink-indicator {
+.dark-mode .event.blue .event-hyperlink-indicator:hover {
   background: rgba(58, 151, 255, 0.3);
 }
 
@@ -1098,7 +1102,7 @@
   color: #48bb78;
 }
 
-.dark-mode .event.green:hover .event-hyperlink-indicator {
+.dark-mode .event.green .event-hyperlink-indicator:hover {
   background: rgba(72, 187, 120, 0.3);
 }
 
@@ -1107,7 +1111,7 @@
   color: #fc8181;
 }
 
-.dark-mode .event.red:hover .event-hyperlink-indicator {
+.dark-mode .event.red .event-hyperlink-indicator:hover {
   background: rgba(252, 129, 129, 0.3);
 }
 
@@ -1116,7 +1120,7 @@
   color: #fb923c;
 }
 
-.dark-mode .event.orange:hover .event-hyperlink-indicator {
+.dark-mode .event.orange .event-hyperlink-indicator:hover {
   background: rgba(251, 146, 60, 0.3);
 }
 
@@ -1125,7 +1129,7 @@
   color: #937dc2;
 }
 
-.dark-mode .event.purple:hover .event-hyperlink-indicator {
+.dark-mode .event.purple .event-hyperlink-indicator:hover {
   background: rgba(147, 125, 194, 0.3);
 }
 
@@ -1134,7 +1138,7 @@
   color: var(--timeline-color, #3a97ff);
 }
 
-.dark-mode .event.default:hover .event-hyperlink-indicator {
+.dark-mode .event.default .event-hyperlink-indicator:hover {
   background: rgba(58, 151, 255, 0.3);
 }
 
@@ -1142,7 +1146,7 @@
 @media (max-width: 768px) {
   .event-hyperlink-indicator {
     bottom: 2px;
-    left: 2px;
+    right: 18px;
     padding: 1px 3px;
     font-size: 9px;
     min-width: 16px;
@@ -1158,20 +1162,22 @@
   }
   
   .event.has-hyperlinks.has-description .event-hyperlink-indicator {
-    left: 2px;
-    bottom: 2px;
+    right: 18px;
   }
   
   .event.has-hyperlinks.has-description .event-description-indicator {
     right: 2px;
-    bottom: 2px;
+  }
+
+  .event.has-hyperlinks:not(.has-description) .event-hyperlink-indicator {
+    right: 8px;
   }
 }
 
 @media (max-width: 480px) {
   .event-hyperlink-indicator {
     bottom: 1px;
-    left: 1px;
+    right: 16px;
     padding: 1px 2px;
     font-size: 8px;
     min-width: 14px;
@@ -1184,6 +1190,18 @@
   
   .hyperlink-count {
     font-size: 7px;
+  }
+
+  .event.has-hyperlinks.has-description .event-hyperlink-indicator {
+    right: 16px;
+  }
+  
+  .event.has-hyperlinks.has-description .event-description-indicator {
+    right: 1px;
+  }
+
+  .event.has-hyperlinks:not(.has-description) .event-hyperlink-indicator {
+    right: 6px;
   }
 }
 
@@ -1203,26 +1221,9 @@
   }
 }
 
-/* Hover effect for multiple hyperlinks hint */
-.event.has-hyperlinks[data-hyperlink-count="1"]:hover::after {
-  content: "Klikk for å åpne lenke";
-  position: absolute;
-  top: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  white-space: nowrap;
-  z-index: 100;
-  pointer-events: none;
-  animation: fadeInTooltip 0.3s ease-out;
-}
-
-.event.has-hyperlinks[data-hyperlink-count]:not([data-hyperlink-count="1"]):hover::after {
-  content: "Klikk for å velge lenke";
+/* Hover tooltip for hyperlink indicator */
+.event-hyperlink-indicator[title]:hover::after {
+  content: attr(title);
   position: absolute;
   top: -30px;
   left: 50%;
@@ -1249,6 +1250,6 @@
   }
 }
 
-.dark-mode .event.has-hyperlinks:hover::after {
+.dark-mode .event-hyperlink-indicator[title]:hover::after {
   background: rgba(30, 30, 30, 0.9);
 }
