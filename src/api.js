@@ -1,6 +1,6 @@
 /**
- * API service for backend communication with image handling
- * Updated to support image upload and storage for timeline events
+ * API service for backend communication with image handling and hyperlinks support
+ * Updated to support hyperlinks in timeline events
  */
 import { db, auth, storage } from './firebase';
 import { 
@@ -97,14 +97,34 @@ const deleteEventImage = async (storagePath) => {
 };
 
 /**
- * Process events with image handling
+ * Validate hyperlinks array
+ * @param {Array} hyperlinks - Array of URLs to validate
+ * @returns {Array} Array of valid URLs
+ */
+const validateHyperlinks = (hyperlinks) => {
+  if (!Array.isArray(hyperlinks)) {
+    return [];
+  }
+
+  return hyperlinks
+    .filter(url => url && typeof url === 'string' && url.trim() !== '')
+    .map(url => url.trim())
+    .filter(url => {
+      try {
+        new URL(url);
+        return true;
+      } catch {
+        return false;
+      }
+    });
+};
+
+/**
+ * Process events with image handling and hyperlinks
  * @param {Array} events - Array of events to process
  * @param {string} timelineId - Timeline ID
  * @param {boolean} isUpdate - Whether this is an update operation
  * @returns {Promise<Array>} Processed events
- */
-/**
- * Optimalisert processEventsWithImages funksjon som forhindrer duplikate uploads
  */
 const processEventsWithImages = async (events, timelineId, isUpdate = false) => {
   const processedEvents = [];
@@ -116,9 +136,9 @@ const processEventsWithImages = async (events, timelineId, isUpdate = false) => 
     // Handle image upload if there's a new image file
     if (event.imageFile && event.imageFile instanceof File) {
       try {
-        // Sjekk om bildet allerede er lastet opp
+        // Check if image is already uploaded
         if (event.imageUrl && event.imageStoragePath && typeof event.imageFile === 'object') {
-          // Bildet er allerede prosessert og lastet opp - ikke last opp igjen
+          // Image already processed and uploaded - don't upload again
           console.log('Image already uploaded, reusing existing URL');
           processedEvent.imageUrl = event.imageUrl;
           processedEvent.imageStoragePath = event.imageStoragePath;
@@ -126,18 +146,18 @@ const processEventsWithImages = async (events, timelineId, isUpdate = false) => 
           processedEvent.hasImage = true;
           delete processedEvent.imageFile;
         } else {
-          // Generer stabilt event ID basert på innhold og posisjon
+          // Generate stable event ID based on content and position
           const eventId = event.id || `event_${i}`;
           
-          // Upload image og få URL
+          // Upload image and get URL
           const imageData = await uploadEventImage(event.imageFile, timelineId, eventId);
           
-          // Hvis dette er en oppdatering og vi hadde et gammelt bilde, slett det
+          // If this is an update and we had an old image, delete it
           if (isUpdate && event.imageStoragePath && event.imageStoragePath !== imageData.storagePath) {
             await deleteEventImage(event.imageStoragePath);
           }
           
-          // Erstatt File objekt med bildedata
+          // Replace File object with image data
           processedEvent.imageUrl = imageData.url;
           processedEvent.imageStoragePath = imageData.storagePath;
           processedEvent.imageFileName = imageData.fileName;
@@ -147,7 +167,7 @@ const processEventsWithImages = async (events, timelineId, isUpdate = false) => 
         
       } catch (error) {
         console.error('Error processing image for event:', error);
-        // Fjern bildeegenskaper hvis opplasting feilet
+        // Remove image properties if upload failed
         delete processedEvent.imageFile;
         processedEvent.hasImage = false;
       }
@@ -177,6 +197,9 @@ const processEventsWithImages = async (events, timelineId, isUpdate = false) => 
       delete processedEvent.imageFileName;
     }
 
+    // Process and validate hyperlinks
+    const validHyperlinks = validateHyperlinks(event.hyperlinks);
+
     // Process links in title and description
     const processedTitle = event.title ? processLinks(event.title) : event.title;
     const processedDescription = event.description ? processLinks(event.description) : event.description;
@@ -190,7 +213,8 @@ const processEventsWithImages = async (events, timelineId, isUpdate = false) => 
       color: event.color || 'default',
       xOffset: event.xOffset || 0,
       yOffset: event.yOffset || (event.offset || 0),
-      offset: event.yOffset || event.offset || 0
+      offset: event.yOffset || event.offset || 0,
+      hyperlinks: validHyperlinks // Add validated hyperlinks
     };
 
     processedEvents.push(processedEvent);
@@ -260,7 +284,7 @@ const processLinks = (html) => {
 };
 
 /**
- * Save timeline to Firestore with image handling
+ * Save timeline to Firestore with image handling and hyperlinks
  */
 export const saveTimeline = async (timelineData) => {
   try {
@@ -287,7 +311,7 @@ export const saveTimeline = async (timelineData) => {
     // Create temporary timeline ID for image uploads
     const tempTimelineId = timelineData.id || `temp_${Date.now()}`;
 
-    // Process events with image handling
+    // Process events with image handling and hyperlinks
     const processedEvents = await processEventsWithImages(timelineData.events, tempTimelineId, false);
 
     const intervalSettings = {
@@ -329,7 +353,7 @@ export const saveTimeline = async (timelineData) => {
 };
 
 /**
- * Update an existing timeline in Firestore with image handling
+ * Update an existing timeline in Firestore with image handling and hyperlinks
  */
 export const updateTimeline = async (timelineId, timelineData) => {
   try {
@@ -364,7 +388,7 @@ export const updateTimeline = async (timelineId, timelineData) => {
       throw new Error('You do not have permission to update this timeline');
     }
 
-    // Process events with image handling
+    // Process events with image handling and hyperlinks
     const processedEvents = await processEventsWithImages(timelineData.events, timelineId, true);
 
     const intervalSettings = {
@@ -404,7 +428,7 @@ export const updateTimeline = async (timelineId, timelineData) => {
 };
 
 /**
- * Load timeline from Firestore with image handling
+ * Load timeline from Firestore with image handling and hyperlinks
  */
 export async function loadTimeline(timelineId) {
   try {
@@ -469,7 +493,9 @@ export async function loadTimeline(timelineId) {
           imageFile: event.imageUrl || event.imageFile || null, // This will be the URL for display
           imageUrl: event.imageUrl || null,
           imageStoragePath: event.imageStoragePath || null,
-          imageFileName: event.imageFileName || null
+          imageFileName: event.imageFileName || null,
+          // Add hyperlinks support
+          hyperlinks: validateHyperlinks(event.hyperlinks)
         };
       }),
       backgroundColor: timelineData.backgroundColor || null,

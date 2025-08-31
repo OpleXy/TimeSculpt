@@ -17,6 +17,9 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [isDragOver, setIsDragOver] = useState(false);
+  
+  // New hyperlinks state
+  const [hyperlinks, setHyperlinks] = useState(['']);
 
   // Utility function to strip HTML for plaintext storage
   const stripHtml = (html) => {
@@ -47,6 +50,37 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
     setIsFormValid(true);
   }, [title, date, timelineStart, timelineEnd]);
 
+  // Handle hyperlink input changes
+  const handleHyperlinkChange = (index, value) => {
+    const newHyperlinks = [...hyperlinks];
+    newHyperlinks[index] = value;
+    setHyperlinks(newHyperlinks);
+  };
+
+  // Add new hyperlink field
+  const addHyperlinkField = () => {
+    setHyperlinks([...hyperlinks, '']);
+  };
+
+  // Remove hyperlink field
+  const removeHyperlinkField = (index) => {
+    if (hyperlinks.length > 1) {
+      const newHyperlinks = hyperlinks.filter((_, i) => i !== index);
+      setHyperlinks(newHyperlinks);
+    }
+  };
+
+  // Validate URL format
+  const isValidUrl = (url) => {
+    if (!url.trim()) return true; // Empty URLs are allowed
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
@@ -57,6 +91,17 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
       } else {
         setError('Hendelsesdato må være innenfor tidslinjeperioden');
       }
+      return;
+    }
+
+    // Validate hyperlinks
+    const validHyperlinks = hyperlinks
+      .filter(url => url.trim() !== '')
+      .map(url => url.trim());
+    
+    const invalidUrls = validHyperlinks.filter(url => !isValidUrl(url));
+    if (invalidUrls.length > 0) {
+      setError('En eller flere URL-er er ugyldig formatert. Sørg for at URL-ene starter med http:// eller https://');
       return;
     }
 
@@ -74,7 +119,8 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
       xOffset: 0,
       yOffset: 0,
       hasImage: !!imageFile,
-      imageFile: imageFile // This will be processed by the API
+      imageFile: imageFile, // This will be processed by the API
+      hyperlinks: validHyperlinks // Add hyperlinks to event data
     };
 
     // Call parent handler to add event
@@ -89,6 +135,7 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
     setError('');
     setImageFile(null);
     setImagePreview(null);
+    setHyperlinks(['']); // Reset hyperlinks
   };
 
   // Handle date change from DateInput component
@@ -351,6 +398,48 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
     />
   );
 
+  // Render hyperlinks section
+  const renderHyperlinks = () => (
+    <div className="hyperlinks-container">
+      {hyperlinks.map((link, index) => (
+        <div key={index} className="hyperlink-input-group">
+          <input
+            type="url"
+            value={link}
+            onChange={(e) => handleHyperlinkChange(index, e.target.value)}
+            placeholder="https://example.com"
+            className="hyperlink-input"
+          />
+          <div className="hyperlink-buttons">
+            {hyperlinks.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeHyperlinkField(index)}
+                className="remove-hyperlink-btn"
+                title="Fjern hyperlenke"
+              >
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={addHyperlinkField}
+        className="add-hyperlink-btn"
+        title="Legg til ny hyperlenke"
+      >
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+        <span>Legg til hyperlenke</span>
+      </button>
+    </div>
+  );
+
   // Render image upload content with preview
   const renderImageUpload = () => (
     <div className="image-upload-container">
@@ -441,6 +530,10 @@ function EventForm({ onAddEvent, timelineStart, timelineEnd, showTitle = true })
         </div>
         
         <div className="expandable-group">
+          <ExpandableMenu title="Hyperlenker">
+            {renderHyperlinks()}
+          </ExpandableMenu>
+          
           <ExpandableMenu title="Bilde">
             {renderImageUpload()}
           </ExpandableMenu>

@@ -256,7 +256,7 @@ const handleSaveEditedEvent = (updatedEvent) => {
   const eventIndex = eventToEdit.index;
   const originalEvent = newEvents[eventIndex];
   
-  // FIXED: Preserve ALL existing properties, especially image-related ones
+  // FIXED: Preserve ALL existing properties, especially image-related and hyperlinks
   newEvents[eventIndex] = {
     ...originalEvent, // Start with all original properties
     ...updatedEvent,  // Then apply updates
@@ -273,7 +273,10 @@ const handleSaveEditedEvent = (updatedEvent) => {
     imageFile: updatedEvent.imageFile !== undefined ? updatedEvent.imageFile : originalEvent.imageFile,
     imageUrl: updatedEvent.imageUrl !== undefined ? updatedEvent.imageUrl : originalEvent.imageUrl,
     imageStoragePath: updatedEvent.imageStoragePath !== undefined ? updatedEvent.imageStoragePath : originalEvent.imageStoragePath,
-    imageFileName: updatedEvent.imageFileName !== undefined ? updatedEvent.imageFileName : originalEvent.imageFileName
+    imageFileName: updatedEvent.imageFileName !== undefined ? updatedEvent.imageFileName : originalEvent.imageFileName,
+    
+    // CRITICAL: Preserve hyperlinks properly
+    hyperlinks: updatedEvent.hyperlinks !== undefined ? updatedEvent.hyperlinks : (originalEvent.hyperlinks || [])
   };
   
   setTimelineData({

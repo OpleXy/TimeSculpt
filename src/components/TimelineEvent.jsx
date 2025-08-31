@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import HyperlinkSelectionModal from './HyperlinkSelectionModal';
 
 function TimelineEvent({ 
   event, 
@@ -20,6 +21,7 @@ function TimelineEvent({
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
+  const [isHyperlinkModalOpen, setIsHyperlinkModalOpen] = useState(false);
   const eventRef = useRef(null);
   const lineRef = useRef(null);
   
@@ -70,6 +72,34 @@ function TimelineEvent({
   const handleImageError = () => {
     setImageError(true);
     setImageLoaded(false);
+  };
+
+  // Check if event has hyperlinks
+  const hasHyperlinks = event.hyperlinks && event.hyperlinks.length > 0;
+
+  // Handle hyperlink clicks
+  const handleHyperlinkClick = (e) => {
+    e.stopPropagation();
+    
+    if (!hasHyperlinks) return;
+    
+    // Set this event as the last clicked event
+    if (setLastClickedEvent) {
+      setLastClickedEvent(index);
+    }
+    
+    if (event.hyperlinks.length === 1) {
+      // Single hyperlink - open directly
+      window.open(event.hyperlinks[0], '_blank', 'noopener,noreferrer');
+    } else {
+      // Multiple hyperlinks - open selection modal
+      setIsHyperlinkModalOpen(true);
+    }
+  };
+
+  // Close hyperlink modal
+  const closeHyperlinkModal = () => {
+    setIsHyperlinkModalOpen(false);
   };
   
   // Set position based on timeline orientation and 2D offset
@@ -329,14 +359,20 @@ function TimelineEvent({
     }
   };
   
-  // Handle regular click - only sets as last clicked, doesn't open detail panel
+  // Handle regular click - hyperlinks or just set as last clicked
   const handleClick = (e) => {
     // If we're dragging, don't do anything
     if (isDragging) return;
     
-    // Set this event as the last clicked event (for z-index ordering)
-    if (setLastClickedEvent) {
-      setLastClickedEvent(index);
+    // Check if event has hyperlinks
+    if (hasHyperlinks) {
+      // Handle hyperlink click
+      handleHyperlinkClick(e);
+    } else {
+      // Set this event as the last clicked event (for z-index ordering)
+      if (setLastClickedEvent) {
+        setLastClickedEvent(index);
+      }
     }
     
     // Stop propagation to prevent timeline interactions
@@ -355,6 +391,14 @@ function TimelineEvent({
 
   // Calculate the line coordinates for the SVG line
   const lineStyle = getLineStyle();
+  
+  // Generate cursor style based on event capabilities
+  const getCursorStyle = () => {
+    if (hasHyperlinks) {
+      return 'pointer';
+    }
+    return 'move';
+  };
   
   return (
     <>
@@ -394,20 +438,23 @@ function TimelineEvent({
       {/* Event box with CSS variable for timeline color */}
       <div
         ref={eventRef}
-        className={`event ${isDragging ? 'dragging' : ''} ${event.description ? 'has-description' : ''} ${lastClickedEvent === index ? 'last-clicked' : ''} ${getSizeClass()} ${getColorClass()} ${isSnapped ? 'snapped' : ''} ${imageUrl ? 'has-image' : ''}`}
+        className={`event ${isDragging ? 'dragging' : ''} ${event.description ? 'has-description' : ''} ${lastClickedEvent === index ? 'last-clicked' : ''} ${getSizeClass()} ${getColorClass()} ${isSnapped ? 'snapped' : ''} ${imageUrl ? 'has-image' : ''} ${hasHyperlinks ? 'has-hyperlinks' : ''}`}
         style={{
           ...getPosition(),
           ...getEventStyle(),
           // Set CSS variable for dynamic timeline color
           '--timeline-color': timelineColor,
-          '--timeline-color-dark': timelineColor ? getDarkerColor(timelineColor) : '#0062cc'
+          '--timeline-color-dark': timelineColor ? getDarkerColor(timelineColor) : '#0062cc',
+          cursor: getCursorStyle()
         }}
         onMouseDown={handleMouseDown}
         onContextMenu={handleContextMenu}
         onDoubleClick={handleDoubleClick}
         onClick={handleClick}
         data-index={index}
-        title={event.description ? "Høyreklikk for kontekstmeny eller dobbelklikk for å redigere" : "Høyreklikk for kontekstmeny eller dobbelklikk for å redigere"}
+        title={hasHyperlinks ? 
+          `Klikk for å åpne ${event.hyperlinks.length === 1 ? 'hyperlenke' : 'hyperlenkemeny'} • Høyreklikk for kontekstmeny • Dobbelklikk for å redigere` : 
+          event.description ? "Høyreklikk for kontekstmeny eller dobbelklikk for å redigere" : "Høyreklikk for kontekstmeny eller dobbelklikk for å redigere"}
       >
         {/* Event title */}
         <div className="event-title-content" dangerouslySetInnerHTML={{ __html: processedContent }}></div>
@@ -462,7 +509,36 @@ function TimelineEvent({
             </svg>
           </div>
         )}
+        
+        {/* Hyperlink indicator if event has hyperlinks */}
+        {hasHyperlinks && (
+          <div className="event-hyperlink-indicator">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="12" 
+              height="12" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            >
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+            <span className="hyperlink-count">{event.hyperlinks.length}</span>
+          </div>
+        )}
       </div>
+      
+      {/* Hyperlink Selection Modal */}
+      <HyperlinkSelectionModal
+        isOpen={isHyperlinkModalOpen}
+        onClose={closeHyperlinkModal}
+        hyperlinks={event.hyperlinks}
+        eventTitle={event.title}
+      />
     </>
   );
 }

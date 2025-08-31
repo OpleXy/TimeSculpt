@@ -604,3 +604,164 @@
 .image-upload-area:hover:not(.drag-over) .image-upload-subtitle {
   color: var(--button-primary);
 }
+
+/* Hyperlinks Section Styles - Add to src/styles/event-form.css */
+
+/* Hyperlinks container */
+.hyperlinks-container {
+  padding: 0.5rem;
+}
+
+.hyperlink-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.hyperlink-input-group:last-of-type {
+  margin-bottom: 0.75rem;
+}
+
+/* Hyperlink input field */
+.hyperlink-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  background-color: var(--input-bg, white);
+  color: var(--input-text, #333);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.hyperlink-input:focus {
+  border-color: var(--button-primary, #007bff);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.hyperlink-input::placeholder {
+  color: var(--text-secondary, #999);
+  opacity: 0.8;
+}
+
+/* Hyperlink buttons container */
+.hyperlink-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Remove hyperlink button */
+.remove-hyperlink-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background-color: transparent;
+  color: var(--delete-button-color, #dc3545);
+  border: 1px solid var(--delete-button-color, #dc3545);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.remove-hyperlink-btn:hover {
+  background-color: var(--delete-button-color, #dc3545);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.remove-hyperlink-btn:active {
+  transform: translateY(0);
+}
+
+/* Add hyperlink button */
+.add-hyperlink-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem;
+  background-color: transparent;
+  color: var(--button-primary, #007bff);
+  border: 1px dashed var(--button-primary, #007bff);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.add-hyperlink-btn:hover {
+  background-color: var(--button-primary, #007bff);
+  color: white;
+  border-style: solid;
+  transform: translateY(-1px);
+}
+
+.add-hyperlink-btn:active {
+  transform: translateY(0);
+}
+
+.add-hyperlink-btn svg {
+  flex-shrink: 0;
+}
+
+/* Dark mode support */
+.dark-mode .hyperlink-input {
+  --input-bg: #2c2c2c;
+  --border-color: #444;
+  --input-text: #e1e1e1;
+  --button-primary: #3a97ff;
+}
+
+.dark-mode .hyperlink-input:focus {
+  border-color: var(--button-primary, #3a97ff);
+  box-shadow: 0 0 0 2px rgba(58, 151, 255, 0.2);
+}
+
+.dark-mode .remove-hyperlink-btn {
+  --delete-button-color: #ff6b6b;
+}
+
+.dark-mode .add-hyperlink-btn {
+  --button-primary: #3a97ff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hyperlink-input-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+  }
+  
+  .hyperlink-buttons {
+    justify-content: flex-end;
+  }
+  
+  .remove-hyperlink-btn {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hyperlinks-container {
+    padding: 0.25rem;
+  }
+  
+  .hyperlink-input {
+    font-size: 0.85rem;
+  }
+  
+  .add-hyperlink-btn {
+    font-size: 0.8rem;
+    padding: 0.4rem;
+  }
+}
