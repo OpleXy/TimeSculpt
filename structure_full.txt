@@ -202,8 +202,9 @@ Line Counts Per File:
 1072 src/styles/topbar.css
 993 src/services/timelineCommandProcessor.js
 956 src/api.js
+950 src/App.jsx
 937 src/styles/timeline.css
-937 src/App.jsx
+826 src/components/EditEventModal.jsx
 793 src/styles/add-event-modal.css
 792 src/components/TimelineStyleMenu.jsx
 789 src/components/Topbar.jsx
@@ -212,7 +213,6 @@ Line Counts Per File:
 619 src/styles/pages/MinProfil.css
 605 src/styles/event-form.css
 603 src/components/CreateEventModal.jsx
-582 src/components/EditEventModal.jsx
 533 src/components/IntervalSettings.jsx
 533 src/components/EventEditModal.jsx
 497 src/components/TimelineEvent.jsx

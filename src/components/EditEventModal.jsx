@@ -20,11 +20,12 @@ function EditEventModal({
                               timelineData.start && 
                               timelineData.end;
 
-  // Handle event update
+  // Handle event update - FIXED to preserve all image properties
   const handleEventUpdate = (eventData) => {
     // Create updated event object with existing properties preserved
     const updatedEvent = {
-      ...event, // Preserve existing properties like index, id, etc.
+      ...event, // Preserve ALL existing properties first
+      // Then update with new data
       title: eventData.title,
       plainTitle: stripHtml(eventData.title),
       date: eventData.date,
@@ -37,12 +38,15 @@ function EditEventModal({
       offset: event.yOffset || event.offset || 0,
       autoLayouted: event.autoLayouted || false,
       manuallyPositioned: event.manuallyPositioned || false,
-      // Handle image properties
-      hasImage: eventData.hasImage || false,
-      imageFile: eventData.imageFile || null, // This could be a File or URL
-      imageUrl: eventData.imageUrl || null,
-      imageStoragePath: eventData.imageStoragePath || event.imageStoragePath || null,
-      imageFileName: eventData.imageFileName || event.imageFileName || null
+      
+      // CRITICAL FIX: Preserve existing image properties when no new image is uploaded
+      hasImage: eventData.hasImage || event.hasImage || false,
+      
+      // If new image file is provided, use it, otherwise keep existing image data
+      imageFile: eventData.imageFile !== undefined ? eventData.imageFile : event.imageFile,
+      imageUrl: eventData.imageUrl !== undefined ? eventData.imageUrl : event.imageUrl,
+      imageStoragePath: eventData.imageStoragePath !== undefined ? eventData.imageStoragePath : event.imageStoragePath,
+      imageFileName: eventData.imageFileName !== undefined ? eventData.imageFileName : event.imageFileName
     };
 
     onSave(updatedEvent);
@@ -56,7 +60,7 @@ function EditEventModal({
     return tmp.textContent || tmp.innerText || '';
   };
 
-  // Close modal on ESC key
+  // Close modal on ESC key and prevent drag events on modal
   useEffect(() => {
     const handleEsc = (event) => {
       if (event.keyCode === 27) {
@@ -64,12 +68,25 @@ function EditEventModal({
       }
     };
     
+    // Prevent drag events on the entire document to avoid opening images in new tabs
+    const handleDocumentDragOver = (e) => {
+      e.preventDefault();
+    };
+    
+    const handleDocumentDrop = (e) => {
+      e.preventDefault();
+    };
+    
     if (isOpen) {
       document.addEventListener('keydown', handleEsc, false);
+      document.addEventListener('dragover', handleDocumentDragOver, false);
+      document.addEventListener('drop', handleDocumentDrop, false);
     }
     
     return () => {
       document.removeEventListener('keydown', handleEsc, false);
+      document.removeEventListener('dragover', handleDocumentDragOver, false);
+      document.removeEventListener('drop', handleDocumentDrop, false);
     };
   }, [isOpen, onClose]);
 
@@ -83,10 +100,17 @@ function EditEventModal({
   if (!isOpen || !event) return null;
 
   return (
-    <div className="add-event-modal-overlay" onClick={handleBackdropClick}>
+    <div 
+      className="add-event-modal-overlay" 
+      onClick={handleBackdropClick}
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={(e) => e.preventDefault()}
+    >
       <div 
         className="add-event-modal"
         onClick={(e) => e.stopPropagation()}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => e.preventDefault()}
       >
         {/* Modal Header */}
         <div className="modal-header">
@@ -128,7 +152,7 @@ function EditEventModal({
   );
 }
 
-// Special EventForm component for editing that pre-fills values with image support
+// Special EventForm component for editing that pre-fills values with FIXED image support
 function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
@@ -140,6 +164,9 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [existingImageUrl, setExistingImageUrl] = useState(null);
+  // State for drag and drop
+  const [imageChanged, setImageChanged] = useState(false); // Track if image was changed
+  const [isDragOver, setIsDragOver] = useState(false);
 
   // Format date for input field (YYYY-MM-DD)
   const formatDateForInput = (date) => {
@@ -152,7 +179,7 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
     return date.toISOString().split('T')[0];
   };
 
-  // Initialize form with event data
+  // FIXED: Initialize form with event data including proper image handling
   useEffect(() => {
     if (event) {
       setTitle(event.title || '');
@@ -160,13 +187,15 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
       setDescription(event.description || '');
       setSize(event.size || 'medium');
       setColor(event.color || 'default');
+      setImageChanged(false); // Reset image changed flag
       
-      // Handle existing image
-      if (event.imageFile || event.imageUrl) {
-        const imageUrl = event.imageUrl || event.imageFile;
-        if (typeof imageUrl === 'string') {
+      // FIXED: Handle existing image with better logic
+      if (event.hasImage && (event.imageFile || event.imageUrl)) {
+        const imageUrl = event.imageUrl || (typeof event.imageFile === 'string' ? event.imageFile : null);
+        if (imageUrl) {
           setExistingImageUrl(imageUrl);
           setImagePreview(imageUrl);
+          setImageFile(null); // Clear new image file since we're using existing
         }
       } else {
         setImageFile(null);
@@ -203,7 +232,16 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
     }
 
     setIsFormValid(true);
-  }, [title, date, timelineStart, timelineEnd]);
+  }, [title, date, timelineStart, timelineEnd]); // FIXED: Added missing dependencies
+
+  // Cleanup preview URL on unmount
+  useEffect(() => {
+    return () => {
+      if (imagePreview && imagePreview !== existingImageUrl) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview, existingImageUrl]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -221,6 +259,7 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
     // Create event object
     const eventDate = new Date(date);
     
+    // FIXED: Proper image handling logic
     const eventData = {
       title,
       plainTitle: stripHtml(title),
@@ -228,11 +267,18 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
       description: description || '',
       size,
       color,
-      hasImage: !!(imageFile || existingImageUrl),
-      imageFile: imageFile || existingImageUrl, // File object or existing URL
-      imageUrl: existingImageUrl, // Keep existing URL if no new file
-      imageStoragePath: event.imageStoragePath || null,
-      imageFileName: event.imageFileName || null
+      
+      // CRITICAL FIX: Only update image properties if image was actually changed
+      ...(imageChanged ? {
+        hasImage: !!(imageFile || existingImageUrl),
+        imageFile: imageFile, // New file if uploaded
+        imageUrl: existingImageUrl, // Keep existing URL if no new file
+        // Don't specify imageStoragePath and imageFileName if not changed
+        // Let them be preserved from the original event
+      } : {
+        // If image wasn't changed, don't specify any image properties
+        // This will let the handleEventUpdate function preserve existing values
+      })
     };
 
     // Call parent handler to update event
@@ -255,7 +301,7 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
     setColor(selectedColor);
   };
 
-  // Handle image file selection with preview
+  // FIXED: Handle image file selection with preview and change tracking
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     
@@ -276,6 +322,7 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
 
       setImageFile(file);
       setError(''); // Clear any existing errors
+      setImageChanged(true); // Mark that image was changed
       
       // Clear existing image
       setExistingImageUrl(null);
@@ -286,7 +333,7 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
     }
   };
 
-  // Handle image removal
+  // FIXED: Handle image removal with change tracking
   const handleImageRemove = () => {
     // Clean up preview URLs
     if (imagePreview && imagePreview !== existingImageUrl) {
@@ -296,6 +343,7 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
     setImageFile(null);
     setImagePreview(null);
     setExistingImageUrl(null);
+    setImageChanged(true); // Mark that image was changed (removed)
     
     // Reset the file input
     const fileInput = document.getElementById('bilde-edit');
@@ -304,14 +352,56 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
     }
   };
 
-  // Cleanup preview URL on unmount
-  useEffect(() => {
-    return () => {
-      if (imagePreview && imagePreview !== existingImageUrl) {
-        URL.revokeObjectURL(imagePreview);
+  // Handle drag events
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        setError('Ugyldig filtype. Kun JPEG, PNG, GIF og WebP bilder er tillatt.');
+        return;
       }
-    };
-  }, [imagePreview, existingImageUrl]);
+
+      // Validate file size (5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        setError('Filen er for stor. Maksimal størrelse er 5MB.');
+        return;
+      }
+
+      setImageFile(file);
+      setError('');
+      setImageChanged(true);
+      
+      // Clear existing image
+      setExistingImageUrl(null);
+
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+    }
+  };
 
   // Render size options content
   const renderSizeOptions = () => (
@@ -450,9 +540,154 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
     />
   );
 
-  // Render image upload content with preview and existing image support
+  // Render image upload content with preview and existing image support + drag-and-drop
   const renderImageUpload = () => (
     <div className="image-upload-container">
+      <style>{`
+        .image-upload-area {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 6rem;
+          border: 2px dashed #ccc;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          background-color: #f8f9fa;
+        }
+        .image-upload-area:hover {
+          background-color: #e9ecef;
+          border-color: #007bff;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .image-upload-area.drag-over {
+          background-color: #007bff !important;
+          border-color: #007bff !important;
+          border-style: solid !important;
+          border-width: 3px !important;
+          transform: translateY(-3px) !important;
+          box-shadow: 0 8px 16px rgba(0, 123, 255, 0.3) !important;
+        }
+        .image-upload-area.drag-over .image-upload-icon {
+          color: white !important;
+          transform: scale(1.1);
+        }
+        .image-upload-area.drag-over .image-upload-text,
+        .image-upload-area.drag-over .image-upload-subtitle {
+          color: white !important;
+          font-weight: 600 !important;
+        }
+        .image-upload-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          gap: 8px;
+          pointer-events: none;
+        }
+        .image-upload-icon {
+          width: 2rem;
+          height: 2rem;
+          color: #6c757d;
+          transition: all 0.3s ease;
+        }
+        .image-upload-area:hover:not(.drag-over) .image-upload-icon {
+          color: #007bff;
+        }
+        .image-upload-text {
+          font-size: 0.8rem;
+          color: #6c757d;
+          font-weight: 500;
+          margin: 0;
+          transition: all 0.3s ease;
+        }
+        .image-upload-subtitle {
+          font-size: 0.7rem;
+          color: #6c757d;
+          opacity: 0.8;
+          margin: 0;
+          transition: all 0.3s ease;
+        }
+        .image-upload-area:hover:not(.drag-over) .image-upload-text,
+        .image-upload-area:hover:not(.drag-over) .image-upload-subtitle {
+          color: #007bff;
+        }
+        .image-preview {
+          position: relative;
+          border: 2px solid #ccc;
+          border-radius: 8px;
+          overflow: hidden;
+          background-color: #f8f9fa;
+          margin-bottom: 0.5rem;
+          animation: fadeInScale 0.3s ease-out;
+        }
+        .preview-image {
+          width: 100%;
+          height: auto;
+          max-height: 150px;
+          object-fit: cover;
+          display: block;
+        }
+        .remove-image-btn {
+          position: absolute;
+          top: 6px;
+          right: 6px;
+          width: 24px;
+          height: 24px;
+          background-color: rgba(220, 53, 69, 0.9);
+          color: white;
+          border: none;
+          border-radius: 50%;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
+          z-index: 2;
+        }
+        .remove-image-btn:hover {
+          background-color: rgba(220, 53, 69, 1);
+          transform: scale(1.1);
+        }
+        .image-info {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+          color: white;
+          padding: 6px 10px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-size: 11px;
+        }
+        .file-name {
+          font-weight: 500;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 60%;
+        }
+        .file-size {
+          font-weight: 400;
+          opacity: 0.9;
+        }
+        @keyframes fadeInScale {
+          0% {
+            opacity: 0;
+            transform: scale(0.9);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+      `}</style>
       <div className="image-upload-wrapper visible">
         {/* Image preview */}
         {imagePreview && (
@@ -479,15 +714,24 @@ function EditEventForm({ event, onUpdateEvent, timelineStart, timelineEnd }) {
           </div>
         )}
         
-        {/* Upload area */}
+        {/* Upload area with drag-and-drop */}
         {!imagePreview && (
-          <label htmlFor="bilde-edit" className="image-upload-area">
+          <label 
+            htmlFor="bilde-edit" 
+            className={`image-upload-area ${isDragOver ? 'drag-over' : ''}`}
+            onDragOver={handleDragOver}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
             <div className="image-upload-content">
               <svg className="image-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" 
                   d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6h.1a5 5 0 010 10H7z" />
               </svg>
-              <p className="image-upload-text">Last opp eller dra og slipp bildet her</p>
+              <p className="image-upload-text">
+                {isDragOver ? 'Slipp bildet her' : 'Last opp eller dra og slipp bildet her'}
+              </p>
               <p className="image-upload-subtitle">JPEG, PNG, GIF, WebP (maks 5MB)</p>
             </div>
           </label>

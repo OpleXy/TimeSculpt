@@ -246,39 +246,52 @@ function App() {
   };
 
   // Handle saving and deleting edited events (if handled globally)
-  const handleSaveEditedEvent = (updatedEvent) => {
-    if (!eventToEdit || eventToEdit.index === undefined) return;
+// ERSTATNING for handleSaveEditedEvent funksjonen i App.jsx
+// Finn denne funksjonen (linje ~344) og erstatt med denne versjonen:
+
+const handleSaveEditedEvent = (updatedEvent) => {
+  if (!eventToEdit || eventToEdit.index === undefined) return;
+  
+  const newEvents = [...timelineData.events];
+  const eventIndex = eventToEdit.index;
+  const originalEvent = newEvents[eventIndex];
+  
+  // FIXED: Preserve ALL existing properties, especially image-related ones
+  newEvents[eventIndex] = {
+    ...originalEvent, // Start with all original properties
+    ...updatedEvent,  // Then apply updates
     
-    const newEvents = [...timelineData.events];
-    const eventIndex = eventToEdit.index;
+    // Ensure positioning is preserved
+    xOffset: originalEvent.xOffset || 0,
+    yOffset: originalEvent.yOffset || originalEvent.offset || 0,
+    offset: originalEvent.yOffset || originalEvent.offset || 0,
+    autoLayouted: originalEvent.autoLayouted || false,
+    manuallyPositioned: originalEvent.manuallyPositioned || false,
     
-    // Update the event while preserving positioning and metadata
-    newEvents[eventIndex] = {
-      ...updatedEvent,
-      // Preserve existing positioning
-      xOffset: eventToEdit.xOffset || 0,
-      yOffset: eventToEdit.yOffset || eventToEdit.offset || 0,
-      offset: eventToEdit.yOffset || eventToEdit.offset || 0,
-      autoLayouted: eventToEdit.autoLayouted || false,
-      manuallyPositioned: eventToEdit.manuallyPositioned || false
-    };
-    
-    setTimelineData({
-      ...timelineData,
-      events: newEvents
-    });
-    
-    // Mark as having unsaved changes
-    setHasUnsavedChanges(true);
-    setSaveError('');
-    
-    // Close the modal
-    setIsEditEventModalOpen(false);
-    setEventToEdit(null);
-    
-    // Show success notification
-    showShortcutNotification('Hendelse oppdatert');
+    // CRITICAL: Preserve image properties if they weren't explicitly changed
+    hasImage: updatedEvent.hasImage !== undefined ? updatedEvent.hasImage : originalEvent.hasImage,
+    imageFile: updatedEvent.imageFile !== undefined ? updatedEvent.imageFile : originalEvent.imageFile,
+    imageUrl: updatedEvent.imageUrl !== undefined ? updatedEvent.imageUrl : originalEvent.imageUrl,
+    imageStoragePath: updatedEvent.imageStoragePath !== undefined ? updatedEvent.imageStoragePath : originalEvent.imageStoragePath,
+    imageFileName: updatedEvent.imageFileName !== undefined ? updatedEvent.imageFileName : originalEvent.imageFileName
   };
+  
+  setTimelineData({
+    ...timelineData,
+    events: newEvents
+  });
+  
+  // Mark as having unsaved changes
+  setHasUnsavedChanges(true);
+  setSaveError('');
+  
+  // Close the modal
+  setIsEditEventModalOpen(false);
+  setEventToEdit(null);
+  
+  // Show success notification
+  showShortcutNotification('Hendelse oppdatert');
+};
 
   const handleDeleteEditedEvent = (event, index) => {
     const eventIndex = typeof index === 'number' ? index : eventToEdit?.index;
