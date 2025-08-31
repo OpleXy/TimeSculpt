@@ -230,7 +230,6 @@ Line Counts Per File:
 370 src/components/TimelineShareModal.jsx
 367 src/components/BackgroundSelector.jsx
 353 src/services/openAiService.js
-345 src/styles/welcome-screen.css
 339 src/components/TextUploadTimelineGenerator.jsx
 318 src/styles/timeline-cards.css
 311 src/services/backgroundImageService.js
@@ -249,7 +248,6 @@ Line Counts Per File:
 207 src/styles/EventFormStyles.css
 204 src/styles/pages/PublicTimelines.css
 202 src/styles/pages/layout.css
-189 src/components/WelcomeScreen.jsx
 188 src/components/DateInput.jsx
 187 src/styles/text-to-timeline.css
 156 src/styles/EventContextMenu.css
@@ -273,8 +271,10 @@ Line Counts Per File:
 122 src/styles/DateInput.css
 122 src/contexts/ThemeContext.jsx
 121 src/components/AddEventModal.jsx
+115 src/styles/welcome-screen.css
 109 src/assets/logo-timesculpt.png
 108 src/styles/mobile-warning.css
+104 src/components/WelcomeScreen.jsx
 103 src/components/TimelineForm.jsx
 102 src/components/DeleteConfirmationModal.jsx
 94 src/styles/event-creation-selector.css

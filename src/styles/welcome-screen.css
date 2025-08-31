@@ -1,346 +1,115 @@
-/* 
- * welcome-screen.css 
- * Simplified styles focusing on AI generation
- */
+/* --------------------------------------------
+   File: src/styles/welcome-screen.css
+   Updated: blur + lighter background, full height
+---------------------------------------------*/
+
+:root {
+  --bg: #f8f9fa;
+  --text: #222;
+  --muted: #6c757d;
+  --primary: #0d6efd;
+  --primary-strong: #0a58ca;
+  --ring: rgba(13, 110, 253, 0.35);
+}
 
 .welcome-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
+  display: grid;
+  place-items: center;
+  min-height: 100vh; /* full height */
   width: 100%;
-  height: 100%;
-  min-height: calc(100vh - 60px);
-  overflow-y: auto;
-  background-color: var(--bg-color, #f8f9fa);
+  padding: 2rem 1rem;
+  background: url('http://localhost:5173/backgrounds/timesculpt.png') center/cover no-repeat;
+  position: relative;
 }
 
-.welcome-content {
-  max-width: 600px;
-  margin: 0 auto;
-  text-align: center;
-  background-color: var(--card-bg, white);
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.welcome-container h3 {
-  color: var(--primary-color, #333);
-  margin-bottom: 2rem;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-/* AI Timeline Section - Main Focus */
-.ai-timeline-section {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  border: 2px solid #e9ecef;
-  text-align: center;
-}
-
-.ai-timeline-section h4 {
-  color: #495057;
-  margin-bottom: 1rem;
-  font-size: 1.3rem;
-  font-weight: 600;
-}
-
-.ai-timeline-section p {
-  color: #6c757d;
-  margin-bottom: 1.5rem;
-  font-size: 1rem;
+.welcome-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(204, 204, 204, 0.6); /* light overlay */
+  backdrop-filter: blur(2px);
+  z-index: 0;
 }
 
 .ai-timeline-form {
-  margin-top: 1.5rem;
+  width: 100%;
+  max-width: 720px;
+  position: relative;
+  z-index: 1; /* above overlay */
 }
 
-.input-group {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
+.input-group { position: relative; }
 
 .ai-input {
-  flex: 1;
-  min-width: 280px;
-  padding: 0.875rem 1.125rem;
-  border: 2px solid #dee2e6;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+  padding: 1.1rem 3.25rem 1.1rem 1.25rem;
+  border: 2px solid #e1e5ea;
+  border-radius: 9999px;
+  font-size: 1.05rem;
+  background: #fff;
+  color: var(--text);
+  transition: border-color .18s ease, box-shadow .18s ease, transform .06s ease;
 }
-
 .ai-input:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 .22rem var(--ring);
 }
 
 .ai-generate-btn {
-  padding: 0.875rem 1.5rem;
-  background: #007bff;
-  color: white;
+  position: absolute;
+  right: .35rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
+  background: var(--primary);
+  color: #fff;
   cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  transition: transform .06s ease, background .18s ease;
 }
+.ai-generate-btn:hover:not(:disabled) { background: var(--primary-strong); }
+.ai-generate-btn:active:not(:disabled) { transform: translateY(-50%) scale(0.98); }
+.ai-generate-btn:disabled { opacity: .6; cursor: not-allowed; }
 
-.ai-generate-btn:hover:not(:disabled) {
-  background: #0056b3;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
-}
+.spinner { width: 22px; height: 22px; animation: spin 1s linear infinite; }
+.spinner .path { stroke: #fff; stroke-linecap: round; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-.ai-generate-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.example-prompts {
-  margin-top: 1.5rem;
-}
-
-.example-prompts p {
-  color: #6c757d;
-  margin-bottom: 0.75rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.example-buttons {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-  flex-wrap: wrap;
-}
+.example-buttons { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
 
 .example-btn {
-  padding: 0.5rem 1rem;
-  background: white;
-  color: #007bff;
-  border: 1px solid #007bff;
-  border-radius: 20px;
-  font-size: 0.875rem;
+  padding: .6rem .9rem;
+  border-radius: 9999px;
+  border: 1px solid var(--primary);
+  background: #fff;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: .9rem;
   cursor: pointer;
-  transition: all 0.2s;
-  font-weight: 500;
+  transition: background .18s ease, color .18s ease, transform .06s ease;
 }
+.example-btn:hover:not(:disabled) { background: var(--primary); color: #fff; }
+.example-btn:active:not(:disabled) { transform: scale(0.98); }
+.example-btn:disabled { opacity: .6; cursor: not-allowed; }
 
-.example-btn:hover:not(:disabled) {
-  background: #007bff;
-  color: white;
-  transform: translateY(-1px);
-}
-
-.example-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Manual Section */
-.manual-section {
-  padding: 1.5rem;
-  color: #6c757d;
-  text-align: center;
-}
-
-.manual-section p {
-  margin-bottom: 1.5rem;
-  font-size: 1rem;
-}
-
-.support-link {
-  display: flex;
-  justify-content: center;
-}
-
-.support-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: #6c757d;
-  color: white;
-  border-radius: 50%;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 1.2rem;
-  transition: all 0.2s;
-}
-
-.support-icon:hover {
-  background: #495057;
-  color: white;
-  text-decoration: none;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-/* Loading Spinner */
-.spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid #ffffff4d;
-  border-top: 2px solid #ffffff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  display: inline-block;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Error Message */
 .error-message {
-  background: #f8d7da;
-  color: #721c24;
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-  margin-top: 1rem;
-  font-size: 0.9rem;
-  border: 1px solid #f5c6cb;
+  background: #fde2e1;
+  border: 1px solid #f4b8b5;
+  color: #7a221f;
+  padding: .8rem 1rem;
+  border-radius: 12px;
+  margin: .75rem 0 0.75rem;
+  font-size: .95rem;
 }
 
-/* Dark mode support */
-.dark-mode .welcome-container {
-  background-color: var(--dark-bg-color, #121212);
-}
+.dark-mode .welcome-container::before { background: rgba(18,18,18,0.6); }
 
-.dark-mode .welcome-content {
-  background-color: var(--dark-card-bg, #1e1e1e);
-  color: var(--dark-text-color, #eee);
-}
-
-.dark-mode .welcome-container h3 {
-  color: var(--dark-text-color, #f8f9fa);
-}
-
-.dark-mode .ai-timeline-section {
-  background: #2a2a2a;
-  border-color: #404040;
-}
-
-.dark-mode .ai-timeline-section h4 {
-  color: #f8f9fa;
-}
-
-.dark-mode .ai-timeline-section p {
-  color: #adb5bd;
-}
-
-.dark-mode .ai-input {
-  background: #343a40;
-  border-color: #495057;
-  color: #f8f9fa;
-}
-
-.dark-mode .ai-input:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-.dark-mode .example-btn {
-  background: #343a40;
-  color: #007bff;
-  border-color: #007bff;
-}
-
-.dark-mode .example-btn:hover:not(:disabled) {
-  background: #007bff;
-  color: white;
-}
-
-.dark-mode .manual-section {
-  color: #adb5bd;
-}
-
-.dark-mode .error-message {
-  background: #f8d7da;
-  color: #721c24;
-  border-color: #f5c6cb;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .welcome-container {
-    padding: 1rem;
-    min-height: calc(100vh - 60px);
-  }
-  
-  .welcome-content {
-    max-width: 100%;
-    padding: 1.5rem;
-  }
-  
-  .ai-timeline-section {
-    padding: 1.5rem;
-  }
-  
-  .input-group {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  
-  .ai-input {
-    min-width: auto;
-    width: 100%;
-  }
-  
-  .ai-generate-btn {
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .example-buttons {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .example-btn {
-    width: 200px;
-    text-align: center;
-  }
-
-  .welcome-container h3 {
-    font-size: 1.3rem;
-  }
-
-  .ai-timeline-section h4 {
-    font-size: 1.1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .welcome-content {
-    padding: 1rem;
-  }
-  
-  .ai-timeline-section {
-    padding: 1rem;
-  }
-  
-  .example-btn {
-    width: 100%;
-  }
+@media (max-width: 520px) {
+  .ai-input { font-size: 1rem; padding-right: 3rem; }
+  .ai-generate-btn { width: 40px; height: 40px; }
 }
