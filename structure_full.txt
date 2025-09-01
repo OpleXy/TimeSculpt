@@ -99,6 +99,7 @@ src
 │   │   ├── MicrosoftSignIn.jsx
 │   │   ├── Register.jsx
 │   │   └── UserProfile.jsx
+│   ├── contextMenu
 │   └── events
 ├── contexts
 │   ├── AuthContext.jsx
@@ -174,7 +175,7 @@ src
 └── utils
     └── dateUtils.js
 
-12 directories, 116 files
+13 directories, 116 files
 
 Line Counts Per File:
 12839 public/backgrounds/dino.png
