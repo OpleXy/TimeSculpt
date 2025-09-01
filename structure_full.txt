@@ -100,6 +100,14 @@ src
 │   │   ├── Register.jsx
 │   │   └── UserProfile.jsx
 │   ├── contextMenu
+│   │   ├── AutoLayoutSubmenu.jsx
+│   │   ├── BackgroundSubmenu.jsx
+│   │   ├── ColorSubmenu.jsx
+│   │   ├── ImageEditorSubmenu.jsx
+│   │   ├── IntervalsSubmenu.jsx
+│   │   ├── MenuIcons.jsx
+│   │   ├── TimelineContextMenu.jsx
+│   │   └── index.js
 │   └── events
 ├── contexts
 │   ├── AuthContext.jsx
@@ -175,7 +183,7 @@ src
 └── utils
     └── dateUtils.js
 
-13 directories, 116 files
+13 directories, 124 files
 
 Line Counts Per File:
 12839 public/backgrounds/dino.png
@@ -226,21 +234,25 @@ Line Counts Per File:
 399 src/styles/BackgroundSelector.css
 388 src/services/aiTimelineService.js
 378 src/pages/MineTidslinjer.jsx
+371 src/components/contextMenu/IntervalsSubmenu.jsx
 370 src/components/TimelineShareModal.jsx
 367 src/components/BackgroundSelector.jsx
 353 src/services/openAiService.js
 339 src/components/TextUploadTimelineGenerator.jsx
+337 src/components/contextMenu/BackgroundSubmenu.jsx
 318 src/styles/timeline-cards.css
 311 src/services/backgroundImageService.js
 299 src/styles/pages/Innstillinger.css
 285 src/services/eventLayoutService.js
 281 src/services/historicalEvents.js
+278 src/components/contextMenu/TimelineContextMenu.jsx
 276 src/styles/timeline-command-input.css
 264 src/components/TimelineCommandInput.jsx
 260 src/firebase.js
 252 src/hooks/useBackgroundManager.js
 238 src/services/promptTimelineService.js
 235 src/components/TimelineList.jsx
+221 src/components/contextMenu/ImageEditorSubmenu.jsx
 213 src/components/TopbarTimelineForm.jsx
 209 src/styles/text-upload-timeline-generator.css
 209 src/styles/pages/NotFound.css
@@ -249,6 +261,7 @@ Line Counts Per File:
 202 src/styles/pages/layout.css
 188 src/components/DateInput.jsx
 187 src/styles/text-to-timeline.css
+186 src/components/contextMenu/MenuIcons.jsx
 156 src/styles/EventContextMenu.css
 153 src/styles/background-images.css
 152 src/styles/topbar-privacy.css
@@ -281,6 +294,7 @@ Line Counts Per File:
 90 src/styles/theme-toggle.css
 80 src/pages/NotFound.jsx
 79 src/components/auth/AuthModal.jsx
+78 src/components/contextMenu/AutoLayoutSubmenu.jsx
 76 src/styles/prompt-processing.css
 71 src/themeManager.js
 69 src/styles/RichTextEditor.css
@@ -296,6 +310,7 @@ Line Counts Per File:
 57 src/components/Layout.jsx
 56 src/components/EventCreationSelector.jsx
 53 src/styles/EventFormTransition.css
+45 src/components/contextMenu/ColorSubmenu.jsx
 44 src/components/ExpandableMenu.jsx
 43 src/contexts/AuthContext.jsx
 37 src/routes/AppRoutes.jsx
@@ -305,6 +320,7 @@ Line Counts Per File:
 23 src/components/ToggleSwitch.jsx
 19 src/main.jsx
 18 src/styles/privacy-toggle.css
+8 src/components/contextMenu/index.js
 8 src/Header.jsx
 7 public/.htaccess
 0 src/styles/topbar-timeline-form.css
