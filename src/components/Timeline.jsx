@@ -2,7 +2,7 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import TimelineEvent from './TimelineEvent';
 import TimelineContextMenu from './contextMenu'; // Keep only ONE import for TimelineContextMenu
-import EventDetailPanel from './EventDetailPanel';
+
 import EventContextMenu from './EventContextMenu';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import BackgroundManager from './BackgroundManager';
@@ -1197,13 +1197,7 @@ function Timeline({
           timelineData={timelineData}
         />
         
-        <EventDetailPanel 
-          event={detailEvent}
-          isOpen={showDetailPanel}
-          onClose={handleCloseDetailPanel}
-          onSave={handleSaveEventFromPanel}
-          onDelete={handleDeleteFromPanel}
-        />
+        
         
         {/* New Delete Confirmation Modal */}
         <DeleteConfirmationModal

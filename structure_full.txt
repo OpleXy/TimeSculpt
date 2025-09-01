@@ -63,7 +63,6 @@ src
 │   ├── EditEventModal.jsx
 │   ├── EventContextMenu.jsx
 │   ├── EventCreationSelector.jsx
-│   ├── EventDetailPanel.jsx
 │   ├── EventEditModal.jsx
 │   ├── EventForm.jsx
 │   ├── ExpandableMenu.jsx
@@ -74,16 +73,13 @@ src
 │   ├── PrivacyToggle.jsx
 │   ├── RichTextEditor.jsx
 │   ├── TextToTimelineForm.jsx
-│   ├── TextUploadTimelineGenerator.jsx
 │   ├── ThemeToggle.jsx
 │   ├── Timeline.jsx
-│   ├── TimelineCommandInput.jsx
 │   ├── TimelineEvent.jsx
 │   ├── TimelineForm.jsx
 │   ├── TimelineIntervals.jsx
 │   ├── TimelineList.jsx
 │   ├── TimelineShareModal.jsx
-│   ├── TimelineStyleMenu.jsx
 │   ├── ToggleSwitch.jsx
 │   ├── Topbar.jsx
 │   ├── TopbarTimelineForm.jsx
@@ -130,10 +126,7 @@ src
 │   ├── backgroundImageService.js
 │   ├── documentTitleService.js
 │   ├── eventLayoutService.js
-│   ├── historicalEvents.js
-│   ├── openAiService.js
-│   ├── promptTimelineService.js
-│   └── timelineCommandProcessor.js
+│   └── openAiService.js
 ├── styles
 │   ├── BackgroundSelector.css
 │   ├── DateInput.css
@@ -179,11 +172,9 @@ src
 │   ├── ui-components.css
 │   └── welcome-screen.css
 ├── themeManager.js
-├── userAPI.js
-└── utils
-    └── dateUtils.js
+└── userAPI.js
 
-13 directories, 124 files
+12 directories, 116 files
 
 Line Counts Per File:
 12839 public/backgrounds/dino.png
@@ -206,16 +197,14 @@ Line Counts Per File:
 1698 src/styles/darkMode.css
 1634 src/styles/ui-components.css
 1415 src/styles/timeline.css
-1277 src/components/Timeline.jsx
+1271 src/components/Timeline.jsx
 1193 src/styles/timeline-share-modal.css
 1122 src/styles/topbar.css
 1078 src/App.jsx
-993 src/services/timelineCommandProcessor.js
 982 src/api.js
 921 src/components/EditEventModal.jsx
 806 src/components/Topbar.jsx
 793 src/styles/add-event-modal.css
-792 src/components/TimelineStyleMenu.jsx
 781 src/styles/auth.css
 766 src/styles/event-form.css
 681 src/components/CreateEventModal.jsx
@@ -226,7 +215,6 @@ Line Counts Per File:
 533 src/components/IntervalSettings.jsx
 533 src/components/EventEditModal.jsx
 477 src/components/TimelineIntervals.jsx
-467 src/components/EventDetailPanel.jsx
 463 src/pages/MinProfil.jsx
 409 src/styles/hyperlink-selection-modal.css
 399 src/styles/pages/MineTidslinjer.css
@@ -238,19 +226,15 @@ Line Counts Per File:
 370 src/components/TimelineShareModal.jsx
 367 src/components/BackgroundSelector.jsx
 353 src/services/openAiService.js
-339 src/components/TextUploadTimelineGenerator.jsx
 318 src/styles/timeline-cards.css
 311 src/services/backgroundImageService.js
 303 src/components/contextMenu/ImageEditorSubmenu.jsx
 299 src/styles/pages/Innstillinger.css
 285 src/services/eventLayoutService.js
-281 src/services/historicalEvents.js
 279 src/components/contextMenu/TimelineContextMenu.jsx
 276 src/styles/timeline-command-input.css
-264 src/components/TimelineCommandInput.jsx
 260 src/firebase.js
 252 src/hooks/useBackgroundManager.js
-238 src/services/promptTimelineService.js
 235 src/components/TimelineList.jsx
 213 src/components/TopbarTimelineForm.jsx
 209 src/styles/text-upload-timeline-generator.css
@@ -298,7 +282,6 @@ Line Counts Per File:
 76 src/styles/prompt-processing.css
 71 src/themeManager.js
 69 src/styles/RichTextEditor.css
-68 src/utils/dateUtils.js
 66 src/hooks/useAutoSave.js
 65 src/components/auth/GoogleSignIn.jsx
 64 src/components/auth/MicrosoftSignIn.jsx
