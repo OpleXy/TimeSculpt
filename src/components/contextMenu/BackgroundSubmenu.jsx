@@ -49,6 +49,33 @@ function BackgroundSubmenu({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState('');
 
+  // Helper function to get the actual image URL from different formats
+  const getCurrentImageUrl = () => {
+    if (!currentBackgroundImage) return null;
+    
+    if (typeof currentBackgroundImage === 'object' && currentBackgroundImage.url) {
+      return currentBackgroundImage.url;
+    } else if (typeof currentBackgroundImage === 'string') {
+      return currentBackgroundImage;
+    }
+    
+    return null;
+  };
+
+  // Helper function to check if current image matches a filename
+  const isImageSelected = (filename) => {
+    if (!currentBackgroundImage) return false;
+    
+    if (typeof currentBackgroundImage === 'object' && currentBackgroundImage.url) {
+      return currentBackgroundImage.url === `/backgrounds/${filename}`;
+    } else if (typeof currentBackgroundImage === 'string') {
+      return currentBackgroundImage === filename || 
+             currentBackgroundImage === `/backgrounds/${filename}`;
+    }
+    
+    return false;
+  };
+
   // Validation of image files
   const validateFile = (file) => {
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
@@ -157,9 +184,11 @@ function BackgroundSubmenu({
 
   // Remove custom background
   const handleRemoveCustomBackground = async () => {
-    if (currentBackgroundImage && currentBackgroundImage.startsWith('https://')) {
+    const currentImageUrl = getCurrentImageUrl();
+    
+    if (currentImageUrl && currentImageUrl.startsWith('https://')) {
       try {
-        await deleteBackgroundImage(currentBackgroundImage);
+        await deleteBackgroundImage(currentImageUrl);
       } catch (error) {
         console.error('Feil ved sletting av bilde:', error);
       }
@@ -171,7 +200,15 @@ function BackgroundSubmenu({
   };
 
   // Check if current background image is custom (uploaded)
-  const isCustomImage = currentBackgroundImage && currentBackgroundImage.startsWith('https://');
+  const isCustomImage = () => {
+    const imageUrl = getCurrentImageUrl();
+    return imageUrl && imageUrl.startsWith('https://');
+  };
+
+  // Get display URL for custom image preview
+  const getCustomImagePreviewUrl = () => {
+    return getCurrentImageUrl();
+  };
 
   return (
     <div className="context-menu-background">
@@ -279,11 +316,11 @@ function BackgroundSubmenu({
                     </div>
                   )}
 
-                  {isCustomImage && (
+                  {isCustomImage() && (
                     <div className="background-custom-image-actions">
                       <h4>Ditt opplastede bilde</h4>
                       <img 
-                        src={currentBackgroundImage} 
+                        src={getCustomImagePreviewUrl()} 
                         alt="Egendefinert bakgrunn"
                         className="background-custom-image-preview"
                       />
@@ -307,7 +344,7 @@ function BackgroundSubmenu({
                   <button
                     key={image.filename}
                     className={`background-image-option ${
-                      currentBackgroundImage === image.filename ? 'selected' : ''
+                      isImageSelected(image.filename) ? 'selected' : ''
                     }`}
                     onClick={() => handleBackgroundImageSelect(image.filename)}
                     title={image.name}
@@ -321,7 +358,7 @@ function BackgroundSubmenu({
                     <div className="background-image-info">
                       <span className="background-image-name">{image.name}</span>
                     </div>
-                    {currentBackgroundImage === image.filename && (
+                    {isImageSelected(image.filename) && (
                       <span className="background-checkmark">✓</span>
                     )}
                   </button>

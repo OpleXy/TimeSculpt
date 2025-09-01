@@ -1,7 +1,11 @@
 // src/components/contextMenu/ImageEditorSubmenu.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-function ImageEditorSubmenu({ onBackgroundImageSelect, setCurrentView }) {
+function ImageEditorSubmenu({ 
+  onBackgroundImageSelect, 
+  setCurrentView, 
+  currentBackgroundImage // Add this prop
+}) {
   // Image filter states
   const [currentImageUrl, setCurrentImageUrl] = useState(null);
   const [imageFilters, setImageFilters] = useState({
@@ -14,6 +18,84 @@ function ImageEditorSubmenu({ onBackgroundImageSelect, setCurrentView }) {
     hue: 0,
     opacity: 100
   });
+
+  // Update currentImageUrl when currentBackgroundImage changes
+  useEffect(() => {
+    if (currentBackgroundImage) {
+      // Handle different image formats
+      if (typeof currentBackgroundImage === 'object' && currentBackgroundImage.url) {
+        // New format with filters
+        setCurrentImageUrl(currentBackgroundImage.url);
+        
+        // If filters exist, parse and apply them
+        if (currentBackgroundImage.filters && currentBackgroundImage.filters !== 'none') {
+          parseFiltersFromString(currentBackgroundImage.filters);
+        }
+      } else if (typeof currentBackgroundImage === 'string') {
+        // Handle different string formats
+        if (currentBackgroundImage.startsWith('http')) {
+          // Direct URL (uploaded image)
+          setCurrentImageUrl(currentBackgroundImage);
+        } else {
+          // Predefined image filename
+          setCurrentImageUrl(`/backgrounds/${currentBackgroundImage}`);
+        }
+      }
+    } else {
+      setCurrentImageUrl(null);
+    }
+  }, [currentBackgroundImage]);
+
+  // Parse existing filters from CSS string
+  const parseFiltersFromString = (filterString) => {
+    const filters = {
+      blur: 0,
+      brightness: 100,
+      contrast: 100,
+      saturate: 100,
+      sepia: 0,
+      grayscale: 0,
+      hue: 0,
+      opacity: 100
+    };
+
+    // Parse each filter from the string
+    const filterMatches = filterString.match(/(\w+)\(([^)]+)\)/g);
+    if (filterMatches) {
+      filterMatches.forEach(match => {
+        const [, filterName, value] = match.match(/(\w+)\(([^)]+)\)/);
+        
+        switch (filterName) {
+          case 'blur':
+            filters.blur = parseFloat(value.replace('px', ''));
+            break;
+          case 'brightness':
+            filters.brightness = parseInt(value.replace('%', ''));
+            break;
+          case 'contrast':
+            filters.contrast = parseInt(value.replace('%', ''));
+            break;
+          case 'saturate':
+            filters.saturate = parseInt(value.replace('%', ''));
+            break;
+          case 'sepia':
+            filters.sepia = parseInt(value.replace('%', ''));
+            break;
+          case 'grayscale':
+            filters.grayscale = parseInt(value.replace('%', ''));
+            break;
+          case 'hue-rotate':
+            filters.hue = parseInt(value.replace('deg', ''));
+            break;
+          case 'opacity':
+            filters.opacity = parseInt(value.replace('%', ''));
+            break;
+        }
+      });
+    }
+
+    setImageFilters(filters);
+  };
 
   // Handle filter changes
   const handleFilterChange = (filterType, value) => {
@@ -34,7 +116,7 @@ function ImageEditorSubmenu({ onBackgroundImageSelect, setCurrentView }) {
     if (onBackgroundImageSelect) {
       onBackgroundImageSelect({
         url: currentImageUrl,
-        filters: filterString
+        filters: filterString !== 'blur(0px) brightness(100%) contrast(100%) saturate(100%) sepia(0%) grayscale(0%) hue-rotate(0deg) opacity(100%)' ? filterString : 'none'
       });
     }
     

@@ -266,11 +266,12 @@ function TimelineContextMenu({
         )}
 
         {currentView === 'imageeditor' && (
-          <ImageEditorSubmenu
-            onBackgroundImageSelect={onBackgroundImageSelect}
-            setCurrentView={setCurrentView}
-          />
-        )}
+  <ImageEditorSubmenu
+    onBackgroundImageSelect={onBackgroundImageSelect}
+    setCurrentView={setCurrentView}
+    currentBackgroundImage={currentBackgroundImage} // Add this line
+  />
+)}
       </div>
     </div>
   );
