@@ -1,16 +1,16 @@
+// src/components/Timeline.jsx - CORRECTED imports section
 import { useRef, useEffect, useState, useCallback } from 'react';
 import TimelineEvent from './TimelineEvent';
-import TimelineContextMenu from './TimelineContextMenu';
+import TimelineContextMenu from './contextMenu'; // Keep only ONE import for TimelineContextMenu
 import EventDetailPanel from './EventDetailPanel';
 import EventContextMenu from './EventContextMenu';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import BackgroundManager from './BackgroundManager';
 import TimelineIntervals from './TimelineIntervals';
 import CreateEventModal from './CreateEventModal';
-import EditEventModal from './EditEventModal'; // NEW IMPORT
+import EditEventModal from './EditEventModal';
 import { setDocumentTitle } from '../services/documentTitleService';
 import { smartLayout, needsRelayout, resetEventLayout } from '../services/eventLayoutService';
-
 function Timeline({ 
   timelineData, 
   setTimelineData,

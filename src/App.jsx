@@ -1,3 +1,4 @@
+// src/App.jsx - Updated imports section
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Topbar from './components/Topbar';

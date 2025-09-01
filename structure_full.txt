@@ -78,7 +78,6 @@ src
 │   ├── ThemeToggle.jsx
 │   ├── Timeline.jsx
 │   ├── TimelineCommandInput.jsx
-│   ├── TimelineContextMenu.jsx
 │   ├── TimelineEvent.jsx
 │   ├── TimelineForm.jsx
 │   ├── TimelineIntervals.jsx
@@ -106,6 +105,7 @@ src
 │   │   ├── ImageEditorSubmenu.jsx
 │   │   ├── IntervalsSubmenu.jsx
 │   │   ├── MenuIcons.jsx
+│   │   ├── ThicknessSubmenu.jsx
 │   │   ├── TimelineContextMenu.jsx
 │   │   └── index.js
 │   └── events
@@ -205,12 +205,11 @@ Line Counts Per File:
 2301 public/backgrounds/timesculpt.png
 1698 src/styles/darkMode.css
 1634 src/styles/ui-components.css
-1575 src/components/TimelineContextMenu.jsx
 1415 src/styles/timeline.css
 1277 src/components/Timeline.jsx
 1193 src/styles/timeline-share-modal.css
 1122 src/styles/topbar.css
-1077 src/App.jsx
+1078 src/App.jsx
 993 src/services/timelineCommandProcessor.js
 982 src/api.js
 921 src/components/EditEventModal.jsx
@@ -284,6 +283,7 @@ Line Counts Per File:
 122 src/contexts/ThemeContext.jsx
 121 src/components/AddEventModal.jsx
 115 src/styles/welcome-screen.css
+115 src/components/contextMenu/ThicknessSubmenu.jsx
 109 src/assets/logo-timesculpt.png
 104 src/components/WelcomeScreen.jsx
 103 src/components/TimelineForm.jsx
