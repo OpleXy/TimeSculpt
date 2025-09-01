@@ -82,22 +82,9 @@ function BackgroundManager({
 // Helper function to get background image options - using the new filenames
 export const getBackgroundImageOptions = () => {
   return [
-    { name: 'Cctv', value: 'cctv.png' },
-    { name: 'Cia', value: 'cia.png' },
-    { name: 'Dino', value: 'dino.png' },
-    { name: 'Eldre Krig', value: 'eldrekrig.png' },
-    { name: 'Eventyr', value: 'eventyr.png' },
-    { name: 'Hacker', value: 'hacker.png' },
-    { name: 'Huleboer', value: 'huleboer.png' },
-    { name: 'Industri', value: 'industri.png' },
-    { name: 'Kina', value: 'kina.png' },
-    { name: 'Melkeveien', value: 'melkeveien.png' },
-    { name: 'Moderne Krig', value: 'modernekrig.png' },
-    { name: 'Overgrodd', value: 'overgrodd.png' },
-    { name: 'Patent', value: 'patent.png' },
-    { name: 'Pyramide', value: 'pyramide.png' },
-    { name: 'Ridder', value: 'ridder.png' },
-    { name: 'Timesculpt', value: 'timesculpt.png' }
+    { name: 'beach', value: 'beach.png' },
+    { name: 'city', value: 'city.png' },
+    { name: 'forest', value: 'forest.png' }
   ];
 };
 

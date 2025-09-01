@@ -25,21 +25,9 @@ watch-structure.sh
 
 public
 ├── backgrounds
-│   ├── cctv.png
-│   ├── cia.png
-│   ├── dino.png
-│   ├── eldrekrig.png
-│   ├── eventyr.png
-│   ├── hacker.png
-│   ├── huleboer.png
-│   ├── industri.png
-│   ├── kina.png
-│   ├── melkeveien.png
-│   ├── modernekrig.png
-│   ├── overgrodd.png
-│   ├── patent.png
-│   ├── pyramide.png
-│   ├── ridder.png
+│   ├── beach.png
+│   ├── city.png
+│   ├── forest.png
 │   └── timesculpt.png
 ├── timesculpt_logo_page.svg
 ├── timesculpt_logo_w_text.svg
@@ -56,11 +44,11 @@ src
 │   ├── ActiveLink.jsx
 │   ├── AddEventModal.jsx
 │   ├── BackgroundManager.jsx
-│   ├── BackgroundSelector.jsx
 │   ├── CreateEventModal.jsx
 │   ├── DateInput.jsx
 │   ├── DeleteConfirmationModal.jsx
 │   ├── EditEventModal.jsx
+│   ├── ErrorBoundary.jsx
 │   ├── EventContextMenu.jsx
 │   ├── EventCreationSelector.jsx
 │   ├── EventEditModal.jsx
@@ -180,22 +168,10 @@ src
 18 directories, 113 files
 
 Line Counts Per File:
-12839 public/backgrounds/dino.png
-12344 public/backgrounds/patent.png
-11738 public/backgrounds/eventyr.png
-11623 public/backgrounds/overgrodd.png
-11544 public/backgrounds/industri.png
-11475 public/backgrounds/pyramide.png
-11459 public/backgrounds/cia.png
-10718 public/backgrounds/hacker.png
-10597 public/backgrounds/huleboer.png
-10586 public/backgrounds/melkeveien.png
-10347 public/backgrounds/eldrekrig.png
-10285 public/backgrounds/ridder.png
-10098 public/backgrounds/modernekrig.png
-9714 public/backgrounds/kina.png
+6358 public/backgrounds/forest.png
+6326 public/backgrounds/city.png
+5957 public/backgrounds/beach.png
 2759 src/styles/TimelineContextMenu.css
-2588 public/backgrounds/cctv.png
 2301 public/backgrounds/timesculpt.png
 1698 src/styles/darkMode.css
 1634 src/styles/ui-components.css
@@ -224,19 +200,18 @@ Line Counts Per File:
 399 src/styles/BackgroundSelector.css
 388 src/services/aiTimelineService.js
 378 src/pages/MineTidslinjer.jsx
-374 src/components/contextMenu/BackgroundSubmenu.jsx
 371 src/components/contextMenu/IntervalsSubmenu.jsx
 370 src/components/TimelineShareModal.jsx
-367 src/components/BackgroundSelector.jsx
+362 src/components/contextMenu/BackgroundSubmenu.jsx
 353 src/services/openAiService.js
 318 src/styles/timeline-cards.css
 311 src/services/backgroundImageService.js
-303 src/components/contextMenu/ImageEditorSubmenu.jsx
 299 src/styles/pages/Innstillinger.css
 285 src/services/eventLayoutService.js
 279 src/components/contextMenu/TimelineContextMenu.jsx
 276 src/styles/timeline-command-input.css
 260 src/firebase.js
+260 src/components/contextMenu/ImageEditorSubmenu.jsx
 252 src/hooks/useBackgroundManager.js
 235 src/components/TimelineList.jsx
 213 src/components/TopbarTimelineForm.jsx
@@ -249,7 +224,6 @@ Line Counts Per File:
 187 src/styles/text-to-timeline.css
 186 src/components/contextMenu/MenuIcons.jsx
 156 src/styles/EventContextMenu.css
-153 src/styles/background-images.css
 152 src/styles/topbar-privacy.css
 152 src/components/auth/Register.jsx
 148 src/styles/base.css
@@ -271,14 +245,16 @@ Line Counts Per File:
 121 src/components/AddEventModal.jsx
 115 src/styles/welcome-screen.css
 115 src/components/contextMenu/ThicknessSubmenu.jsx
+112 src/components/ErrorBoundary.jsx
 109 src/assets/logo-timesculpt.png
 104 src/components/WelcomeScreen.jsx
 103 src/components/TimelineForm.jsx
-103 src/components/BackgroundManager.jsx
 102 src/components/DeleteConfirmationModal.jsx
 94 src/styles/event-creation-selector.css
 93 src/components/auth/AuthCompletion.jsx
 90 src/styles/theme-toggle.css
+90 src/components/BackgroundManager.jsx
+81 src/styles/background-images.css
 80 src/pages/NotFound.jsx
 79 src/components/auth/AuthModal.jsx
 78 src/components/contextMenu/AutoLayoutSubmenu.jsx

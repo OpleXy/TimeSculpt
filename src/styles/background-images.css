@@ -10,117 +10,27 @@
   }
   
   /* Add different color backgrounds for each preview */
-  .bg-image-preview[data-image="cctv.png"] { 
+  .bg-image-preview[data-image="beach.png"] { 
     background-color: #e6f7ff; 
-    background-image: url('/backgrounds/cctv.png');
+    background-image: url('/backgrounds/beach.png');
     background-size: cover;
     background-position: center;
   }
   
-  .bg-image-preview[data-image="cia.png"] { 
+  .bg-image-preview[data-image="city.png"] { 
     background-color: #d9f7be; 
-    background-image: url('/backgrounds/cia.png');
+    background-image: url('/backgrounds/city.png');
     background-size: cover;
     background-position: center;
   }
   
-  .bg-image-preview[data-image="dino.png"] { 
+  .bg-image-preview[data-image="forest.png"] { 
     background-color: #fff1b8; 
-    background-image: url('/backgrounds/dino.png');
+    background-image: url('/backgrounds/forest.png');
     background-size: cover;
     background-position: center;
   }
   
-  .bg-image-preview[data-image="eldrekrig.png"] { 
-    background-color: #ffd6e7; 
-    background-image: url('/backgrounds/eldrekrig.png');
-    background-size: cover;
-    background-position: center;
-  }
-  
-  .bg-image-preview[data-image="eventyr.png"] { 
-    background-color: #efdbff; 
-    background-image: url('/backgrounds/eventyr.png');
-    background-size: cover;
-    background-position: center;
-  }
-  
-  .bg-image-preview[data-image="hacker.png"] { 
-    background-color: #d6e4ff; 
-    background-image: url('/backgrounds/hacker.png');
-    background-size: cover;
-    background-position: center;
-  }
-  
-  .bg-image-preview[data-image="huleboer.png"] { 
-    background-color: #d9f7be; 
-    background-image: url('/backgrounds/huleboer.png');
-    background-size: cover;
-    background-position: center;
-  }
-  
-  .bg-image-preview[data-image="industri.png"] { 
-    background-color: #ffd8bf; 
-    background-image: url('/backgrounds/industri.png');
-    background-size: cover;
-    background-position: center;
-  }
-  
-  .bg-image-preview[data-image="kina.png"] { 
-    background-color: #f4ffb8; 
-    background-image: url('/backgrounds/kina.png');
-    background-size: cover;
-    background-position: center;
-  }
-  
-  .bg-image-preview[data-image="melkeveien.png"] { 
-    background-color: #bfbfbf; 
-    background-image: url('/backgrounds/melkeveien.png');
-    background-size: cover;
-    background-position: center;
-  }
-  
-  .bg-image-preview[data-image="modernekrig.png"] { 
-    background-color: #bae7ff; 
-    background-image: url('/backgrounds/modernekrig.png');
-    background-size: cover;
-    background-position: center;
-  }
-  
-  .bg-image-preview[data-image="overgrodd.png"] { 
-    background-color: #d3adf7; 
-    background-image: url('/backgrounds/overgrodd.png');
-    background-size: cover;
-    background-position: center;
-  }
-  
-  .bg-image-preview[data-image="patent.png"] { 
-    background-color: #ffa39e; 
-    background-image: url('/backgrounds/patent.png');
-    background-size: cover;
-    background-position: center;
-  }
-  
-  .bg-image-preview[data-image="pyramide.png"] { 
-    background-color: #b5f5ec; 
-    background-image: url('/backgrounds/pyramide.png');
-    background-size: cover;
-    background-position: center;
-  }
-  
-  .bg-image-preview[data-image="ridder.png"] { 
-    background-color: #e6f7ff; 
-    background-image: url('/backgrounds/ridder.png');
-    background-size: cover;
-    background-position: center;
-  }
-  
-  .bg-image-preview[data-image="timesculpt.png"] { 
-    background-color: #d9f7be; 
-    background-image: url('/backgrounds/timesculpt.png');
-    background-size: cover;
-    background-position: center;
-  }
   
   /* For the menu item that shows the current background */
   .bg-image-preview[data-image]:not([data-image=""]) {
@@ -137,18 +47,36 @@
     background-position: 0 0, 4px 4px;
   }
 
-  .timeline-container[style*="background-image"]::before {
+/* FIXED: Create a separate background layer that doesn't affect timeline content */
+.timeline-container::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    /* Increase the white overlay opacity for better contrast */
-    background-color: rgba(255, 255, 255, 0.594); 
-    /* Add blur effect to the background */
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(3px);
+    z-index: -1; /* Put behind all timeline content */
     pointer-events: none; /* Allow clicks to pass through */
+    
+    /* Only apply overlay and blur when there's a background image */
+    background-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
 
-  }
+
+/* Alternative approach: Use a dedicated background layer class */
+.timeline-container.has-background-image {
+    position: relative;
+}
+
+.timeline-container.has-background-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    pointer-events: none;
+}

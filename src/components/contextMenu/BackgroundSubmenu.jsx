@@ -16,22 +16,10 @@ const predefinedColors = [
 ];
 
 const predefinedImages = [
-  { name: 'CCTV', filename: 'cctv.png', category: 'Teknologi' },
-  { name: 'CIA', filename: 'cia.png', category: 'Historie' },
-  { name: 'Dinosaur', filename: 'dino.png', category: 'Forhistorie' },
-  { name: 'Eldre Krig', filename: 'eldrekrig.png', category: 'Historie' },
-  { name: 'Eventyr', filename: 'eventyr.png', category: 'Eventyr' },
-  { name: 'Hacker', filename: 'hacker.png', category: 'Teknologi' },
-  { name: 'Huleboer', filename: 'huleboer.png', category: 'Forhistorie' },
-  { name: 'Industri', filename: 'industri.png', category: 'Industri' },
-  { name: 'Kina', filename: 'kina.png', category: 'Kultur' },
-  { name: 'Melkeveien', filename: 'melkeveien.png', category: 'Romfart' },
-  { name: 'Moderne Krig', filename: 'modernekrig.png', category: 'Historie' },
-  { name: 'Overgrodd', filename: 'overgrodd.png', category: 'Natur' },
-  { name: 'Patent', filename: 'patent.png', category: 'Teknologi' },
-  { name: 'Pyramide', filename: 'pyramide.png', category: 'Historie' },
-  { name: 'Ridder', filename: 'ridder.png', category: 'Middelalder' },
-  { name: 'TimeSculpt', filename: 'timesculpt.png', category: 'Standard' }
+  { name: 'Strand', filename: 'beach.png', category: 'Natur' },
+  { name: 'By', filename: 'city.png', category: 'Urban' },
+  { name: 'Skog', filename: 'forest.png', category: 'Natur' },
+
 ];
 
 function BackgroundSubmenu({

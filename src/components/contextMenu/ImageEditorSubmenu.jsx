@@ -1,22 +1,17 @@
-// src/components/contextMenu/ImageEditorSubmenu.jsx
+// src/components/contextMenu/ImageEditorSubmenu.jsx - SIMPLIFIED VERSION
 import React, { useState, useEffect } from 'react';
 
 function ImageEditorSubmenu({ 
   onBackgroundImageSelect, 
   setCurrentView, 
-  currentBackgroundImage // Add this prop
+  currentBackgroundImage 
 }) {
   // Image filter states
   const [currentImageUrl, setCurrentImageUrl] = useState(null);
   const [imageFilters, setImageFilters] = useState({
     blur: 0,
     brightness: 100,
-    contrast: 100,
-    saturate: 100,
-    sepia: 0,
-    grayscale: 0,
-    hue: 0,
-    opacity: 100
+    saturate: 100
   });
 
   // Update currentImageUrl when currentBackgroundImage changes
@@ -30,6 +25,9 @@ function ImageEditorSubmenu({
         // If filters exist, parse and apply them
         if (currentBackgroundImage.filters && currentBackgroundImage.filters !== 'none') {
           parseFiltersFromString(currentBackgroundImage.filters);
+        } else {
+          // Reset filters if none are applied
+          resetFilters();
         }
       } else if (typeof currentBackgroundImage === 'string') {
         // Handle different string formats
@@ -40,9 +38,12 @@ function ImageEditorSubmenu({
           // Predefined image filename
           setCurrentImageUrl(`/backgrounds/${currentBackgroundImage}`);
         }
+        // Reset filters for string-based images (legacy format)
+        resetFilters();
       }
     } else {
       setCurrentImageUrl(null);
+      resetFilters();
     }
   }, [currentBackgroundImage]);
 
@@ -51,12 +52,7 @@ function ImageEditorSubmenu({
     const filters = {
       blur: 0,
       brightness: 100,
-      contrast: 100,
-      saturate: 100,
-      sepia: 0,
-      grayscale: 0,
-      hue: 0,
-      opacity: 100
+      saturate: 100
     };
 
     // Parse each filter from the string
@@ -72,23 +68,8 @@ function ImageEditorSubmenu({
           case 'brightness':
             filters.brightness = parseInt(value.replace('%', ''));
             break;
-          case 'contrast':
-            filters.contrast = parseInt(value.replace('%', ''));
-            break;
           case 'saturate':
             filters.saturate = parseInt(value.replace('%', ''));
-            break;
-          case 'sepia':
-            filters.sepia = parseInt(value.replace('%', ''));
-            break;
-          case 'grayscale':
-            filters.grayscale = parseInt(value.replace('%', ''));
-            break;
-          case 'hue-rotate':
-            filters.hue = parseInt(value.replace('deg', ''));
-            break;
-          case 'opacity':
-            filters.opacity = parseInt(value.replace('%', ''));
             break;
         }
       });
@@ -97,50 +78,88 @@ function ImageEditorSubmenu({
     setImageFilters(filters);
   };
 
-  // Handle filter changes
+  // Handle filter changes with real-time preview
   const handleFilterChange = (filterType, value) => {
-    setImageFilters(prev => ({
-      ...prev,
+    const newFilters = {
+      ...imageFilters,
       [filterType]: value
-    }));
+    };
+    
+    setImageFilters(newFilters);
+    
+    // Apply filters in real-time for better UX
+    applyFiltersRealTime(newFilters);
   };
 
-  // Apply filters to background
+  // Apply filters in real-time (optional - for immediate feedback)
+  const applyFiltersRealTime = (filters) => {
+    if (!currentImageUrl || !onBackgroundImageSelect) return;
+    
+    // Create filter string
+    const filterString = createFilterString(filters);
+    
+    // Apply the filtered image immediately
+    onBackgroundImageSelect({
+      url: currentImageUrl,
+      filters: filterString !== 'none' ? filterString : 'none'
+    });
+  };
+
+  // Create CSS filter string from filter values
+  const createFilterString = (filters) => {
+    const filterParts = [];
+    
+    if (filters.blur > 0) filterParts.push(`blur(${filters.blur}px)`);
+    if (filters.brightness !== 100) filterParts.push(`brightness(${filters.brightness}%)`);
+    if (filters.saturate !== 100) filterParts.push(`saturate(${filters.saturate}%)`);
+    
+    return filterParts.length > 0 ? filterParts.join(' ') : 'none';
+  };
+
+  // Apply filters to background (final save)
   const applyImageFilters = () => {
     if (!currentImageUrl || !onBackgroundImageSelect) return;
     
     // Create filter string
-    const filterString = `blur(${imageFilters.blur}px) brightness(${imageFilters.brightness}%) contrast(${imageFilters.contrast}%) saturate(${imageFilters.saturate}%) sepia(${imageFilters.sepia}%) grayscale(${imageFilters.grayscale}%) hue-rotate(${imageFilters.hue}deg) opacity(${imageFilters.opacity}%)`;
+    const filterString = createFilterString(imageFilters);
     
     // Apply the filtered image
-    if (onBackgroundImageSelect) {
-      onBackgroundImageSelect({
-        url: currentImageUrl,
-        filters: filterString !== 'blur(0px) brightness(100%) contrast(100%) saturate(100%) sepia(0%) grayscale(0%) hue-rotate(0deg) opacity(100%)' ? filterString : 'none'
-      });
-    }
+    onBackgroundImageSelect({
+      url: currentImageUrl,
+      filters: filterString
+    });
     
     // Go back to background menu
     setCurrentView('background');
   };
 
-  // Reset all filters
+  // Reset all filters to default values
   const resetFilters = () => {
-    setImageFilters({
+    const defaultFilters = {
       blur: 0,
       brightness: 100,
-      contrast: 100,
-      saturate: 100,
-      sepia: 0,
-      grayscale: 0,
-      hue: 0,
-      opacity: 100
-    });
+      saturate: 100
+    };
+    
+    setImageFilters(defaultFilters);
+  };
+
+  // Reset and apply default filters
+  const handleResetFilters = () => {
+    resetFilters();
+    
+    // Apply reset filters immediately
+    if (currentImageUrl && onBackgroundImageSelect) {
+      onBackgroundImageSelect({
+        url: currentImageUrl,
+        filters: 'none'
+      });
+    }
   };
 
   // Generate filter CSS string for preview
   const getFilterStyle = () => {
-    return `blur(${imageFilters.blur}px) brightness(${imageFilters.brightness}%) contrast(${imageFilters.contrast}%) saturate(${imageFilters.saturate}%) sepia(${imageFilters.sepia}%) grayscale(${imageFilters.grayscale}%) hue-rotate(${imageFilters.hue}deg) opacity(${imageFilters.opacity}%)`;
+    return createFilterString(imageFilters);
   };
 
   // If no image is loaded, show a message
@@ -169,7 +188,8 @@ function ImageEditorSubmenu({
             width: '100%',
             height: '120px',
             objectFit: 'cover',
-            borderRadius: '6px'
+            borderRadius: '6px',
+            transition: 'filter 0.2s ease' // Smooth filter transitions
           }}
         />
       </div>
@@ -203,19 +223,6 @@ function ImageEditorSubmenu({
           />
         </div>
 
-        {/* Contrast */}
-        <div className="filter-group">
-          <label>Kontrast: {imageFilters.contrast}%</label>
-          <input
-            type="range"
-            min="0"
-            max="200"
-            value={imageFilters.contrast}
-            onChange={(e) => handleFilterChange('contrast', parseInt(e.target.value))}
-            className="filter-slider"
-          />
-        </div>
-
         {/* Saturation */}
         <div className="filter-group">
           <label>Metning: {imageFilters.saturate}%</label>
@@ -228,73 +235,23 @@ function ImageEditorSubmenu({
             className="filter-slider"
           />
         </div>
-
-        {/* Sepia */}
-        <div className="filter-group">
-          <label>Sepia: {imageFilters.sepia}%</label>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={imageFilters.sepia}
-            onChange={(e) => handleFilterChange('sepia', parseInt(e.target.value))}
-            className="filter-slider"
-          />
-        </div>
-
-        {/* Grayscale */}
-        <div className="filter-group">
-          <label>Gråskala: {imageFilters.grayscale}%</label>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={imageFilters.grayscale}
-            onChange={(e) => handleFilterChange('grayscale', parseInt(e.target.value))}
-            className="filter-slider"
-          />
-        </div>
-
-        {/* Hue Rotate */}
-        <div className="filter-group">
-          <label>Fargetone: {imageFilters.hue}°</label>
-          <input
-            type="range"
-            min="0"
-            max="360"
-            value={imageFilters.hue}
-            onChange={(e) => handleFilterChange('hue', parseInt(e.target.value))}
-            className="filter-slider"
-          />
-        </div>
-
-        {/* Opacity */}
-        <div className="filter-group">
-          <label>Gjennomsiktighet: {imageFilters.opacity}%</label>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={imageFilters.opacity}
-            onChange={(e) => handleFilterChange('opacity', parseInt(e.target.value))}
-            className="filter-slider"
-          />
-        </div>
       </div>
 
       {/* Action Buttons */}
       <div className="editor-actions">
         <button 
           className="reset-filters-btn"
-          onClick={resetFilters}
+          onClick={handleResetFilters}
+          title="Fjern alle filtere og gå tilbake til original"
         >
           Tilbakestill
         </button>
         <button 
           className="apply-filters-btn"
           onClick={applyImageFilters}
+          title="Lagre endringer og gå tilbake"
         >
-          Bruk
+          Ferdig
         </button>
       </div>
     </div>
