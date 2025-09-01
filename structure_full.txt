@@ -14,11 +14,11 @@ div
 eslint.config.js
 index.html
 node_modules
-oppstart timesculpt github.txt
 package-lock.json
 package.json
 public
 src
+startTimesculptGithub.txt
 structure_full.txt
 vite.config.js
 watch-structure.sh
@@ -85,13 +85,10 @@ src
 │   ├── TopbarTimelineForm.jsx
 │   ├── WelcomeScreen.jsx
 │   ├── auth
-│   │   ├── AppleSignIn.jsx
 │   │   ├── AuthCompletion.jsx
 │   │   ├── AuthModal.jsx
-│   │   ├── FacebookSignIn.jsx
 │   │   ├── GoogleSignIn.jsx
 │   │   ├── Login.jsx
-│   │   ├── MicrosoftSignIn.jsx
 │   │   ├── Register.jsx
 │   │   └── UserProfile.jsx
 │   ├── contextMenu
@@ -104,7 +101,9 @@ src
 │   │   ├── ThicknessSubmenu.jsx
 │   │   ├── TimelineContextMenu.jsx
 │   │   └── index.js
-│   └── events
+│   ├── events
+│   ├── modals
+│   └── topbar
 ├── contexts
 │   ├── AuthContext.jsx
 │   └── ThemeContext.jsx
@@ -141,13 +140,16 @@ src
 │   ├── background-images.css
 │   ├── base.css
 │   ├── content-menu.css
+│   ├── contextMenu
 │   ├── darkMode.css
 │   ├── event-colors.css
 │   ├── event-creation-selector.css
 │   ├── event-form.css
+│   ├── events
 │   ├── expandable-menu.css
 │   ├── hyperlink-selection-modal.css
 │   ├── layout-manager.css
+│   ├── modals
 │   ├── pages
 │   │   ├── Innstillinger.css
 │   │   ├── MinProfil.css
@@ -166,6 +168,7 @@ src
 │   ├── timeline-command-input.css
 │   ├── timeline-share-modal.css
 │   ├── timeline.css
+│   ├── topbar
 │   ├── topbar-privacy.css
 │   ├── topbar-timeline-form.css
 │   ├── topbar.css
@@ -174,7 +177,7 @@ src
 ├── themeManager.js
 └── userAPI.js
 
-12 directories, 116 files
+18 directories, 113 files
 
 Line Counts Per File:
 12839 public/backgrounds/dino.png
@@ -284,11 +287,8 @@ Line Counts Per File:
 69 src/styles/RichTextEditor.css
 66 src/hooks/useAutoSave.js
 65 src/components/auth/GoogleSignIn.jsx
-64 src/components/auth/MicrosoftSignIn.jsx
 64 src/components/RichTextEditor.jsx
-62 src/components/auth/FacebookSignIn.jsx
 61 src/components/auth/UserProfile.jsx
-60 src/components/auth/AppleSignIn.jsx
 59 src/components/LayoutManager.jsx
 57 src/components/Layout.jsx
 56 src/components/EventCreationSelector.jsx
