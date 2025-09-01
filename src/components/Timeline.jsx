@@ -983,20 +983,49 @@ function Timeline({
   
   // Get container style including background color or image
   const getContainerStyle = () => {
-    const baseStyle = {};
-    
-    if (backgroundImageUrl) {
+  const baseStyle = {};
+  
+  // Handle background image with potential filters
+  if (backgroundImageUrl) {
+    if (typeof backgroundImageUrl === 'object' && backgroundImageUrl.url) {
+      // New format with filters
+      baseStyle.backgroundImage = `url(${backgroundImageUrl.url})`;
+      baseStyle.backgroundSize = 'cover';
+      baseStyle.backgroundPosition = 'center';
+      baseStyle.backgroundRepeat = 'no-repeat';
+      
+      // Apply filters if they exist
+      if (backgroundImageUrl.filters && backgroundImageUrl.filters !== 'none') {
+        baseStyle.filter = backgroundImageUrl.filters;
+      }
+    } else if (typeof backgroundImageUrl === 'string') {
+      // Legacy format - simple URL
       baseStyle.backgroundImage = `url(${backgroundImageUrl})`;
       baseStyle.backgroundSize = 'cover';
       baseStyle.backgroundPosition = 'center';
-    } else if (backgroundColor) {
-      baseStyle.backgroundColor = backgroundColor;
-    } else {
-      baseStyle.backgroundColor = 'white';
+      baseStyle.backgroundRepeat = 'no-repeat';
+      
+      // Remove any default filters that might have been applied
+      baseStyle.filter = 'none';
     }
     
-    return baseStyle;
-  };
+    // Ensure background color is cleared when using images
+    baseStyle.backgroundColor = 'transparent';
+  } else if (backgroundColor) {
+    // Solid color background
+    baseStyle.backgroundColor = backgroundColor;
+    baseStyle.backgroundImage = 'none';
+    baseStyle.filter = 'none';
+  } else {
+    // Default fallback
+    baseStyle.backgroundColor = 'white';
+    baseStyle.backgroundImage = 'none';
+    baseStyle.filter = 'none';
+  }
+  
+  return baseStyle;
+};
+
   
   // Return early if no timeline data
   if (!timelineData.start || !timelineData.end) {

@@ -8,7 +8,7 @@ import EditEventModal from './components/EditEventModal';
 import { useAuth } from './contexts/AuthContext.jsx';
 import { useTheme } from './contexts/ThemeContext.jsx';
 import AuthModal from './components/auth/AuthModal';
-import MobileWarning from './components/MobileWarning';
+
 import useAutoSave from './hooks/useAutoSave';
 
 import { generateTimelineEvents } from './services/aiTimelineService';
@@ -19,7 +19,7 @@ import './styles/timeline.css';
 import './styles/ui-components.css';
 import './styles/auth.css';
 import './styles/topbar.css';
-import './styles/mobile-warning.css';
+
 import './styles/theme-toggle.css';
 import './styles/add-event-modal.css';
 
@@ -99,10 +99,12 @@ function App() {
       count: 5,
       type: 'even'
     },
-    isPublic: false
+    isPublic: false,
+    backgroundImage: null,
+    backgroundFilters: null // NYTT: For å lagre filter-data
   });
 
-  // Generate a simple hash for timeline data to detect actual changes
+  // OPPDATERT: Generate a simple hash for timeline data to detect actual changes (inkludert background filters)
   const generateDataHash = (data) => {
     const relevantData = {
       id: data.id,
@@ -123,12 +125,16 @@ function App() {
       showIntervals,
       intervalCount,
       intervalType,
-      isPublic
+      isPublic,
+      // NYTT: Include background filter data in hash
+      backgroundColor: data.backgroundColor,
+      backgroundImage: data.backgroundImage,
+      backgroundFilters: data.backgroundFilters
     };
     return JSON.stringify(relevantData);
   };
 
-  // Optimized auto-save function with deduplication
+  // OPPDATERT: Optimized auto-save function with deduplication (inkludert background filters)
   const autoSaveTimeline = async () => {
     // Don't save if there's no meaningful data or if it's not saved initially
     if (!timelineData || !timelineData.title || !timelineData.id || timelineData.events.length === 0) {
@@ -165,7 +171,9 @@ function App() {
         intervalCount: intervalSettings.count,
         intervalType: intervalSettings.type,
         intervalSettings: intervalSettings,
-        isPublic: isPublic
+        isPublic: isPublic,
+        // NYTT: Inkluder background filter data
+        backgroundFilters: timelineData.backgroundFilters || null
       };
       
       // Import API functions dynamically
@@ -202,7 +210,8 @@ function App() {
       showIntervals,
       intervalCount,
       intervalType,
-      isPublic
+      isPublic,
+      timelineData?.backgroundFilters // NYTT: Trigger auto-save on filter changes
     ]
   );
 
@@ -246,55 +255,52 @@ function App() {
   };
 
   // Handle saving and deleting edited events (if handled globally)
-// ERSTATNING for handleSaveEditedEvent funksjonen i App.jsx
-// Finn denne funksjonen (linje ~344) og erstatt med denne versjonen:
-
-const handleSaveEditedEvent = (updatedEvent) => {
-  if (!eventToEdit || eventToEdit.index === undefined) return;
-  
-  const newEvents = [...timelineData.events];
-  const eventIndex = eventToEdit.index;
-  const originalEvent = newEvents[eventIndex];
-  
-  // FIXED: Preserve ALL existing properties, especially image-related and hyperlinks
-  newEvents[eventIndex] = {
-    ...originalEvent, // Start with all original properties
-    ...updatedEvent,  // Then apply updates
+  const handleSaveEditedEvent = (updatedEvent) => {
+    if (!eventToEdit || eventToEdit.index === undefined) return;
     
-    // Ensure positioning is preserved
-    xOffset: originalEvent.xOffset || 0,
-    yOffset: originalEvent.yOffset || originalEvent.offset || 0,
-    offset: originalEvent.yOffset || originalEvent.offset || 0,
-    autoLayouted: originalEvent.autoLayouted || false,
-    manuallyPositioned: originalEvent.manuallyPositioned || false,
+    const newEvents = [...timelineData.events];
+    const eventIndex = eventToEdit.index;
+    const originalEvent = newEvents[eventIndex];
     
-    // CRITICAL: Preserve image properties if they weren't explicitly changed
-    hasImage: updatedEvent.hasImage !== undefined ? updatedEvent.hasImage : originalEvent.hasImage,
-    imageFile: updatedEvent.imageFile !== undefined ? updatedEvent.imageFile : originalEvent.imageFile,
-    imageUrl: updatedEvent.imageUrl !== undefined ? updatedEvent.imageUrl : originalEvent.imageUrl,
-    imageStoragePath: updatedEvent.imageStoragePath !== undefined ? updatedEvent.imageStoragePath : originalEvent.imageStoragePath,
-    imageFileName: updatedEvent.imageFileName !== undefined ? updatedEvent.imageFileName : originalEvent.imageFileName,
+    // FIXED: Preserve ALL existing properties, especially image-related and hyperlinks
+    newEvents[eventIndex] = {
+      ...originalEvent, // Start with all original properties
+      ...updatedEvent,  // Then apply updates
+      
+      // Ensure positioning is preserved
+      xOffset: originalEvent.xOffset || 0,
+      yOffset: originalEvent.yOffset || originalEvent.offset || 0,
+      offset: originalEvent.yOffset || originalEvent.offset || 0,
+      autoLayouted: originalEvent.autoLayouted || false,
+      manuallyPositioned: originalEvent.manuallyPositioned || false,
+      
+      // CRITICAL: Preserve image properties if they weren't explicitly changed
+      hasImage: updatedEvent.hasImage !== undefined ? updatedEvent.hasImage : originalEvent.hasImage,
+      imageFile: updatedEvent.imageFile !== undefined ? updatedEvent.imageFile : originalEvent.imageFile,
+      imageUrl: updatedEvent.imageUrl !== undefined ? updatedEvent.imageUrl : originalEvent.imageUrl,
+      imageStoragePath: updatedEvent.imageStoragePath !== undefined ? updatedEvent.imageStoragePath : originalEvent.imageStoragePath,
+      imageFileName: updatedEvent.imageFileName !== undefined ? updatedEvent.imageFileName : originalEvent.imageFileName,
+      
+      // CRITICAL: Preserve hyperlinks properly
+      hyperlinks: updatedEvent.hyperlinks !== undefined ? updatedEvent.hyperlinks : (originalEvent.hyperlinks || [])
+    };
     
-    // CRITICAL: Preserve hyperlinks properly
-    hyperlinks: updatedEvent.hyperlinks !== undefined ? updatedEvent.hyperlinks : (originalEvent.hyperlinks || [])
+    setTimelineData({
+      ...timelineData,
+      events: newEvents
+    });
+    
+    // Mark as having unsaved changes
+    setHasUnsavedChanges(true);
+    setSaveError('');
+    
+    // Close the modal
+    setIsEditEventModalOpen(false);
+    setEventToEdit(null);
+    
+    // Show success notification
+    showShortcutNotification('Hendelse oppdatert');
   };
-  
-  setTimelineData({
-    ...timelineData,
-    events: newEvents
-  });
-  
-  // Mark as having unsaved changes
-  setHasUnsavedChanges(true);
-  setSaveError('');
-  
-  // Close the modal
-  setIsEditEventModalOpen(false);
-  setEventToEdit(null);
-  
-  // Show success notification
-  showShortcutNotification('Hendelse oppdatert');
-};
 
   const handleDeleteEditedEvent = (event, index) => {
     const eventIndex = typeof index === 'number' ? index : eventToEdit?.index;
@@ -409,7 +415,9 @@ const handleSaveEditedEvent = (updatedEvent) => {
           count: 5,
           type: 'even'
         },
-        isPublic: false
+        isPublic: false,
+        backgroundImage: null,
+        backgroundFilters: null // NYTT: Reset filter data
       });
       
       // Reset interval settings
@@ -534,7 +542,8 @@ const handleSaveEditedEvent = (updatedEvent) => {
             count: intervalCount,
             type: intervalType
           },
-          isPublic: false // Default to private
+          isPublic: false, // Default to private
+          backgroundFilters: null // NYTT: Reset filters for new timeline
         };
         
         setTimelineData(newTimelineData);
@@ -562,7 +571,8 @@ const handleSaveEditedEvent = (updatedEvent) => {
             count: intervalCount,
             type: intervalType
           },
-          isPublic: false
+          isPublic: false,
+          backgroundFilters: null // NYTT: Reset filters
         };
         
         setTimelineData(fallbackTimelineData);
@@ -584,7 +594,8 @@ const handleSaveEditedEvent = (updatedEvent) => {
           count: intervalCount,
           type: intervalType
         },
-        isPublic: false // Default to private
+        isPublic: false, // Default to private
+        backgroundFilters: null // NYTT: Reset filters for new timeline
       };
       
       setTimelineData(newTimelineData);
@@ -671,7 +682,9 @@ const handleSaveEditedEvent = (updatedEvent) => {
         // Store settings in a single object
         intervalSettings: intervalSettings,
         // Include privacy setting
-        isPublic: isPublic
+        isPublic: isPublic,
+        // NYTT: Include background filter data
+        backgroundFilters: timelineData.backgroundFilters || null
       };
       
       // Import API functions dynamically to avoid circular dependencies
@@ -817,6 +830,113 @@ const handleSaveEditedEvent = (updatedEvent) => {
     setSaveError(''); // Clear any save errors
   };
 
+  // NYTT: Handle color selection for background - fjern filtre når vi bytter til helfarge
+  const handleColorSelect = (color) => {
+    if (color === 'none') {
+      setTimelineData(prev => ({
+        ...prev,
+        backgroundColor: null,
+        backgroundImage: null,
+        backgroundFilters: null // NYTT: Fjern filtre
+      }));
+    } else {
+      setTimelineData(prev => ({
+        ...prev,
+        backgroundColor: color === 'none' ? null : color,
+        backgroundImage: null,
+        backgroundFilters: null // NYTT: Fjern filtre når vi bytter til helfarge
+      }));
+    }
+    
+    // Mark as having unsaved changes
+    setHasUnsavedChanges(true);
+    setSaveError('');
+  };
+
+  // OPPDATERT: Handle background image selection - støtte for filtre
+  const handleBackgroundImageSelect = (imageData) => {
+    if (!imageData) {
+      // Clear background
+      setTimelineData(prev => ({
+        ...prev,
+        backgroundImage: null,
+        backgroundColor: 'white',
+        backgroundFilters: null
+      }));
+      return;
+    }
+    
+    if (typeof imageData === 'object' && imageData.url) {
+      // New format with filters
+      setTimelineData(prev => ({
+        ...prev,
+        backgroundImage: imageData.url,
+        backgroundColor: null,
+        backgroundFilters: imageData.filters || null
+      }));
+    } else if (typeof imageData === 'string') {
+      // Legacy format or simple string
+      setTimelineData(prev => ({
+        ...prev,
+        backgroundImage: imageData,
+        backgroundColor: null,
+        backgroundFilters: null
+      }));
+    }
+    
+    // Mark as having unsaved changes
+    setHasUnsavedChanges(true);
+    setSaveError('');
+  };
+
+  // NYTT: Spesifikk funksjon for å håndtere filtrerte bakgrunnsbilder fra editor
+  const handleFilteredBackgroundSelect = (filteredImageData) => {
+    if (!filteredImageData || !filteredImageData.url) {
+      console.error('Invalid filtered image data:', filteredImageData);
+      return;
+    }
+    
+    setTimelineData(prev => ({
+      ...prev,
+      backgroundImage: filteredImageData.url,
+      backgroundColor: null,
+      backgroundFilters: filteredImageData.filters || null
+    }));
+    
+    // Mark as having unsaved changes
+    setHasUnsavedChanges(true);
+    setSaveError('');
+  };
+
+  // Handle timeline style selection (color & thickness)
+  const handleStyleSelect = (style) => {
+    if (style.color !== undefined) {
+      setTimelineData(prev => ({
+        ...prev,
+        timelineColor: style.color
+      }));
+    }
+    
+    if (style.thickness !== undefined) {
+      setTimelineData(prev => ({
+        ...prev,
+        timelineThickness: style.thickness
+      }));
+    }
+    
+    // Add this block to handle orientation
+    if (style.orientation !== undefined) {
+      setTimelineData(prev => ({
+        ...prev,
+        orientation: style.orientation
+      }));
+    }
+    
+    // Mark as having unsaved changes
+    setHasUnsavedChanges(true);
+    setSaveError('');
+  };
+
   // Add class to body when modal is open to prevent scrolling
   useEffect(() => {
     if (isAddEventModalOpen || isEditEventModalOpen) {
@@ -834,7 +954,7 @@ const handleSaveEditedEvent = (updatedEvent) => {
   return (
     <div className={`app-container ${darkMode ? 'dark-mode' : ''}`}>
       {/* Add the Mobile Warning Component */}
-      <MobileWarning />
+      
       
       <Topbar 
         timelineData={timelineData} 
@@ -869,6 +989,10 @@ const handleSaveEditedEvent = (updatedEvent) => {
                 intervalCount={intervalCount}
                 intervalType={intervalType}
                 onUpdateIntervalSettings={updateIntervalSettings}
+                onBackgroundImageSelect={handleBackgroundImageSelect}
+                onColorSelect={handleColorSelect}
+                onStyleSelect={handleStyleSelect}
+                onFilteredBackgroundSelect={handleFilteredBackgroundSelect} // NYTT: For filtrerte bilder
               />
               
               {/* Add Event Button - positioned in bottom left of timeline container */}

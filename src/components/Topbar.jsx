@@ -9,6 +9,8 @@ import ToggleSwitch from './ToggleSwitch';
 import DateInput from './DateInput';
 import TimelineShareModal from './TimelineShareModal';
 import logoWithText from '../assets/logo-timesculpt.png';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGlobe, faPen, faFolder } from '@fortawesome/free-solid-svg-icons';
 
 function Topbar({ 
   timelineData, 
@@ -313,15 +315,30 @@ function Topbar({
       <div className="topbar-center">
         {!isTimelineActive && (
           <nav className="main-nav">
-            <ul className="nav-links">
-              <li>
-                <ActiveLink to="/utforsk">Utforsk</ActiveLink>
-              </li>
-              <li>
-                <ActiveLink to="/">Lag tidsline</ActiveLink>
-              </li>
-            </ul>
-          </nav>
+    <ul className="nav-links">
+        <li>
+            <ActiveLink to="/utforsk">
+                <FontAwesomeIcon icon={faGlobe} style={{ marginRight: '8px' }} />
+                Utforsk
+            </ActiveLink>
+        </li>
+        <li>
+            <ActiveLink to="/">
+                <FontAwesomeIcon icon={faPen} style={{ marginRight: '8px' }} />
+                Ny tidslinje
+            </ActiveLink>
+        </li>
+        {isAuthenticated && (
+            <li>
+                <ActiveLink to="/mine-tidslinjer">
+                    <FontAwesomeIcon icon={faFolder} style={{ marginRight: '8px' }} />
+                    Mine tidslinjer
+                </ActiveLink>
+            </li>
+        )}
+    </ul>
+</nav>
+
         )}
         
         {isTimelineActive && (
@@ -706,7 +723,7 @@ function Topbar({
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                     <polyline points="9 22 9 12 15 12 15 22"/>
                   </svg>
-                  <span>Mitt arkiv</span>
+                  <span>Mine tidslinjer</span>
                 </div>
                 
                 <div onClick={handleSettings} className="dropdown-item">

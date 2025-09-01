@@ -1253,3 +1253,164 @@
 .dark-mode .event-hyperlink-indicator[title]:hover::after {
   background: rgba(30, 30, 30, 0.9);
 }
+
+/* Oppdateringer til timeline.css - fjern/erstatt eksisterende stiler */
+
+/* Timeline Container - OPPDATERT: Fjern default filter og blur effekter */
+.timeline-container {
+  flex-grow: 1;
+  position: relative;
+  min-height: 400px;
+  overflow: hidden;
+  cursor: default;
+  will-change: transform;
+  height: calc(105vh - 4rem);
+  background-color: inherit;
+  transition: background-color 0.3s ease, filter 0.3s ease;
+  
+  /* FJERNET: Alle default filter og backdrop-filter effekter */
+  filter: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  
+  /* Define CSS variables for timeline colors that can be used by events */
+  --timeline-color: var(--primary-color, #007bff);
+  --timeline-color-dark: var(--primary-color-dark, #0062cc);
+  --timeline-thickness: 2px;
+}
+
+/* OPPDATERT: Fjern alle default blur-effekter på bakgrunnsbilder */
+.timeline-container[style*="background-image"] {
+  /* Sikre at ingen default filters påvirker bakgrunnsbilder */
+  filter: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* NYTT: Eksplisitt støtte for filtrerte bakgrunnsbilder */
+.timeline-container.with-filtered-background {
+  /* Filters blir satt inline via style-attributtet */
+  transition: filter 0.3s ease, background-image 0.3s ease;
+}
+
+/* OPPDATERT: Event Detail Panel - fjern blur som kunne påvirke bakgrunn */
+.event-detail-panel {
+  position: fixed;
+  top: 60px;
+  right: 0;
+  height: calc(100vh - 60px);
+  width: 350px;
+  background: rgba(240, 240, 240, 0.95); /* OPPDATERT: Økt opacity, mindre blur-avhengighet */
+  backdrop-filter: blur(2px); /* REDUSERT: Fra 4px til 2px */
+  -webkit-backdrop-filter: blur(2px);
+  box-shadow: -3px 0 15px rgba(0, 0, 0, 0.1);
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border-color);
+  transition: transform 0.3s ease-out;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* OPPDATERT: Panel Header - mindre blur-avhengighet */
+.detail-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: rgba(248, 249, 250, 0.95); /* OPPDATERT: Økt opacity */
+  backdrop-filter: blur(2px); /* REDUSERT: Fra 10px til 2px */
+  -webkit-backdrop-filter: blur(2px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  transition: background-color 0.3s, backdrop-filter 0.3s;
+}
+
+/* NYTT: Dark mode oppdateringer for bedre kontrast uten blur-avhengighet */
+.dark-mode .timeline-container {
+  filter: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.dark-mode .event-detail-panel {
+  background: rgba(40, 44, 52, 0.95); /* OPPDATERT: Økt opacity for dark mode */
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.dark-mode .detail-panel-header {
+  background-color: rgba(30, 34, 42, 0.95); /* OPPDATERT: Økt opacity for dark mode */
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* NYTT: Bedre støtte for responsive design uten blur-avhengighet */
+@media (max-width: 768px) {
+  .event-detail-panel {
+    background: rgba(240, 240, 240, 0.98); /* OPPDATERT: Høyere opacity på mobile */
+    backdrop-filter: blur(1px); /* MINIMAL: Kun 1px blur på mobile */
+    -webkit-backdrop-filter: blur(1px);
+  }
+  
+  .detail-panel-header {
+    background-color: rgba(248, 249, 250, 0.98);
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+  }
+  
+  .dark-mode .event-detail-panel {
+    background: rgba(40, 44, 52, 0.98);
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+  }
+  
+  .dark-mode .detail-panel-header {
+    background-color: rgba(30, 34, 42, 0.98);
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+  }
+}
+
+/* NYTT: Fallback for nettlesere som ikke støtter backdrop-filter */
+@supports not (backdrop-filter: blur(1px)) {
+  .event-detail-panel {
+    background: rgba(240, 240, 240, 0.98);
+  }
+  
+  .detail-panel-header {
+    background-color: rgba(248, 249, 250, 0.98);
+  }
+  
+  .dark-mode .event-detail-panel {
+    background: rgba(40, 44, 52, 0.98);
+  }
+  
+  .dark-mode .detail-panel-header {
+    background-color: rgba(30, 34, 42, 0.98);
+  }
+}
+
+/* NYTT: Spesiell håndtering for filtrerte bakgrunnsbilder */
+.timeline-container[data-has-filtered-background="true"] {
+  /* Sikre at container ikke legger til ekstra filtre */
+  position: relative;
+}
+
+.timeline-container[data-has-filtered-background="true"]::before {
+  /* Alternativ metode for å legge til filter kun på bakgrunn */
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  /* Filters blir satt via JavaScript når nødvendig */
+}
+
+/* FJERNET: Alle gamle blur og filter-effekter som var hardkodet */
+/* Tidligere kode som la til uønsket blur er fjernet */

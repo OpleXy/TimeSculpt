@@ -1070,3 +1070,53 @@ body.dark-mode .back-to-main-button:hover svg {
   }
 }
 
+/* Grunnleggende stil for nav-links */
+.nav-links {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    align-items: center;
+}
+
+/* Stilen for lenkene */
+.nav-links a {
+    position: relative;
+    color: #495057;
+    font-weight: 500;
+    padding: 0.75rem 0;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+/* Aktiv lenke stil */
+.nav-links a.active {
+    color: #007bff;
+    font-weight: 600;
+}
+
+/* Pseudo-element for streken */
+.nav-links a::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #007bff;
+    transition: width 0.3s ease, left 0.3s ease;
+}
+
+/* Når lenken er aktiv, streken utvider seg og beveger seg */
+.nav-links a.active::before {
+    width: 100%;
+    left: 0;
+}
+
+/* Glidende overgang for å få streken til å bevege seg */
+.nav-links a:not(.active)::before {
+    width: 0;
+    left: 0;
+}

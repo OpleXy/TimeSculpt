@@ -1,13 +1,16 @@
 import React, { useEffect } from 'react';
-import '../styles/background-images.css'; // Import the background styles
+import '../styles/background-images.css';
 
 /**
- * BackgroundManager component - a utility component for handling background images
- * This component doesn't render any visible elements
+ * BackgroundManager component - handles background images with filter support
+ * This component doesn't render any visible elements but manages background styling
  */
-function BackgroundManager({ backgroundImage, onBackgroundLoaded }) {
-  // We'll use CSS for displaying background images instead of trying to dynamically import them
-
+function BackgroundManager({ 
+  backgroundImage, 
+  backgroundFilters, 
+  onBackgroundLoaded 
+}) {
+  
   useEffect(() => {
     if (!backgroundImage) {
       // No background image selected
@@ -17,21 +20,46 @@ function BackgroundManager({ backgroundImage, onBackgroundLoaded }) {
       return;
     }
     
-    // For the fixed version, we'll just construct a URL assuming the images are in the public folder
-    // Images should be placed in: public/backgrounds/[filename].png with lowercase filenames
-    const imageUrl = `/backgrounds/${backgroundImage}`;
+    let imageUrl;
+    
+    // Handle different types of background image data
+    if (typeof backgroundImage === 'object' && backgroundImage.url) {
+      // New format with filters
+      imageUrl = backgroundImage.url;
+    } else if (typeof backgroundImage === 'string') {
+      // Legacy format or simple string
+      if (backgroundImage.startsWith('https://') || backgroundImage.startsWith('http://')) {
+        // Custom uploaded image
+        imageUrl = backgroundImage;
+      } else {
+        // Predefined image from public folder
+        imageUrl = `/backgrounds/${backgroundImage}`;
+      }
+    } else {
+      console.error('Invalid background image format:', backgroundImage);
+      if (onBackgroundLoaded) {
+        onBackgroundLoaded(null);
+      }
+      return;
+    }
     
     // Create an Image object to check if the image can be loaded
     const img = new Image();
+    
     img.onload = () => {
       // Image loaded successfully
+      const backgroundData = {
+        url: imageUrl,
+        filters: backgroundImage?.filters || backgroundFilters || 'none'
+      };
+      
       if (onBackgroundLoaded) {
-        onBackgroundLoaded(imageUrl);
+        onBackgroundLoaded(backgroundData);
       }
     };
     
     img.onerror = () => {
-      console.error(`Failed to load background image: ${backgroundImage}`);
+      console.error(`Failed to load background image: ${imageUrl}`);
       if (onBackgroundLoaded) {
         onBackgroundLoaded(null);
       }
@@ -45,7 +73,7 @@ function BackgroundManager({ backgroundImage, onBackgroundLoaded }) {
       img.onload = null;
       img.onerror = null;
     };
-  }, [backgroundImage, onBackgroundLoaded]);
+  }, [backgroundImage, backgroundFilters, onBackgroundLoaded]);
   
   // This component doesn't render anything visible
   return null;

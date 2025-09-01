@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^7.0.0",
+    "@fortawesome/react-fontawesome": "^3.0.2",
     "firebase": "^10.14.1",
     "openai": "^4.96.0",
     "react": "^19.0.0",

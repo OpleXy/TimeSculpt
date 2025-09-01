@@ -39,6 +39,19 @@ function TimelineContextMenu({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState('');
   
+  // Image filter states for the editor
+  const [currentImageUrl, setCurrentImageUrl] = useState(null);
+  const [imageFilters, setImageFilters] = useState({
+    blur: 0,
+    brightness: 100,
+    contrast: 100,
+    saturate: 100,
+    sepia: 0,
+    grayscale: 0,
+    hue: 0,
+    opacity: 100
+  });
+  
   // Color picker state
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [colorPickerPosition, setColorPickerPosition] = useState({ x: 0, y: 0 });
@@ -71,6 +84,10 @@ function TimelineContextMenu({
   ];
   
   const [availableTypes, setAvailableTypes] = useState(intervalTypes);
+  
+  const MINIMUM_DAYS_PER_INTERVAL = 2;
+  const MAXIMUM_EVEN_INTERVALS = 20;
+  const MAXIMUM_TOTAL_MARKERS = 30;
   
   // Forhåndsdefinerte farger for bakgrunn
   const predefinedColors = [
@@ -106,10 +123,6 @@ function TimelineContextMenu({
     { name: 'TimeSculpt', filename: 'timesculpt.png', category: 'Standard' }
   ];
   
-  const MINIMUM_DAYS_PER_INTERVAL = 2;
-  const MAXIMUM_EVEN_INTERVALS = 20;
-  const MAXIMUM_TOTAL_MARKERS = 30;
-  
   // Timeline color options
   const timelineColors = [
     { name: 'Default Blue', value: '#007bff' },
@@ -124,7 +137,6 @@ function TimelineContextMenu({
   // Auto-layout helper functions
   const eventCount = timelineData?.events?.length || 0;
   const canUseAutoLayout = eventCount >= 3;
-  const isVertical = timelineData?.orientation === 'vertical';
 
   // Handle auto-layout toggle
   const handleAutoLayoutToggleClick = (e) => {
@@ -164,7 +176,6 @@ function TimelineContextMenu({
     return intervalTypes.filter(type => {
       switch (type.id) {
         case 'daily':
-          // Only show daily if timeline is short enough and won't create too many markers
           return diffDays >= 2 && diffDays <= MAXIMUM_TOTAL_MARKERS;
         case 'weekly':
           return diffWeeks >= 2 && diffWeeks <= MAXIMUM_TOTAL_MARKERS;
@@ -177,7 +188,7 @@ function TimelineContextMenu({
         case 'century':
           return diffCenturies >= 2;
         default:
-          return true; // Always include 'even'
+          return true;
       }
     });
   }, [timelineData]);
@@ -189,7 +200,6 @@ function TimelineContextMenu({
     const newAvailableTypes = calculateAvailableTypes();
     setAvailableTypes(newAvailableTypes);
     
-    // If current type is no longer available, switch to appropriate one
     if (!newAvailableTypes.find(t => t.id === localIntervalType)) {
       const newType = ['even', 'yearly', 'decade', 'monthly', 'weekly', 'daily', 'century']
         .find(t => newAvailableTypes.some(available => available.id === t)) || 'even';
@@ -200,7 +210,6 @@ function TimelineContextMenu({
       }
     }
     
-    // Calculate max intervals for 'even' type
     if (timelineData?.start && timelineData?.end) {
       const startDate = typeof timelineData.start === 'string' 
         ? new Date(timelineData.start) 
@@ -219,7 +228,6 @@ function TimelineContextMenu({
       
       setMaxAllowedIntervals(maxIntervals);
       
-      // Adjust interval count if needed
       if (localIntervalType === 'even' && localIntervalCount > maxIntervals) {
         setLocalIntervalCount(maxIntervals);
         setIntervalInputValue(String(maxIntervals));
@@ -300,7 +308,7 @@ function TimelineContextMenu({
     return true;
   };
 
-  // Handle file upload
+  // Handle file upload - FIXED: Properly handle uploaded images
   const handleFileUpload = useCallback(async (file) => {
     if (!currentUser) {
       setUploadError('Du må være logget inn for å laste opp bilder');
@@ -319,12 +327,33 @@ function TimelineContextMenu({
         (progress) => setUploadProgress(progress)
       );
 
+      // Set the uploaded image as current for editing
+      setCurrentImageUrl(imageUrl);
+      
+      // Reset filters for new image
+      setImageFilters({
+        blur: 0,
+        brightness: 100,
+        contrast: 100,
+        saturate: 100,
+        sepia: 0,
+        grayscale: 0,
+        hue: 0,
+        opacity: 100
+      });
+
+      // Apply the image immediately without filters
       if (onBackgroundImageSelect) {
         onBackgroundImageSelect(imageUrl);
       }
 
       setIsUploading(false);
       setUploadProgress(0);
+      
+      // Switch to images tab and show editor
+      setActiveBackgroundTab('images');
+      setCurrentView('imageeditor');
+      
     } catch (error) {
       console.error('Feil ved opplasting:', error);
       setUploadError(error.message);
@@ -357,28 +386,28 @@ function TimelineContextMenu({
       handleFileUpload(files[0]);
     }
   };
-const handleColorSelect = (color) => {
-  if (onColorSelect) {
-    onColorSelect(color);
-  }
-  setShowColorPicker(false); // Denne er allerede riktig
-};
+
+  const handleColorSelect = (color) => {
+    if (onColorSelect) {
+      onColorSelect(color);
+    }
+    setShowColorPicker(false);
+  };
 
   const handleCustomColorClick = (e) => {
-  e.stopPropagation();
-  const rect = e.currentTarget.getBoundingClientRect();
-  setColorPickerPosition({
-    x: rect.right + 10,
-    y: rect.top
-  });
-  setShowColorPicker(true); // Denne er allerede riktig
-};
+    e.stopPropagation();
+    const rect = e.currentTarget.getBoundingClientRect();
+    setColorPickerPosition({
+      x: rect.right + 10,
+      y: rect.top
+    });
+    setShowColorPicker(true);
+  };
 
   // Handle color picker change with live preview
   const handleColorPickerChange = (e) => {
     const newColor = e.target.value;
     setCustomColor(newColor);
-    // Apply color immediately for live preview
     if (onColorSelect) {
       onColorSelect(newColor);
     }
@@ -401,9 +430,28 @@ const handleColorSelect = (color) => {
   // Handle background image selection
   const handleBackgroundImageSelect = (imageValue) => {
     if (imageValue) {
+      // For predefined images, construct the URL
+      const imageUrl = imageValue.startsWith('https://') ? imageValue : `/backgrounds/${imageValue}`;
+      setCurrentImageUrl(imageUrl);
+      
+      // Reset filters for new image
+      setImageFilters({
+        blur: 0,
+        brightness: 100,
+        contrast: 100,
+        saturate: 100,
+        sepia: 0,
+        grayscale: 0,
+        hue: 0,
+        opacity: 100
+      });
+      
       if (onBackgroundImageSelect) {
         onBackgroundImageSelect(imageValue);
       }
+      
+      // Switch to image editor
+      setCurrentView('imageeditor');
     }
   };
 
@@ -420,6 +468,49 @@ const handleColorSelect = (color) => {
     if (onColorSelect) {
       onColorSelect('#ffffff');
     }
+    
+    setCurrentImageUrl(null);
+  };
+
+  // Handle filter changes in image editor
+  const handleFilterChange = (filterType, value) => {
+    setImageFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
+
+  // Apply filters to background
+  const applyImageFilters = () => {
+    if (!currentImageUrl || !onBackgroundImageSelect) return;
+    
+    // Create filter string
+    const filterString = `blur(${imageFilters.blur}px) brightness(${imageFilters.brightness}%) contrast(${imageFilters.contrast}%) saturate(${imageFilters.saturate}%) sepia(${imageFilters.sepia}%) grayscale(${imageFilters.grayscale}%) hue-rotate(${imageFilters.hue}deg) opacity(${imageFilters.opacity}%)`;
+    
+    // Apply the filtered image
+    if (onBackgroundImageSelect) {
+      onBackgroundImageSelect({
+        url: currentImageUrl,
+        filters: filterString
+      });
+    }
+    
+    // Go back to background menu
+    setCurrentView('background');
+  };
+
+  // Reset all filters
+  const resetFilters = () => {
+    setImageFilters({
+      blur: 0,
+      brightness: 100,
+      contrast: 100,
+      saturate: 100,
+      sepia: 0,
+      grayscale: 0,
+      hue: 0,
+      opacity: 100
+    });
   };
   
   // Store scroll position when changing views
@@ -796,6 +887,11 @@ const handleColorSelect = (color) => {
     </svg>
   );
 
+  // Generate filter CSS string for preview
+  const getFilterStyle = () => {
+    return `blur(${imageFilters.blur}px) brightness(${imageFilters.brightness}%) contrast(${imageFilters.contrast}%) saturate(${imageFilters.saturate}%) sepia(${imageFilters.sepia}%) grayscale(${imageFilters.grayscale}%) hue-rotate(${imageFilters.hue}deg) opacity(${imageFilters.opacity}%)`;
+  };
+
   return (
     <div 
       ref={menuRef} 
@@ -821,6 +917,7 @@ const handleColorSelect = (color) => {
           {currentView === 'intervals' && 'Intervallmarkører'}
           {currentView === 'background' && 'Bakgrunn'}
           {currentView === 'autolayout' && 'Auto-Layout'}
+          {currentView === 'imageeditor' && 'Bildeeditor'}
         </span>
       </div>
       
@@ -892,8 +989,6 @@ const handleColorSelect = (color) => {
         {/* Auto-Layout Submenu */}
         {currentView === 'autolayout' && (
           <div className="context-menu-autolayout">
-
-          
             <div className="toggle-container">
               <div className="toggle-item">
                 <span className="toggle-label">Aktiver auto-layout</span>
@@ -917,8 +1012,6 @@ const handleColorSelect = (color) => {
 
             {autoLayoutEnabled && canUseAutoLayout && (
               <>
-                
-
                 <button 
                   className="context-menu-action"
                   onClick={handleResetLayoutClick}
@@ -944,8 +1037,150 @@ const handleColorSelect = (color) => {
                 <span>Legg til flere hendelser for å bruke auto-layout</span>
               </div>
             )}
+          </div>
+        )}
 
-            
+        {/* Image Editor Submenu - NEW */}
+        {currentView === 'imageeditor' && currentImageUrl && (
+          <div className="image-editor-container">
+            {/* Image Preview */}
+            <div className="image-preview">
+              <img 
+                src={currentImageUrl} 
+                alt="Background preview"
+                style={{ 
+                  filter: getFilterStyle(),
+                  width: '100%',
+                  height: '120px',
+                  objectFit: 'cover',
+                  borderRadius: '6px'
+                }}
+              />
+            </div>
+
+            {/* Filter Controls */}
+            <div className="filter-controls">
+              {/* Blur */}
+              <div className="filter-group">
+                <label>Blur: {imageFilters.blur}px</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                  value={imageFilters.blur}
+                  onChange={(e) => handleFilterChange('blur', parseFloat(e.target.value))}
+                  className="filter-slider"
+                />
+              </div>
+
+              {/* Brightness */}
+              <div className="filter-group">
+                <label>Lysstyrke: {imageFilters.brightness}%</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="200"
+                  value={imageFilters.brightness}
+                  onChange={(e) => handleFilterChange('brightness', parseInt(e.target.value))}
+                  className="filter-slider"
+                />
+              </div>
+
+              {/* Contrast */}
+              <div className="filter-group">
+                <label>Kontrast: {imageFilters.contrast}%</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="200"
+                  value={imageFilters.contrast}
+                  onChange={(e) => handleFilterChange('contrast', parseInt(e.target.value))}
+                  className="filter-slider"
+                />
+              </div>
+
+              {/* Saturation */}
+              <div className="filter-group">
+                <label>Metning: {imageFilters.saturate}%</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="200"
+                  value={imageFilters.saturate}
+                  onChange={(e) => handleFilterChange('saturate', parseInt(e.target.value))}
+                  className="filter-slider"
+                />
+              </div>
+
+              {/* Sepia */}
+              <div className="filter-group">
+                <label>Sepia: {imageFilters.sepia}%</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={imageFilters.sepia}
+                  onChange={(e) => handleFilterChange('sepia', parseInt(e.target.value))}
+                  className="filter-slider"
+                />
+              </div>
+
+              {/* Grayscale */}
+              <div className="filter-group">
+                <label>Gråskala: {imageFilters.grayscale}%</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={imageFilters.grayscale}
+                  onChange={(e) => handleFilterChange('grayscale', parseInt(e.target.value))}
+                  className="filter-slider"
+                />
+              </div>
+
+              {/* Hue Rotate */}
+              <div className="filter-group">
+                <label>Fargetone: {imageFilters.hue}°</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="360"
+                  value={imageFilters.hue}
+                  onChange={(e) => handleFilterChange('hue', parseInt(e.target.value))}
+                  className="filter-slider"
+                />
+              </div>
+
+              {/* Opacity */}
+              <div className="filter-group">
+                <label>Gjennomsiktighet: {imageFilters.opacity}%</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={imageFilters.opacity}
+                  onChange={(e) => handleFilterChange('opacity', parseInt(e.target.value))}
+                  className="filter-slider"
+                />
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="editor-actions">
+              <button 
+                className="reset-filters-btn"
+                onClick={resetFilters}
+              >
+                Tilbakestill
+              </button>
+              <button 
+                className="apply-filters-btn"
+                onClick={applyImageFilters}
+              >
+                Bruk
+              </button>
+            </div>
           </div>
         )}
 
@@ -968,41 +1203,39 @@ const handleColorSelect = (color) => {
             </div>
 
             <div className="background-content">
-              {/* Combined colors (with custom color picker as first option) */}
-              
               {activeBackgroundTab === 'colors' && (
-  <div className="background-color-palette">
-    {/* Erstatt denne knappen med en color input */}
-    <label className="custom-color-input-wrapper">
-      <input
-        type="color"
-        value={customColor}
-        onChange={handleColorPickerChange}
-        className="custom-color-input"
-        title="Egendefinert farge"
-      />
-    </label>
+                <div className="background-color-palette">
+                  {/* Custom color input */}
+                  <label className="custom-color-input-wrapper">
+                    <input
+                      type="color"
+                      value={customColor}
+                      onChange={handleColorPickerChange}
+                      className="custom-color-input"
+                      title="Egendefinert farge"
+                    />
+                  </label>
 
-    {/* Predefined colors */}
-    {predefinedColors.map((color) => (
-      <button
-        key={color.value}
-        className={`background-color-option ${
-          currentBackgroundColor === color.value ? 'selected' : ''
-        }`}
-        style={{ backgroundColor: color.value }}
-        onClick={() => handleColorSelect(color.value)}
-        title={color.name}
-      >
-        {currentBackgroundColor === color.value && (
-          <span className="background-checkmark">✓</span>
-        )}
-      </button>
-    ))}
-  </div>
-)}
+                  {/* Predefined colors */}
+                  {predefinedColors.map((color) => (
+                    <button
+                      key={color.value}
+                      className={`background-color-option ${
+                        currentBackgroundColor === color.value ? 'selected' : ''
+                      }`}
+                      style={{ backgroundColor: color.value }}
+                      onClick={() => handleColorSelect(color.value)}
+                      title={color.name}
+                    >
+                      {currentBackgroundColor === color.value && (
+                        <span className="background-checkmark">✓</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
      
-              {/* Combined images and upload */}
+              {/* Images tab */}
               {activeBackgroundTab === 'images' && (
                 <div className="background-images-section">
                   {/* Upload section first */}
@@ -1336,7 +1569,6 @@ const handleColorSelect = (color) => {
           </div>
         )}
       </div>
-      
     </div>
   );
 }

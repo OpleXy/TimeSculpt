@@ -71,7 +71,6 @@ src
 │   ├── IntervalSettings.jsx
 │   ├── Layout.jsx
 │   ├── LayoutManager.jsx
-│   ├── MobileWarning.jsx
 │   ├── PrivacyToggle.jsx
 │   ├── RichTextEditor.jsx
 │   ├── TextToTimelineForm.jsx
@@ -147,7 +146,6 @@ src
 │   ├── expandable-menu.css
 │   ├── hyperlink-selection-modal.css
 │   ├── layout-manager.css
-│   ├── mobile-warning.css
 │   ├── pages
 │   │   ├── Innstillinger.css
 │   │   ├── MinProfil.css
@@ -176,7 +174,7 @@ src
 └── utils
     └── dateUtils.js
 
-12 directories, 118 files
+12 directories, 116 files
 
 Line Counts Per File:
 12839 public/backgrounds/dino.png
@@ -193,23 +191,23 @@ Line Counts Per File:
 10285 public/backgrounds/ridder.png
 10098 public/backgrounds/modernekrig.png
 9714 public/backgrounds/kina.png
+2759 src/styles/TimelineContextMenu.css
 2588 public/backgrounds/cctv.png
-2350 src/styles/TimelineContextMenu.css
 2301 public/backgrounds/timesculpt.png
 1698 src/styles/darkMode.css
 1634 src/styles/ui-components.css
-1343 src/components/TimelineContextMenu.jsx
-1254 src/styles/timeline.css
-1248 src/components/Timeline.jsx
+1575 src/components/TimelineContextMenu.jsx
+1415 src/styles/timeline.css
+1277 src/components/Timeline.jsx
 1193 src/styles/timeline-share-modal.css
-1072 src/styles/topbar.css
+1122 src/styles/topbar.css
+1077 src/App.jsx
 993 src/services/timelineCommandProcessor.js
 982 src/api.js
-953 src/App.jsx
 921 src/components/EditEventModal.jsx
+806 src/components/Topbar.jsx
 793 src/styles/add-event-modal.css
 792 src/components/TimelineStyleMenu.jsx
-789 src/components/Topbar.jsx
 781 src/styles/auth.css
 766 src/styles/event-form.css
 681 src/components/CreateEventModal.jsx
@@ -273,9 +271,9 @@ Line Counts Per File:
 121 src/components/AddEventModal.jsx
 115 src/styles/welcome-screen.css
 109 src/assets/logo-timesculpt.png
-108 src/styles/mobile-warning.css
 104 src/components/WelcomeScreen.jsx
 103 src/components/TimelineForm.jsx
+103 src/components/BackgroundManager.jsx
 102 src/components/DeleteConfirmationModal.jsx
 94 src/styles/event-creation-selector.css
 93 src/components/auth/AuthCompletion.jsx
@@ -283,7 +281,6 @@ Line Counts Per File:
 80 src/pages/NotFound.jsx
 79 src/components/auth/AuthModal.jsx
 76 src/styles/prompt-processing.css
-75 src/components/BackgroundManager.jsx
 71 src/themeManager.js
 69 src/styles/RichTextEditor.css
 68 src/utils/dateUtils.js
@@ -298,7 +295,6 @@ Line Counts Per File:
 57 src/components/Layout.jsx
 56 src/components/EventCreationSelector.jsx
 53 src/styles/EventFormTransition.css
-52 src/components/MobileWarning.jsx
 44 src/components/ExpandableMenu.jsx
 43 src/contexts/AuthContext.jsx
 37 src/routes/AppRoutes.jsx

@@ -16,7 +16,7 @@ function AppRoutes() {
       <ThemeProvider>
         <Routes>
           <Route path="/" element={<App />} />
-          <Route path="/tidslinjer" element={<MineTidslinjer />} />
+          <Route path="/mine-tidslinjer" element={<MineTidslinjer />} />
           <Route path="/innstillinger" element={<Innstillinger />} />
           <Route path="/profil" element={<MinProfil />} />
           <Route path="/utforsk" element={<PublicTimelines />} /> {/* Add route for public timelines */}
@@ -25,7 +25,7 @@ function AppRoutes() {
           <Route path="/auth-complete" element={<AuthCompletion />} />
           
           {/* Redirect legacy routes if any */}
-          <Route path="/mine-tidslinjer" element={<Navigate to="/tidslinjer" replace />} />
+          <Route path="/mine-tidslinjer" element={<Navigate to="/mine-tidslinjer" replace />} />
           
           {/* Catch-all route for 404 */}
           <Route path="*" element={<NotFound />} />

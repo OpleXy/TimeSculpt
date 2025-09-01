@@ -2349,3 +2349,412 @@ body.dark-mode .context-menu-action:hover {
   margin-top: 5px;
   color: #666;
 }
+
+/* Bildeeditor CSS - Legg til i TimelineContextMenu.css */
+
+/* Image Editor Container */
+.image-editor-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px;
+}
+
+/* Image Preview */
+.image-preview {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid var(--border-color, #e1e5e9);
+  background: var(--bg-secondary, #f8f9fa);
+  position: relative;
+  transition: border-color 0.3s ease;
+}
+
+.image-preview:hover {
+  border-color: var(--primary-color, #007bff);
+}
+
+.image-preview img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+  transition: filter 0.1s ease;
+}
+
+/* Filter Controls */
+.filter-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.filter-controls::-webkit-scrollbar {
+  width: 4px;
+}
+
+.filter-controls::-webkit-scrollbar-track {
+  background: var(--bg-secondary, #f1f1f1);
+  border-radius: 2px;
+}
+
+.filter-controls::-webkit-scrollbar-thumb {
+  background: var(--primary-color, #007bff);
+  border-radius: 2px;
+}
+
+.filter-controls::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover, #0056b3);
+}
+
+/* Individual Filter Group */
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-group label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-color, #333);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Filter Sliders */
+.filter-slider {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-secondary, #e0e0e0);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.filter-slider:hover {
+  background: var(--border-color, #d0d0d0);
+}
+
+.filter-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--primary-color, #007bff);
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.filter-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.filter-slider::-webkit-slider-thumb:active {
+  transform: scale(1.15);
+}
+
+.filter-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--primary-color, #007bff);
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  -moz-appearance: none;
+}
+
+.filter-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.filter-slider::-moz-range-track {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-secondary, #e0e0e0);
+  border-radius: 3px;
+  border: none;
+}
+
+/* Editor Action Buttons */
+.editor-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color, #eee);
+}
+
+.reset-filters-btn,
+.apply-filters-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.reset-filters-btn {
+  background: var(--bg-secondary, #f8f9fa);
+  color: var(--text-color, #333);
+  border: 1px solid var(--border-color, #ddd);
+}
+
+.reset-filters-btn:hover {
+  background: var(--border-color, #e9ecef);
+  transform: translateY(-1px);
+}
+
+.apply-filters-btn {
+  background: var(--primary-color, #007bff);
+  color: white;
+}
+
+.apply-filters-btn:hover {
+  background: var(--primary-hover, #0056b3);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.apply-filters-btn:active,
+.reset-filters-btn:active {
+  transform: translateY(0);
+}
+
+/* Dark Mode Support */
+.dark-mode .image-preview {
+  border-color: var(--border-color, #555);
+  background: var(--bg-secondary, #2c2c2c);
+}
+
+.dark-mode .image-preview:hover {
+  border-color: var(--primary-color, #3a97ff);
+}
+
+.dark-mode .filter-slider {
+  background: var(--bg-secondary, #4a5568);
+}
+
+.dark-mode .filter-slider:hover {
+  background: #5a6578;
+}
+
+.dark-mode .filter-slider::-webkit-slider-thumb {
+  border-color: var(--bg-primary, #2d3748);
+  background: var(--primary-color, #3a97ff);
+}
+
+.dark-mode .filter-slider::-moz-range-thumb {
+  border-color: var(--bg-primary, #2d3748);
+  background: var(--primary-color, #3a97ff);
+}
+
+.dark-mode .filter-slider::-moz-range-track {
+  background: var(--bg-secondary, #4a5568);
+}
+
+.dark-mode .reset-filters-btn {
+  background: var(--bg-secondary, #2c2c2c);
+  color: var(--text-color, #e1e1e1);
+  border-color: var(--border-color, #555);
+}
+
+.dark-mode .reset-filters-btn:hover {
+  background: var(--border-color, #3c3c3c);
+}
+
+.dark-mode .apply-filters-btn {
+  background: var(--primary-color, #3a97ff);
+}
+
+.dark-mode .apply-filters-btn:hover {
+  background: var(--primary-hover, #2980ff);
+  box-shadow: 0 2px 8px rgba(58, 151, 255, 0.3);
+}
+
+.dark-mode .editor-actions {
+  border-top-color: var(--border-color, #444);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .image-editor-container {
+    padding: 8px;
+    gap: 12px;
+  }
+
+  .image-preview img {
+    height: 100px;
+  }
+
+  .filter-controls {
+    gap: 10px;
+    max-height: 250px;
+  }
+
+  .filter-group label {
+    font-size: 11px;
+  }
+
+  .filter-slider {
+    height: 5px;
+  }
+
+  .filter-slider::-webkit-slider-thumb {
+    width: 14px;
+    height: 14px;
+  }
+
+  .filter-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+  }
+
+  .editor-actions {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .reset-filters-btn,
+  .apply-filters-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+/* Loading State for Image Editor */
+.image-editor-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  background: var(--bg-secondary, #f8f9fa);
+  border-radius: 6px;
+  color: var(--text-secondary, #666);
+  font-size: 14px;
+}
+
+.image-editor-loading::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border: 2px solid var(--border-color, #ddd);
+  border-top: 2px solid var(--primary-color, #007bff);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.dark-mode .image-editor-loading {
+  background: var(--bg-secondary, #2c2c2c);
+  color: var(--text-secondary, #aaa);
+}
+
+.dark-mode .image-editor-loading::before {
+  border-color: var(--border-color, #555);
+  border-top-color: var(--primary-color, #3a97ff);
+}
+
+/* Filter Value Indicators */
+.filter-group label .filter-value {
+  font-weight: 600;
+  color: var(--primary-color, #007bff);
+  min-width: 40px;
+  text-align: right;
+}
+
+.dark-mode .filter-group label .filter-value {
+  color: var(--primary-color, #3a97ff);
+}
+
+/* Special styling for specific filters */
+.filter-group[data-filter="blur"] .filter-slider::-webkit-slider-thumb {
+  background: #17a2b8;
+}
+
+.filter-group[data-filter="brightness"] .filter-slider::-webkit-slider-thumb {
+  background: #ffc107;
+}
+
+.filter-group[data-filter="contrast"] .filter-slider::-webkit-slider-thumb {
+  background: #6f42c1;
+}
+
+.filter-group[data-filter="saturate"] .filter-slider::-webkit-slider-thumb {
+  background: #e83e8c;
+}
+
+.filter-group[data-filter="sepia"] .filter-slider::-webkit-slider-thumb {
+  background: #fd7e14;
+}
+
+.filter-group[data-filter="grayscale"] .filter-slider::-webkit-slider-thumb {
+  background: #6c757d;
+}
+
+.filter-group[data-filter="hue"] .filter-slider::-webkit-slider-thumb {
+  background: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff00, #00ff80, #00ffff, #0080ff, #0000ff, #8000ff, #ff00ff, #ff0080);
+}
+
+.filter-group[data-filter="opacity"] .filter-slider::-webkit-slider-thumb {
+  background: #28a745;
+}
+
+/* Animations for smooth transitions */
+.filter-controls {
+  animation: fadeInFilters 0.3s ease-out;
+}
+
+@keyframes fadeInFilters {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.image-preview {
+  animation: fadeInPreview 0.3s ease-out;
+}
+
+@keyframes fadeInPreview {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
