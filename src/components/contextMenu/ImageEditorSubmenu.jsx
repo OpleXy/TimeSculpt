@@ -1,4 +1,4 @@
-// src/components/contextMenu/ImageEditorSubmenu.jsx - SIMPLIFIED VERSION
+// src/components/contextMenu/ImageEditorSubmenu.jsx - FIXED VERSION
 import React, { useState, useEffect } from 'react';
 
 function ImageEditorSubmenu({ 
@@ -91,17 +91,20 @@ function ImageEditorSubmenu({
     applyFiltersRealTime(newFilters);
   };
 
-  // Apply filters in real-time (optional - for immediate feedback)
+  // FIXED: Apply filters only to background, not timeline container
   const applyFiltersRealTime = (filters) => {
     if (!currentImageUrl || !onBackgroundImageSelect) return;
     
     // Create filter string
     const filterString = createFilterString(filters);
     
-    // Apply the filtered image immediately
+    // IMPORTANT: Send structured data that will be applied ONLY to background
     onBackgroundImageSelect({
       url: currentImageUrl,
-      filters: filterString !== 'none' ? filterString : 'none'
+      filters: filterString !== 'none' ? filterString : 'none',
+      // Add metadata to help Timeline component apply filters correctly
+      _applyToBackground: true,
+      _timestamp: Date.now() // Force update
     });
   };
 
@@ -123,10 +126,12 @@ function ImageEditorSubmenu({
     // Create filter string
     const filterString = createFilterString(imageFilters);
     
-    // Apply the filtered image
+    // FIXED: Apply the filtered image with proper structure
     onBackgroundImageSelect({
       url: currentImageUrl,
-      filters: filterString
+      filters: filterString,
+      _applyToBackground: true,
+      _timestamp: Date.now()
     });
     
     // Go back to background menu
@@ -148,11 +153,13 @@ function ImageEditorSubmenu({
   const handleResetFilters = () => {
     resetFilters();
     
-    // Apply reset filters immediately
+    // FIXED: Apply reset filters with proper structure
     if (currentImageUrl && onBackgroundImageSelect) {
       onBackgroundImageSelect({
         url: currentImageUrl,
-        filters: 'none'
+        filters: 'none',
+        _applyToBackground: true,
+        _timestamp: Date.now()
       });
     }
   };

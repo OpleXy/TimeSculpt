@@ -44,6 +44,7 @@ src
 │   ├── ActiveLink.jsx
 │   ├── AddEventModal.jsx
 │   ├── BackgroundManager.jsx
+│   ├── BackgroundSelector.jsx
 │   ├── CreateEventModal.jsx
 │   ├── DateInput.jsx
 │   ├── DeleteConfirmationModal.jsx
@@ -165,7 +166,7 @@ src
 ├── themeManager.js
 └── userAPI.js
 
-18 directories, 113 files
+18 directories, 114 files
 
 Line Counts Per File:
 6358 public/backgrounds/forest.png
@@ -175,8 +176,8 @@ Line Counts Per File:
 2301 public/backgrounds/timesculpt.png
 1698 src/styles/darkMode.css
 1634 src/styles/ui-components.css
-1415 src/styles/timeline.css
-1271 src/components/Timeline.jsx
+1509 src/styles/timeline.css
+1281 src/components/Timeline.jsx
 1193 src/styles/timeline-share-modal.css
 1122 src/styles/topbar.css
 1078 src/App.jsx
@@ -203,6 +204,7 @@ Line Counts Per File:
 371 src/components/contextMenu/IntervalsSubmenu.jsx
 370 src/components/TimelineShareModal.jsx
 362 src/components/contextMenu/BackgroundSubmenu.jsx
+354 src/components/BackgroundSelector.jsx
 353 src/services/openAiService.js
 318 src/styles/timeline-cards.css
 311 src/services/backgroundImageService.js
@@ -210,8 +212,8 @@ Line Counts Per File:
 285 src/services/eventLayoutService.js
 279 src/components/contextMenu/TimelineContextMenu.jsx
 276 src/styles/timeline-command-input.css
+267 src/components/contextMenu/ImageEditorSubmenu.jsx
 260 src/firebase.js
-260 src/components/contextMenu/ImageEditorSubmenu.jsx
 252 src/hooks/useBackgroundManager.js
 235 src/components/TimelineList.jsx
 213 src/components/TopbarTimelineForm.jsx

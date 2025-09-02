@@ -62,7 +62,7 @@ export default function WelcomeScreen({ onLogin, onCreateTimeline }) {
             type="text"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder={isAuthenticated ? 'Skriv hva du vil lage en tidslinje om…' : 'Generer en tidslinje – f.eks. \"Vikingtiden\"'}
+            placeholder={'Generer en tidslinje; f.eks. \"Vikingtiden\"'}
             disabled={isGenerating}
             className="ai-input"
             autoComplete="off"

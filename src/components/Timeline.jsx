@@ -1,8 +1,7 @@
-// src/components/Timeline.jsx - CORRECTED imports section
+// src/components/Timeline.jsx - KOMPLETT versjon med fikset bakgrunnsfiltrering
 import { useRef, useEffect, useState, useCallback } from 'react';
 import TimelineEvent from './TimelineEvent';
-import TimelineContextMenu from './contextMenu'; // Keep only ONE import for TimelineContextMenu
-
+import TimelineContextMenu from './contextMenu';
 import EventContextMenu from './EventContextMenu';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import BackgroundManager from './BackgroundManager';
@@ -11,6 +10,7 @@ import CreateEventModal from './CreateEventModal';
 import EditEventModal from './EditEventModal';
 import { setDocumentTitle } from '../services/documentTitleService';
 import { smartLayout, needsRelayout, resetEventLayout } from '../services/eventLayoutService';
+
 function Timeline({ 
   timelineData, 
   setTimelineData,
@@ -35,7 +35,7 @@ function Timeline({
   const [createModalPosition, setCreateModalPosition] = useState({ x: 0, y: 0 });
   const [createEventDate, setCreateEventDate] = useState(null);
   
-  // NEW STATES FOR EDIT MODAL
+  // States for edit modal
   const [showEditModal, setShowEditModal] = useState(false);
   const [eventToEdit, setEventToEdit] = useState(null);
   
@@ -64,7 +64,7 @@ function Timeline({
   const [timelineColor, setTimelineColor] = useState('#007bff');
   const [timelineThickness, setTimelineThickness] = useState(2);
   
-  // State for interval markers - initialize with props but maintain locally
+  // State for interval markers
   const [localShowIntervals, setLocalShowIntervals] = useState(showIntervals);
   const [localIntervalCount, setLocalIntervalCount] = useState(intervalCount);
   const [localIntervalType, setLocalIntervalType] = useState(intervalType);
@@ -96,7 +96,6 @@ function Timeline({
       return;
     }
     
-    // Sjekk om vi trenger å re-layoute
     if (!needsRelayout(timelineData.events)) {
       return;
     }
@@ -110,7 +109,6 @@ function Timeline({
       timelineData.end
     );
     
-    // Oppdater timeline data med auto-layouted events
     setTimelineData(prevData => ({
       ...prevData,
       events: layoutedEvents
@@ -119,11 +117,9 @@ function Timeline({
     console.log('✅ Auto-layout anvendt på', layoutedEvents.length, 'hendelser');
   }, [timelineData.events, timelineData.orientation, timelineData.start, timelineData.end, autoLayoutEnabled, setTimelineData]);
 
-  // Auto-layout effect - kjør når hendelser endres
+  // Auto-layout effect
   useEffect(() => {
-    // Kun kjør auto-layout hvis vi har minst 3 hendelser
     if (timelineData.events && timelineData.events.length >= 3 && autoLayoutEnabled) {
-      // Forsinkelse for å unngå å trigge under drag-operasjoner
       const layoutTimer = setTimeout(() => {
         applyAutoLayout();
       }, 500);
@@ -132,7 +128,7 @@ function Timeline({
     }
   }, [timelineData.events?.length, applyAutoLayout, autoLayoutEnabled]);
 
-  // Manuell layout-reset funksjon
+  // Manual layout-reset function
   const handleResetLayout = () => {
     if (!timelineData.events) return;
     
@@ -144,7 +140,6 @@ function Timeline({
       events: resetEvents
     }));
     
-    // Kjør auto-layout igjen etter reset
     if (autoLayoutEnabled) {
       setTimeout(() => {
         applyAutoLayout();
@@ -158,14 +153,13 @@ function Timeline({
     setAutoLayoutEnabled(enabled);
     
     if (enabled && timelineData.events && timelineData.events.length >= 3) {
-      // Kjør auto-layout umiddelbart når aktivert
       setTimeout(() => {
         applyAutoLayout();
       }, 100);
     }
   };
   
-  // Funksjon for å formatere dato
+  // Format date function
   const formatDate = (date) => {
     if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
       return '';
@@ -178,7 +172,6 @@ function Timeline({
         year: 'numeric'
       });
     } catch (error) {
-      // Manuell formatering som fallback
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const year = date.getFullYear();
@@ -186,16 +179,13 @@ function Timeline({
     }
   };
   
-  // Håndter hover over tidslinjen for å vise dato
+  // Handle timeline hover for date display
   const handleTimelineMouseMove = (e) => {
-    // Bare vis hoverdate når musen er over selve tidslinjelinjen
     if (e.target.classList.contains('timeline-line')) {
-      // Sikre at tidslinjen har start og slutt dato
       if (!timelineData.start || !timelineData.end) {
         return;
       }
       
-      // Sikre at start og slutt er gyldige datoobjekter
       const startDate = timelineData.start instanceof Date ? 
         timelineData.start : 
         new Date(timelineData.start);
@@ -204,38 +194,31 @@ function Timeline({
         timelineData.end :
         new Date(timelineData.end);
       
-      // Sjekk om datoene er gyldige
       if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
         return;
       }
       
-      // Beregn dato basert på museposisjon
       const rect = e.target.getBoundingClientRect();
       let hoverPos = { x: e.clientX, y: e.clientY };
       let hoverDt;
       
       if (timelineData.orientation === 'horizontal') {
-        // For horisontal tidslinje, bruk x-koordinaten
         const hoverX = e.clientX - rect.left;
         const hoverPercentage = hoverX / rect.width;
         
-        // Beregn dato basert på prosentandel
         const timeRange = endDate.getTime() - startDate.getTime();
         const timestamp = startDate.getTime() + (timeRange * hoverPercentage);
         hoverDt = new Date(timestamp);
         
       } else {
-        // For vertikal tidslinje, bruk y-koordinaten
         const hoverY = e.clientY - rect.top;
         const hoverPercentage = hoverY / rect.height;
         
-        // Beregn dato basert på prosentandel
         const timeRange = endDate.getTime() - startDate.getTime();
         const timestamp = startDate.getTime() + (timeRange * hoverPercentage);
         hoverDt = new Date(timestamp);
       }
       
-      // Ekstra validering av den beregnede datoen
       if (!hoverDt || isNaN(hoverDt.getTime())) {
         return;
       }
@@ -248,24 +231,20 @@ function Timeline({
     }
   };
   
-  // Skjul hover-datoen når musen forlater tidslinjen
+  // Hide hover date when mouse leaves timeline
   const handleTimelineMouseLeave = () => {
     setShowHoverDate(false);
   };
   
-  // Håndter klikk på tidslinjen for å opprette ny hendelse
+  // Handle timeline line click to create new event
   const handleTimelineLineClick = (e) => {
-    // Bare utløs på direkte klikk på tidslinje-linjen
     if (e.target.classList.contains('timeline-line')) {
       e.stopPropagation();
       
-      // Sjekk om tidslinjen har start og slutt dato
       if (!timelineData.start || !timelineData.end) {
-        // Ikke gjør noe hvis tidslinjen ikke er initialisert
         return;
       }
       
-      // Sikre at start og slutt er gyldige datoobjekter
       const startDate = timelineData.start instanceof Date ? 
         timelineData.start : 
         new Date(timelineData.start);
@@ -274,44 +253,37 @@ function Timeline({
         timelineData.end :
         new Date(timelineData.end);
       
-      // Sjekk om datoene er gyldige
       if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
         console.error('Ugyldige tidslinje-datoer:', { start: timelineData.start, end: timelineData.end });
-        return; // Ikke fortsett hvis datoene er ugyldige
+        return;
       }
       
-      // Beregn posisjon for modalen
       const rect = e.target.getBoundingClientRect();
       let clickPosition;
       let clickDate;
       
       if (timelineData.orientation === 'horizontal') {
-        // For horisontal tidslinje, bruk x-koordinaten
         const clickX = e.clientX - rect.left;
         const clickPercentage = clickX / rect.width;
         clickPosition = { x: e.clientX, y: e.clientY };
         
-        // Beregn dato basert på prosentandel
         const timeRange = endDate.getTime() - startDate.getTime();
         const timestamp = startDate.getTime() + (timeRange * clickPercentage);
         clickDate = new Date(timestamp);
         
       } else {
-        // For vertikal tidslinje, bruk y-koordinaten
         const clickY = e.clientY - rect.top;
         const clickPercentage = clickY / rect.height;
         clickPosition = { x: e.clientX, y: e.clientY };
         
-        // Beregn dato basert på prosentandel
         const timeRange = endDate.getTime() - startDate.getTime();
         const timestamp = startDate.getTime() + (timeRange * clickPercentage);
         clickDate = new Date(timestamp);
       }
       
-      // Ekstra validering av den beregnede datoen
       if (!clickDate || isNaN(clickDate.getTime())) {
         console.error('Kunne ikke beregne gyldig dato fra klikk');
-        clickDate = new Date(); // Bruk nåværende dato som fallback
+        clickDate = new Date();
       }
       
       console.log('Beregnet dato fra klikk:', clickDate.toISOString());
@@ -322,26 +294,24 @@ function Timeline({
     }
   };
   
-  // Funksjon for å legge til en ny hendelse fra modalen
+  // Add new event from modal
   const addNewEvent = (newEvent) => {
-    // Legg til den nye hendelsen i tidslinjens events-array
     const updatedEvents = [...timelineData.events, newEvent];
     
-    // Oppdater tidslinje-dataen
     setTimelineData({
       ...timelineData,
       events: updatedEvents
     });
   };
   
-  // NEW FUNCTION: Handle opening edit modal
+  // Handle opening edit modal
   const handleEditEvent = (event, index) => {
     setEventToEdit({...event, index});
     setShowEditModal(true);
-    setShowDetailPanel(false); // Close detail panel if open
+    setShowDetailPanel(false);
   };
   
-  // NEW FUNCTION: Handle saving edited event from modal
+  // Handle saving edited event from modal
   const handleSaveEventFromModal = (updatedEvent) => {
     if (!eventToEdit || eventToEdit.index === undefined) return;
     
@@ -350,7 +320,6 @@ function Timeline({
     
     newEvents[eventIndex] = {
       ...updatedEvent,
-      // Preserve positioning and other metadata
       xOffset: eventToEdit.xOffset || 0,
       yOffset: eventToEdit.yOffset || eventToEdit.offset || 0,
       offset: eventToEdit.yOffset || eventToEdit.offset || 0,
@@ -367,7 +336,7 @@ function Timeline({
     setEventToEdit(null);
   };
   
-  // NEW FUNCTION: Handle deleting event from modal
+  // Handle deleting event from modal
   const handleDeleteEventFromModal = (event, index) => {
     const eventIndex = typeof index === 'number' ? index : eventToEdit?.index;
     if (eventIndex === undefined) return;
@@ -390,22 +359,36 @@ function Timeline({
     }
   };
   
-  // Callback for when a background image is loaded
-  const handleBackgroundLoaded = useCallback((imageUrl) => {
-    setBackgroundImageUrl(imageUrl);
+  // FIXED: Callback for when a background image is loaded
+  const handleBackgroundLoaded = useCallback((loadedImageData) => {
+    console.log('✅ Background loaded:', loadedImageData);
+    
+    if (loadedImageData) {
+      // Handle both simple URLs and structured data
+      if (typeof loadedImageData === 'object') {
+        setBackgroundImageUrl(loadedImageData);
+      } else {
+        // Convert simple URL to structured format for consistency
+        setBackgroundImageUrl({
+          url: loadedImageData,
+          filters: 'none'
+        });
+      }
+    } else {
+      setBackgroundImageUrl(null);
+    }
   }, []);
   
   // Handle event dragging with 2D movement
   const handleEventDrag = (index, xOffset, yOffset) => {
     const newEvents = [...timelineData.events];
     
-    // Marker event as manually positioned (disable auto-layout for this event)
     newEvents[index] = {
       ...newEvents[index],
       xOffset: xOffset,
       yOffset: yOffset,
-      offset: yOffset, // Keep for backward compatibility
-      autoLayouted: false, // Mark as manually positioned
+      offset: yOffset,
+      autoLayouted: false,
       manuallyPositioned: true
     };
     
@@ -415,9 +398,8 @@ function Timeline({
     });
   };
   
-  // Handle showing event details in the side panel - UPDATED to use edit modal
+  // Handle showing event details in the side panel
   const handleShowEventDetail = (event, index) => {
-    // Use edit modal instead of detail panel
     handleEditEvent(event, index);
   };
   
@@ -431,18 +413,16 @@ function Timeline({
     e.preventDefault();
     e.stopPropagation();
     
-    // Close any existing menus
     setShowContextMenu(false);
     setShowDetailPanel(false);
     
-    // Set up event context menu
     setContextMenuEvent({ ...event, index });
     setEventContextMenuPosition({ x: e.clientX, y: e.clientY });
     setShowEventContextMenu(true);
     setLastClickedEvent(index);
   };
   
-  // Handle edit event from context menu - UPDATED to use edit modal
+  // Handle edit event from context menu
   const handleEditEventFromContextMenu = (event) => {
     handleEditEvent(event, event.index);
     setShowEventContextMenu(false);
@@ -497,7 +477,7 @@ function Timeline({
     setDeleteEventToConfirm(null);
   };
   
-  // Legacy delete event handler (for existing functionality)
+  // Legacy delete event handler
   const handleDeleteEvent = (event, index) => {
     setEventToDelete(index);
     setShowConfirmDelete(true);
@@ -526,7 +506,6 @@ function Timeline({
       events: newEvents
     });
     
-    // Update the detail event to reflect changes
     setDetailEvent({...updatedEvent, index: eventIndex});
   };
   
@@ -537,7 +516,7 @@ function Timeline({
     setShowDeleteConfirmation(true);
   };
   
-  // Legacy confirm delete event (for existing modals)
+  // Legacy confirm delete event
   const confirmDeleteEvent = () => {
     if (eventToDelete === null) return;
     
@@ -571,15 +550,12 @@ function Timeline({
     
     if (!timeline || !container) return;
     
-    // Explicitly set transform-origin to ensure consistent behavior for zooming
     timeline.style.transformOrigin = 'top left';
     
-    // Update timeline transform with consistent values
     const updateTransform = () => {
       timeline.style.transform = `translate3d(${translatePos.x}px, ${translatePos.y}px, 0) scale(${zoom})`;
     };
     
-    // Initial transform update
     updateTransform();
     
     // Zoom towards mouse position on wheel
@@ -604,14 +580,11 @@ function Timeline({
         newZoom = currentZoom / scaleFactor;
       }
       
-      // Clamp zoom within reasonable bounds
       newZoom = Math.max(0.5, Math.min(3, newZoom));
       
-      // Calculate world coordinates based on current transform
       const worldX = (mouseX - translatePos.x) / currentZoom;
       const worldY = (mouseY - translatePos.y) / currentZoom;
       
-      // Calculate new screen coordinates to maintain mouse position
       const newTranslateX = mouseX - worldX * newZoom;
       const newTranslateY = mouseY - worldY * newZoom;
       
@@ -665,25 +638,19 @@ function Timeline({
         const rect = container.getBoundingClientRect();
         const defaultZoom = 0.7;
         
-        // Calculate center position of the container
         const containerCenterX = rect.width / 2;
         const containerCenterY = rect.height / 2;
         
-        // Get the timeline element dimensions
         const timelineRect = timeline.getBoundingClientRect();
-        // Use current scale to get accurate dimensions
         const timelineWidth = timelineRect.width / zoom;
         const timelineHeight = timelineRect.height / zoom;
         
-        // Calculate the position to center the timeline
         let newTranslateX, newTranslateY;
         
         if (timelineData.orientation === 'horizontal') {
-          // For horizontal timeline, center horizontally and put the line in the middle vertically
           newTranslateX = containerCenterX - (timelineWidth / 2) * defaultZoom;
           newTranslateY = containerCenterY - (timelineHeight / 2) * defaultZoom;
         } else {
-          // For vertical timeline, center vertically and put the line in the middle horizontally
           newTranslateX = containerCenterX - (timelineWidth / 2) * defaultZoom;
           newTranslateY = containerCenterY - (timelineHeight / 2) * defaultZoom;
         }
@@ -767,7 +734,6 @@ function Timeline({
       });
     }
     
-    // Add this block to handle orientation
     if (style.orientation !== undefined) {
       setTimelineData({
         ...timelineData,
@@ -776,18 +742,46 @@ function Timeline({
     }
   };
   
-  // Handle background image selection
-  const handleBackgroundImageSelect = (imageName) => {
-    if (imageName) {
-      setBackgroundImage(imageName);
-      setBackgroundColor(null);
+  // FIXED: Handle background image selection
+  const handleBackgroundImageSelect = (imageData) => {
+    console.log('🖼️ Background image select:', imageData);
+    
+    if (imageData) {
+      // Handle structured image data from image editor
+      if (typeof imageData === 'object' && imageData.url) {
+        console.log('📝 Setting structured background:', {
+          url: imageData.url,
+          filters: imageData.filters || 'none'
+        });
+        
+        setBackgroundImage(imageData);
+        setBackgroundColor(null);
+        
+        // Update timeline data with structured background
+        setTimelineData({
+          ...timelineData,
+          backgroundImage: imageData,
+          backgroundColor: null
+        });
+        
+      } else if (typeof imageData === 'string') {
+        // Handle simple string (predefined image)
+        console.log('📁 Setting predefined background:', imageData);
+        
+        setBackgroundImage(imageData);
+        setBackgroundColor(null);
+        
+        setTimelineData({
+          ...timelineData,
+          backgroundImage: imageData,
+          backgroundColor: null
+        });
+      }
       
-      setTimelineData({
-        ...timelineData,
-        backgroundImage: imageName,
-        backgroundColor: null
-      });
     } else {
+      // Remove background
+      console.log('🗑️ Removing background');
+      
       setBackgroundImage(null);
       setBackgroundImageUrl(null);
       setBackgroundColor('white');
@@ -800,12 +794,10 @@ function Timeline({
     }
   };
   
-  // Handle interval toggle from context menu - UPDATED for consistent state
+  // Handle interval toggle from context menu
   const handleIntervalToggle = (shouldShow) => {
-    // Update local state
     setLocalShowIntervals(shouldShow);
     
-    // Important: Update all state locations consistently
     setTimelineData({
       ...timelineData,
       showIntervals: shouldShow,
@@ -826,20 +818,17 @@ function Timeline({
   
   // Handle interval count change from context menu
   const handleIntervalCountChange = (count) => {
-    // Force update the local state with the new count
     setLocalIntervalCount(count);
     
-    // Update the timelineData to include this setting
     setTimelineData({
       ...timelineData,
-      intervalCount: count, // Add this property to the timelineData object
+      intervalCount: count,
       intervalSettings: {
         ...(timelineData.intervalSettings || {}),
         count: count
       }
     });
     
-    // Always call parent update function if it exists
     if (onUpdateIntervalSettings) {
       onUpdateIntervalSettings({
         showIntervals: localShowIntervals,
@@ -851,10 +840,8 @@ function Timeline({
   
   // Handle interval type change from context menu
   const handleIntervalTypeChange = (type) => {
-    // Update local state
     setLocalIntervalType(type);
     
-    // Update the timelineData to include this setting
     setTimelineData({
       ...timelineData,
       intervalType: type,
@@ -864,7 +851,6 @@ function Timeline({
       }
     });
     
-    // Always call parent update function if it exists
     if (onUpdateIntervalSettings) {
       onUpdateIntervalSettings({
         showIntervals: localShowIntervals,
@@ -879,8 +865,13 @@ function Timeline({
     setShowContextMenu(false);
   };
   
-  // Set styling from timelineData when it changes
+  // UPDATED: Set styling from timelineData when it changes
   useEffect(() => {
+    console.log('🔄 Timeline data changed, updating styles:', {
+      backgroundColor: timelineData.backgroundColor,
+      backgroundImage: timelineData.backgroundImage
+    });
+    
     if (timelineData.backgroundColor) {
       setBackgroundColor(timelineData.backgroundColor);
       setBackgroundImage(null);
@@ -888,6 +879,9 @@ function Timeline({
     } else if (timelineData.backgroundImage) {
       setBackgroundImage(timelineData.backgroundImage);
       setBackgroundColor(null);
+      
+      // Trigger BackgroundManager to load the image
+      // The handleBackgroundLoaded callback will set backgroundImageUrl
     } else {
       setBackgroundColor('white');
       setBackgroundImage(null);
@@ -902,7 +896,7 @@ function Timeline({
       setTimelineThickness(timelineData.timelineThickness);
     }
     
-    // Check all possible locations for interval settings - UPDATED
+    // Handle interval settings
     if (timelineData.showIntervals !== undefined) {
       setLocalShowIntervals(timelineData.showIntervals);
     } else if (timelineData.intervalSettings?.show !== undefined) {
@@ -921,8 +915,6 @@ function Timeline({
       setLocalIntervalType(timelineData.intervalSettings.type);
     }
     
-    // Don't automatically close detail panel when timeline data changes
-    // The panel should only close when user explicitly clicks the close button
   }, [timelineData]);
   
   // Calculate timeline duration
@@ -981,51 +973,63 @@ function Timeline({
     return baseStyle;
   };
   
-  // Get container style including background color or image
+  // FIXED: Get container style including background color or image - PROPERLY HANDLES FILTERED BACKGROUNDS
   const getContainerStyle = () => {
-  const baseStyle = {};
-  
-  // Handle background image with potential filters
-  if (backgroundImageUrl) {
-    if (typeof backgroundImageUrl === 'object' && backgroundImageUrl.url) {
-      // New format with filters
-      baseStyle.backgroundImage = `url(${backgroundImageUrl.url})`;
-      baseStyle.backgroundSize = 'cover';
-      baseStyle.backgroundPosition = 'center';
-      baseStyle.backgroundRepeat = 'no-repeat';
+    const baseStyle = {};
+    
+    // Check if we have a filtered background image
+    const hasFilteredBackground = backgroundImageUrl && 
+      typeof backgroundImageUrl === 'object' && 
+      backgroundImageUrl.url && 
+      backgroundImageUrl.filters && 
+      backgroundImageUrl.filters !== 'none';
+    
+    if (hasFilteredBackground) {
+      // FIXED: Use CSS custom properties for filtered backgrounds
+      baseStyle['--bg-image'] = `url(${backgroundImageUrl.url})`;
+      baseStyle['--bg-filter'] = backgroundImageUrl.filters;
+      baseStyle.backgroundColor = 'transparent';
       
-      // Apply filters if they exist
-      if (backgroundImageUrl.filters && backgroundImageUrl.filters !== 'none') {
-        baseStyle.filter = backgroundImageUrl.filters;
+      // Signal that this container has a filtered background
+      baseStyle['data-has-filtered-background'] = 'true';
+      
+    } else if (backgroundImageUrl) {
+      // Handle other background image formats
+      let imageUrl;
+      
+      if (typeof backgroundImageUrl === 'object' && backgroundImageUrl.url) {
+        imageUrl = backgroundImageUrl.url;
+      } else if (typeof backgroundImageUrl === 'string') {
+        if (backgroundImageUrl.startsWith('http')) {
+          imageUrl = backgroundImageUrl;
+        } else {
+          imageUrl = `/backgrounds/${backgroundImageUrl}`;
+        }
       }
-    } else if (typeof backgroundImageUrl === 'string') {
-      // Legacy format - simple URL
-      baseStyle.backgroundImage = `url(${backgroundImageUrl})`;
-      baseStyle.backgroundSize = 'cover';
-      baseStyle.backgroundPosition = 'center';
-      baseStyle.backgroundRepeat = 'no-repeat';
       
-      // Remove any default filters that might have been applied
-      baseStyle.filter = 'none';
+      if (imageUrl) {
+        baseStyle.backgroundImage = `url(${imageUrl})`;
+        baseStyle.backgroundSize = 'cover';
+        baseStyle.backgroundPosition = 'center';
+        baseStyle.backgroundRepeat = 'no-repeat';
+        baseStyle.backgroundColor = 'transparent';
+      }
+      
+    } else if (backgroundColor) {
+      // Solid color background
+      baseStyle.backgroundColor = backgroundColor;
+      baseStyle.backgroundImage = 'none';
+    } else {
+      // Default fallback
+      baseStyle.backgroundColor = 'white';
+      baseStyle.backgroundImage = 'none';
     }
     
-    // Ensure background color is cleared when using images
-    baseStyle.backgroundColor = 'transparent';
-  } else if (backgroundColor) {
-    // Solid color background
-    baseStyle.backgroundColor = backgroundColor;
-    baseStyle.backgroundImage = 'none';
+    // IMPORTANT: Never apply filter to main container
     baseStyle.filter = 'none';
-  } else {
-    // Default fallback
-    baseStyle.backgroundColor = 'white';
-    baseStyle.backgroundImage = 'none';
-    baseStyle.filter = 'none';
-  }
-  
-  return baseStyle;
-};
-
+    
+    return baseStyle;
+  };
   
   // Return early if no timeline data
   if (!timelineData.start || !timelineData.end) {
@@ -1077,6 +1081,13 @@ function Timeline({
       </>
     );
   }
+
+  // UPDATED: Main component render with proper filtered background handling
+  const containerStyle = getContainerStyle();
+  const hasFilteredBackground = containerStyle['data-has-filtered-background'] === 'true';
+  
+  // Separate data attributes from style
+  const { 'data-has-filtered-background': dataAttr, ...styleProps } = containerStyle;
   
   return (
     <>
@@ -1087,18 +1098,19 @@ function Timeline({
       
       <div 
         id="timelineContainer" 
-        className={`timeline-container ${showDetailPanel ? 'with-detail-panel' : ''}`}
+        className={`timeline-container ${showDetailPanel ? 'with-detail-panel' : ''} ${hasFilteredBackground ? 'has-filtered-background' : ''}`}
         ref={containerRef}
         onContextMenu={handleContextMenu}
         onClick={handleTimelineClick}
-        style={getContainerStyle()}
+        style={styleProps}
+        data-has-filtered-background={hasFilteredBackground ? 'true' : 'false'}
       >
         <div 
           id="timeline" 
           className={`timeline ${timelineData.orientation}`} 
           ref={timelineRef}
         >
-          {/* Tidslinjeelement med klikk og hover-funksjonalitet */}
+          {/* Timeline line with click and hover functionality */}
           <div 
             className="timeline-line" 
             style={getTimelineLineStyle()} 
@@ -1139,7 +1151,7 @@ function Timeline({
           })}
         </div>
         
-        {/* Vis hoverdato når musen er over tidslinjen */}
+        {/* Show hover date when mouse is over timeline */}
         {showHoverDate && (
           <div className="timeline-hover-date" style={{
             position: 'absolute',
@@ -1187,7 +1199,7 @@ function Timeline({
           />
         )}
         
-        {/* NEW: EditEventModal */}
+        {/* Edit Event Modal */}
         <EditEventModal
           isOpen={showEditModal}
           onClose={() => setShowEditModal(false)}
@@ -1196,8 +1208,6 @@ function Timeline({
           event={eventToEdit}
           timelineData={timelineData}
         />
-        
-        
         
         {/* New Delete Confirmation Modal */}
         <DeleteConfirmationModal
@@ -1255,7 +1265,7 @@ function Timeline({
           </div>
         </div>
         
-        {/* CreateEventModal for hendelsesopprettelse ved klikk */}
+        {/* CreateEventModal for event creation on click */}
         <CreateEventModal
           isOpen={showCreateModal}
           onClose={() => setShowCreateModal(false)}

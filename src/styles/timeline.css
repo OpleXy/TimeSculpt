@@ -1411,6 +1411,100 @@
   z-index: -1;
   /* Filters blir satt via JavaScript når nødvendig */
 }
+/* ADD TO timeline.css - Background filter support without affecting timeline content */
 
-/* FJERNET: Alle gamle blur og filter-effekter som var hardkodet */
-/* Tidligere kode som la til uønsket blur er fjernet */
+/* FIXED: Apply filters only to background via pseudo-element */
+.timeline-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1; /* Behind all timeline content */
+  pointer-events: none; /* Allow clicks to pass through */
+  
+  /* Inherit background from parent */
+  background-image: inherit;
+  background-size: inherit;
+  background-position: inherit;
+  background-repeat: inherit;
+  
+  /* Apply filters ONLY to the background pseudo-element */
+  filter: var(--background-filter, none);
+  transition: filter 0.3s ease;
+}
+
+/* Ensure main container doesn't have filters when using background images with filters */
+.timeline-container[style*="--background-filter"] {
+  /* Remove background image from main container when using filtered background */
+  background-image: none !important;
+}
+
+.timeline-container[style*="--background-filter"]::before {
+  /* The background image and filters are applied to the pseudo-element */
+  background-image: var(--background-image-url, none);
+}
+
+/* Alternative approach using CSS custom properties */
+.timeline-container.has-filtered-background {
+  position: relative;
+  background: none; /* Remove background from main container */
+}
+
+.timeline-container.has-filtered-background::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  
+  /* Apply background and filters to pseudo-element only */
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: var(--bg-filter, none);
+  transition: filter 0.3s ease;
+}
+
+/* Ensure timeline elements stay above filtered background */
+.timeline {
+  position: relative;
+  z-index: 1;
+}
+
+.event {
+  position: absolute;
+  z-index: 10 !important;
+}
+
+.timeline-context-menu {
+  z-index: 1000;
+}
+
+.event-detail-panel {
+  z-index: 90;
+}
+
+/* Dark mode compatibility */
+.dark-mode .timeline-container::before {
+  /* Filters work the same in dark mode */
+  filter: var(--background-filter, none);
+}
+
+/* Responsive compatibility */
+@media (max-width: 768px) {
+  .timeline-container::before {
+    filter: var(--background-filter, none);
+  }
+}
+
+/* Fallback for older browsers that don't support CSS custom properties well */
+@supports not (background: var(--bg-image)) {
+  .timeline-container.has-filtered-background::before {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}
