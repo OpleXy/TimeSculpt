@@ -22,7 +22,6 @@ import './styles/theme-toggle.css';
 import './styles/add-event-modal.css';
 import './styles/sidebarinfo.css';
 import './styles/event-colors.css';
-import './styles/text-to-timeline.css';
 import './styles/topbar-timeline-form.css';
 import './styles/prompt-processing.css';
 import './styles/privacy-toggle.css';
