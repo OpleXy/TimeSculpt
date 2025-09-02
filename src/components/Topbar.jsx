@@ -41,6 +41,10 @@ function Topbar({
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareModalTab, setShareModalTab] = useState('permissions');
   
+  // New state for actions dropdown
+  const [showActionsDropdown, setShowActionsDropdown] = useState(false);
+  const actionsDropdownRef = useRef(null);
+  
   // Check if we're on the main timeline page
   const isTimelinePage = location.pathname === '/';
   
@@ -85,11 +89,16 @@ function Topbar({
         setShowTitleEditor(false);
         setShowWarning(false);
       }
+
+      // Handle actions dropdown
+      if (showActionsDropdown && actionsDropdownRef.current && !actionsDropdownRef.current.contains(event.target)) {
+        setShowActionsDropdown(false);
+      }
     };
     
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
-  }, [showDropdown, showTitleEditor]);
+  }, [showDropdown, showTitleEditor, showActionsDropdown]);
 
   // Update form values when timeline data changes
   useEffect(() => {
@@ -259,6 +268,36 @@ function Topbar({
     }
   };
 
+  // New handler functions for actions dropdown
+  const handleActionsDropdownToggle = () => {
+    setShowActionsDropdown(!showActionsDropdown);
+  };
+
+  const handleShareTimeline = () => {
+    setShowActionsDropdown(false);
+    setShareModalTab('permissions');
+    setShowShareModal(true);
+  };
+
+  const handleExportPDF = () => {
+    setShowActionsDropdown(false);
+    // TODO: Implementer PDF-eksport
+    console.log('Eksporter som PDF');
+    alert('PDF-eksport kommer snart!');
+  };
+
+  const handleExportPNG = () => {
+    setShowActionsDropdown(false);
+    // TODO: Implementer PNG-eksport
+    console.log('Eksporter som PNG');
+    alert('PNG-eksport kommer snart!');
+  };
+
+  const handlePrintTimeline = () => {
+    setShowActionsDropdown(false);
+    window.print();
+  };
+
   const consistentHeight = '36px';
 
   return (
@@ -371,6 +410,72 @@ function Topbar({
                 <path d="m18.5 2.5 3 3L12 15l-4 1 1-4L18.5 2.5z"/>
               </svg>
             </span>
+
+            {/* Public/Private Status Badge */}
+              {isTimelineActive && timelineData.id && (
+                <div 
+                  className={`privacy-status-badge ${isPublic ? 'public' : 'private'}`}
+                  onClick={isTimelineOwner ? toggleTimelinePrivacy : undefined}
+                  style={{ 
+                    cursor: isTimelineOwner ? 'pointer' : 'default',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    fontSize: '13px',
+                    fontWeight: '500',
+                    padding: '2px 10px',
+                    borderRadius: '16px',
+                    backgroundColor: isPublic 
+                      ? 'rgba(40, 167, 69, 0.1)' 
+                      : 'rgba(108, 117, 125, 0.1)',
+                    color: isPublic 
+                      ? '#28a745' 
+                      : '#6c757d',
+                    border: isPublic
+                      ? '1px solid rgba(40, 167, 69, 0.2)'
+                      : '1px solid rgba(108, 117, 125, 0.2)'
+                  }}
+                >
+                  {isPublic ? (
+                    <>
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="14" 
+                        height="14" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="2" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                      </svg>
+                      Offentlig
+                    </>
+                  ) : (
+                    <>
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="14" 
+                        height="14" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="2" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                      >
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                      </svg>
+                      Privat
+                    </>
+                  )}
+                </div>
+              )}
             
             {/* Timeline Actions Container */}
             <div className="timeline-actions-container" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: '15px' }}>
@@ -437,26 +542,27 @@ function Topbar({
                 </div>
               )}
               
-              {/* Share Button */}
+              {/* Timeline Actions Button with Dropdown */}
               {isTimelineActive && timelineData.id && isAuthenticated && (
-                <div className="timeline-share-dropdown">
+                <div className="timeline-actions-dropdown" ref={actionsDropdownRef} style={{ position: 'relative' }}>
                   <button 
-                    className="share-timeline-btn topbar-share-btn"
-                    onClick={() => handleOpenShareModal('permissions')}
-                    title="Del tidslinje"
+                    className="timeline-actions-btn topbar-actions-btn"
+                    onClick={handleActionsDropdownToggle}
+                    title="Handlinger for tidslinje"
                     style={{
                       width: 'auto',
                       padding: '0 16px',
                       height: '36px',
-                      backgroundColor: isTimelineOwner ? '#28a745' : 'transparent',
-                      color: isTimelineOwner ? 'white' : '#333',
-                      border: isTimelineOwner ? 'none' : '1px solid #dee2e6',
+                      backgroundColor: '#17a2b8',
+                      color: 'white',
+                      border: 'none',
                       borderRadius: '6px',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       fontWeight: '500',
-                      fontSize: '14px'
+                      fontSize: '14px',
+                      position: 'relative'
                     }}
                   >
                     <svg 
@@ -471,82 +577,134 @@ function Topbar({
                       strokeLinejoin="round"
                       style={{ marginRight: '8px' }}
                     >
-                      <circle cx="18" cy="5" r="3"></circle>
-                      <circle cx="6" cy="12" r="3"></circle>
-                      <circle cx="18" cy="19" r="3"></circle>
-                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                      <circle cx="12" cy="12" r="1"></circle>
+                      <circle cx="12" cy="5" r="1"></circle>
+                      <circle cx="12" cy="19" r="1"></circle>
                     </svg>
-                    Del
+                    <span>Handlinger</span>
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      width="16" 
+                      height="16" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+                      style={{ 
+                        marginLeft: '8px',
+                        transform: showActionsDropdown ? 'rotate(180deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.2s ease'
+                      }}
+                    >
+                      <path d="M6 9l6 6 6-6"/>
+                    </svg>
                   </button>
-                </div>
-              )}
-              
-              {/* Public/Private Status Badge */}
-              {isTimelineActive && timelineData.id && (
-                <div 
-                  className={`privacy-status-badge ${isPublic ? 'public' : 'private'}`}
-                  onClick={isTimelineOwner ? toggleTimelinePrivacy : undefined}
-                  style={{ 
-                    cursor: isTimelineOwner ? 'pointer' : 'default',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '5px',
-                    fontSize: '13px',
-                    fontWeight: '500',
-                    padding: '2px 10px',
-                    borderRadius: '16px',
-                    backgroundColor: isPublic 
-                      ? 'rgba(40, 167, 69, 0.1)' 
-                      : 'rgba(108, 117, 125, 0.1)',
-                    color: isPublic 
-                      ? '#28a745' 
-                      : '#6c757d',
-                    border: isPublic
-                      ? '1px solid rgba(40, 167, 69, 0.2)'
-                      : '1px solid rgba(108, 117, 125, 0.2)'
-                  }}
-                >
-                  {isPublic ? (
-                    <>
-                      <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        width="14" 
-                        height="14" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round"
+
+                  {showActionsDropdown && (
+                    <div className="timeline-actions-dropdown-menu">
+                      <button 
+                        className="dropdown-action-item"
+                        onClick={handleShareTimeline}
                       >
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                      </svg>
-                      Offentlig
-                    </>
-                  ) : (
-                    <>
-                      <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        width="14" 
-                        height="14" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round"
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          width="16" 
+                          height="16" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="2" 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round"
+                        >
+                          <circle cx="18" cy="5" r="3"></circle>
+                          <circle cx="6" cy="12" r="3"></circle>
+                          <circle cx="18" cy="19" r="3"></circle>
+                          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        </svg>
+                        Del tidslinje
+                      </button>
+
+                      <div className="dropdown-divider"></div>
+
+                      <button 
+                        className="dropdown-action-item"
+                        onClick={handleExportPDF}
                       >
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                      </svg>
-                      Privat
-                    </>
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          width="16" 
+                          height="16" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="2" 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round"
+                        >
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                          <polyline points="14 2 14 8 20 8"></polyline>
+                          <line x1="16" y1="13" x2="8" y2="13"></line>
+                          <line x1="16" y1="17" x2="8" y2="17"></line>
+                          <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Eksporter som PDF
+                      </button>
+
+                      <button 
+                        className="dropdown-action-item"
+                        onClick={handleExportPNG}
+                      >
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          width="16" 
+                          height="16" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="2" 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round"
+                        >
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                          <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                          <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        Eksporter som PNG
+                      </button>
+
+                      <div className="dropdown-divider"></div>
+
+                      <button 
+                        className="dropdown-action-item"
+                        onClick={handlePrintTimeline}
+                      >
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          width="16" 
+                          height="16" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="2" 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round"
+                        >
+                          <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                          <rect x="6" y="14" width="12" height="8"></rect>
+                        </svg>
+                        Print tidslinje
+                      </button>
+                    </div>
                   )}
                 </div>
               )}
+              
+              
             </div>
             
             {showTitleEditor && (
