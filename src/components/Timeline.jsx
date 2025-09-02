@@ -1245,35 +1245,27 @@ function Timeline({
         )}
         
         {/* Timeline info bar at bottom */}
-        <div className="timeline-info-bar">
-          <div className="timeline-duration">
-            {timelineData.start && timelineData.end && (
-              <span>Varighet: {calculateTimelineDuration()}</span>
-            )}
-            {autoLayoutEnabled && timelineData.events && timelineData.events.length >= 3 && (
-              <span className="auto-layout-indicator"> • Auto-layout aktiv</span>
-            )}
-          </div>
-          <div className="timeline-instructions">
-            <strong>Klikk og dra</strong> tidslinjen for å endre view • 
-            <strong> Dobbelklikk</strong> for å nullstille • 
-            <strong> Høyreklikk</strong> på canvas for å redigere tidslinje • 
-            <strong> Høyreklikk</strong> på hendelser for å redigere dem
-            {autoLayoutEnabled && (
-              <span> • <strong>Auto-layout</strong> unngår overlapping</span>
-            )}
-          </div>
-        </div>
-        
-        {/* CreateEventModal for event creation on click */}
-        <CreateEventModal
-          isOpen={showCreateModal}
-          onClose={() => setShowCreateModal(false)}
-          onSave={addNewEvent}
-          position={createModalPosition}
-          date={createEventDate}
-          timelineColor={timelineColor}
-        />
+{/* Bottom timeline info bar */}
+<div className="timeline-info-bar">
+  <div className="timeline-duration">
+    {timelineData.start && timelineData.end && <span>Varighet: {calculateTimelineDuration()}</span>}
+  </div>
+  <div className="timeline-instructions">
+    <strong>Tips!</strong> scroll = <strong>Zoom</strong> | dobbelklikk = <strong>Nullstill</strong> | høyreklikk på canvas = <strong>Rediger tidslinje</strong> | høyreklikk på hendelser = <strong>Rediger hendelser</strong> | dra canvas = <strong>Naviger</strong> | dra hendelsene = <strong>Flytt hendelsene</strong>
+  </div>
+</div>
+
+{/* Create event modal */}
+<CreateEventModal
+  isOpen={showCreateModal}
+  onClose={() => setShowCreateModal(false)}
+  onSave={addNewEvent}
+  position={createModalPosition}
+  date={createEventDate}
+  timelineColor={timelineColor}
+/>
+
+
       </div>
     </>
   );

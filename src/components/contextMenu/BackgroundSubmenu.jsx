@@ -1,4 +1,4 @@
-// src/components/contextMenu/BackgroundSubmenu.jsx - MED INNEBYGD IMAGE EDITING
+// src/components/contextMenu/BackgroundSubmenu.jsx - COMPACT VERSION
 import React, { useState, useRef, useCallback } from 'react';
 import { uploadBackgroundImage, deleteBackgroundImage } from '../../services/backgroundImageService';
 
@@ -36,9 +36,8 @@ function BackgroundSubmenu({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState('');
   
-  // NEW: Image editing states - directly in background menu
+  // Image editing states - always available when image is selected
   const [selectedImageForEditing, setSelectedImageForEditing] = useState(null);
-  const [showImageEditor, setShowImageEditor] = useState(false);
   const [imageFilters, setImageFilters] = useState({
     blur: 0,
     brightness: 100,
@@ -111,15 +110,11 @@ function BackgroundSubmenu({
         onBackgroundImageSelect(imageUrl);
       }
 
-      // FIXED: Set uploaded image for editing
       setSelectedImageForEditing(imageUrl);
-      resetImageFilters(); // Reset filters for new upload
+      resetImageFilters();
 
       setIsUploading(false);
       setUploadProgress(0);
-      
-      // Switch to images tab but DON'T open editor automatically
-      setActiveBackgroundTab('images');
       
     } catch (error) {
       console.error('Feil ved opplasting:', error);
@@ -169,14 +164,13 @@ function BackgroundSubmenu({
     }
   };
 
-  // NEW: Handle background image selection WITH editing option
+  // Handle background image selection WITH editing option
   const handleBackgroundImageSelect = (imageValue) => {
     if (imageValue) {
       if (onBackgroundImageSelect) {
         onBackgroundImageSelect(imageValue);
       }
       
-      // FIXED: Set up for potential editing - handle both uploaded and predefined images
       setSelectedImageForEditing(imageValue);
       
       // Load existing filters if available
@@ -188,7 +182,7 @@ function BackgroundSubmenu({
     }
   };
 
-  // NEW: Parse existing filters from CSS string
+  // Parse existing filters from CSS string
   const parseFiltersFromString = (filterString) => {
     const filters = {
       blur: 0,
@@ -220,7 +214,7 @@ function BackgroundSubmenu({
     setImageFilters(filters);
   };
 
-  // NEW: Reset image filters
+  // Reset image filters
   const resetImageFilters = () => {
     setImageFilters({
       blur: 0,
@@ -229,7 +223,7 @@ function BackgroundSubmenu({
     });
   };
 
-  // NEW: Handle filter changes - IMPROVED for both uploaded and predefined images
+  // Handle filter changes
   const handleFilterChange = (filterType, value) => {
     const newFilters = {
       ...imageFilters,
@@ -244,17 +238,13 @@ function BackgroundSubmenu({
       
       let imageUrl;
       
-      // FIXED: Handle both uploaded images (URLs) and predefined images (filenames)
       if (typeof selectedImageForEditing === 'string') {
         if (selectedImageForEditing.startsWith('http')) {
-          // Uploaded image - use URL directly
           imageUrl = selectedImageForEditing;
         } else {
-          // Predefined image - add path prefix
           imageUrl = `/backgrounds/${selectedImageForEditing}`;
         }
       } else if (selectedImageForEditing && selectedImageForEditing.url) {
-        // Structured image object
         imageUrl = selectedImageForEditing.url;
       }
       
@@ -269,7 +259,7 @@ function BackgroundSubmenu({
     }
   };
 
-  // NEW: Create CSS filter string
+  // Create CSS filter string
   const createFilterString = (filters) => {
     const filterParts = [];
     
@@ -280,29 +270,25 @@ function BackgroundSubmenu({
     return filterParts.length > 0 ? filterParts.join(' ') : 'none';
   };
 
-  // NEW: Generate filter style for preview
+  // Generate filter style for preview
   const getFilterStyle = () => {
     return createFilterString(imageFilters);
   };
 
-  // NEW: Reset filters - IMPROVED to handle all image types
+  // Reset filters
   const handleResetFilters = () => {
     resetImageFilters();
     
     if (selectedImageForEditing && onBackgroundImageSelect) {
       let imageUrl;
       
-      // FIXED: Handle both uploaded and predefined images
       if (typeof selectedImageForEditing === 'string') {
         if (selectedImageForEditing.startsWith('http')) {
-          // Uploaded image
           imageUrl = selectedImageForEditing;
         } else {
-          // Predefined image
           imageUrl = `/backgrounds/${selectedImageForEditing}`;
         }
       } else if (selectedImageForEditing && selectedImageForEditing.url) {
-        // Structured image object
         imageUrl = selectedImageForEditing.url;
       }
       
@@ -315,17 +301,6 @@ function BackgroundSubmenu({
         });
       }
     }
-  };
-
-  // NEW: Toggle image editor visibility
-  const toggleImageEditor = () => {
-    if (!showImageEditor && selectedImageForEditing) {
-      // Load current filters when opening editor
-      if (typeof currentBackgroundImage === 'object' && currentBackgroundImage.filters) {
-        parseFiltersFromString(currentBackgroundImage.filters);
-      }
-    }
-    setShowImageEditor(!showImageEditor);
   };
 
   // Remove custom background
@@ -341,7 +316,6 @@ function BackgroundSubmenu({
     }
     
     setSelectedImageForEditing(null);
-    setShowImageEditor(false);
     
     if (onColorSelect) {
       onColorSelect('#ffffff');
@@ -359,20 +333,18 @@ function BackgroundSubmenu({
     return getCurrentImageUrl();
   };
 
-  // UPDATED: Check if we have a selected image that can be edited
+  // Check if we have a selected image that can be edited
   const canEditCurrentImage = () => {
-    // Check if there's a currently active background image
     const currentUrl = getCurrentImageUrl();
     return currentUrl !== null;
   };
 
-  // NEW: Initialize editing when component loads if image is already selected
+  // Initialize editing when component loads if image is already selected
   React.useEffect(() => {
     const currentUrl = getCurrentImageUrl();
     if (currentUrl) {
       setSelectedImageForEditing(currentBackgroundImage);
       
-      // Load existing filters if available
       if (typeof currentBackgroundImage === 'object' && currentBackgroundImage.filters) {
         parseFiltersFromString(currentBackgroundImage.filters);
       } else {
@@ -380,6 +352,75 @@ function BackgroundSubmenu({
       }
     }
   }, [currentBackgroundImage]);
+
+  // Render upload zone as a grid item
+  const renderUploadZone = () => {
+    if (!currentUser) {
+      return (
+        <div className="background-upload-grid-item disabled">
+          <div className="background-upload-grid-content">
+            <div className="background-upload-icon-small">🔒</div>
+            <span className="background-upload-text-small">Logg inn</span>
+          </div>
+        </div>
+      );
+    }
+
+    // If we have a custom uploaded image, show it instead of upload zone
+    if (isCustomImage()) {
+      return (
+        <div 
+          className={`background-image-option ${isCustomImage() ? 'selected custom-image' : ''}`}
+          title="Ditt opplastede bilde"
+        >
+          <img
+            src={getCustomImagePreviewUrl()}
+            alt="Egendefinert bakgrunn"
+            className="background-image-preview"
+          />
+          <div className="background-image-info">
+            <span className="background-image-name">Mitt bilde</span>
+            <button 
+              className="background-remove-button-small"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRemoveCustomBackground();
+              }}
+              title="Fjern bilde"
+            >
+              ✕
+            </button>
+          </div>
+          {isCustomImage() && (
+            <span className="background-checkmark">✓</span>
+          )}
+        </div>
+      );
+    }
+
+    // Show upload zone
+    return (
+      <div 
+        className={`background-upload-grid-item ${isUploading ? 'uploading' : ''}`}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+        onClick={() => !isUploading && fileInputRef.current?.click()}
+        title="Last opp eget bilde"
+      >
+        {isUploading ? (
+          <div className="background-upload-grid-content uploading">
+            <div className="background-spinner-small" />
+            <span className="background-upload-text-small">{Math.round(uploadProgress)}%</span>
+          </div>
+        ) : (
+          <div className="background-upload-grid-content">
+            <div className="background-upload-icon-small">📁</div>
+            <span className="background-upload-text-small">Last opp</span>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="context-menu-background">
@@ -434,84 +475,14 @@ function BackgroundSubmenu({
         {/* Images tab */}
         {activeBackgroundTab === 'images' && (
           <div className="background-images-section">
-            {/* Upload section first */}
-            <div className="background-upload-section">
-              {!currentUser ? (
-                <div className="background-login-required">
-                  <p>Du må være logget inn for å laste opp egne bilder</p>
-                </div>
-              ) : (
-                <>
-                  <div className="upload-section-title">Last opp bilde</div>
-                  <div 
-                    className={`background-drop-zone ${isUploading ? 'uploading' : ''}`}
-                    onDragOver={handleDragOver}
-                    onDrop={handleDrop}
-                    onClick={() => !isUploading && fileInputRef.current?.click()}
-                  >
-                    {isUploading ? (
-                      <div className="background-upload-progress">
-                        <div className="background-spinner" />
-                        <p>Laster opp... {Math.round(uploadProgress)}%</p>
-                        <div className="background-progress-bar">
-                          <div 
-                            className="background-progress-fill"
-                            style={{ width: `${uploadProgress}%` }}
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="background-upload-icon">📁</div>
-                        <p>Dra og slipp bilde her</p>
-                        <p className="background-upload-hint">
-                          JPEG, PNG, WebP • Maks 5MB
-                        </p>
-                      </>
-                    )}
-                  </div>
-
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/jpeg,image/jpg,image/png,image/webp"
-                    onChange={handleFileSelect}
-                    className="background-hidden-file-input"
-                    disabled={isUploading}
-                  />
-
-                  {uploadError && (
-                    <div className="background-error">
-                      <span className="background-error-icon">⚠️</span>
-                      {uploadError}
-                    </div>
-                  )}
-
-                  {isCustomImage() && (
-                    <div className="background-custom-image-actions">
-                      <h4>Ditt opplastede bilde</h4>
-                      <img 
-                        src={getCustomImagePreviewUrl()} 
-                        alt="Egendefinert bakgrunn"
-                        className="background-custom-image-preview"
-                        style={showImageEditor ? { filter: getFilterStyle() } : {}}
-                      />
-                      <button 
-                        className="background-remove-button"
-                        onClick={handleRemoveCustomBackground}
-                      >
-                        Fjern bilde
-                      </button>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-
-            {/* Library section second */}
-            <div className="background-library-section">
-              <div className="library-section-title">Forslag: (generert av openAI)</div>
+            {/* Combined gallery with upload zone and predefined images */}
+            <div className="background-image-gallery-container">
+              <div className="library-section-title">Velg bakgrunnsbilde</div>
               <div className="background-image-gallery">
+                {/* Upload zone as first grid item */}
+                {renderUploadZone()}
+                
+                {/* Predefined images */}
                 {predefinedImages.map((image) => (
                   <button
                     key={image.filename}
@@ -526,7 +497,6 @@ function BackgroundSubmenu({
                       alt={image.name}
                       className="background-image-preview"
                       loading="lazy"
-                      style={showImageEditor && isImageSelected(image.filename) ? { filter: getFilterStyle() } : {}}
                     />
                     <div className="background-image-info">
                       <span className="background-image-name">{image.name}</span>
@@ -537,79 +507,85 @@ function BackgroundSubmenu({
                   </button>
                 ))}
               </div>
+              
+              {/* Hidden file input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/webp"
+                onChange={handleFileSelect}
+                className="background-hidden-file-input"
+                disabled={isUploading}
+              />
+
+              {uploadError && (
+                <div className="background-error">
+                  <span className="background-error-icon">⚠️</span>
+                  {uploadError}
+                </div>
+              )}
             </div>
 
-            {/* NEW: Image Editor Section - Only show when there's an image selected */}
+            {/* Image Editor Section - Always open when image is selected */}
             {canEditCurrentImage() && (
               <div className="background-image-editor-section">
-                <div className="editor-section-header">
-                  <div className="editor-section-title">Bildeeditor</div>
-                  <button 
-                    className={`editor-toggle-btn ${showImageEditor ? 'active' : ''}`}
-                    onClick={toggleImageEditor}
-                    title={showImageEditor ? 'Skjul editor' : 'Vis editor'}
-                  >
-                    {showImageEditor ? '▼' : '▶'}
-                  </button>
-                </div>
+                <div className="editor-section-title">Bildeeditor</div>
                 
-                {showImageEditor && (
-                  <div className="inline-image-editor">
-                    {/* Filter Controls */}
-                    <div className="filter-controls-compact">
-                      {/* Blur */}
-                      <div className={`filter-group-compact ${imageFilters.blur > 0 ? 'has-filter' : ''}`}>
-                        <label>Blur: {imageFilters.blur}px</label>
-                        <input
-                          type="range"
-                          min="0"
-                          max="10"
-                          step="0.1"
-                          value={imageFilters.blur}
-                          onChange={(e) => handleFilterChange('blur', parseFloat(e.target.value))}
-                          className="filter-slider-compact"
-                        />
-                      </div>
-
-                      {/* Brightness */}
-                      <div className={`filter-group-compact ${imageFilters.brightness !== 100 ? 'has-filter' : ''}`}>
-                        <label>Lysstyrke: {imageFilters.brightness}%</label>
-                        <input
-                          type="range"
-                          min="0"
-                          max="200"
-                          value={imageFilters.brightness}
-                          onChange={(e) => handleFilterChange('brightness', parseInt(e.target.value))}
-                          className="filter-slider-compact"
-                        />
-                      </div>
-
-                      {/* Saturation */}
-                      <div className={`filter-group-compact ${imageFilters.saturate !== 100 ? 'has-filter' : ''}`}>
-                        <label>Metning: {imageFilters.saturate}%</label>
-                        <input
-                          type="range"
-                          min="0"
-                          max="200"
-                          value={imageFilters.saturate}
-                          onChange={(e) => handleFilterChange('saturate', parseInt(e.target.value))}
-                          className="filter-slider-compact"
-                        />
-                      </div>
+                <div className="inline-image-editor always-open">
+                  {/* Filter Controls */}
+                  <div className="filter-controls-compact">
+                    {/* Blur */}
+                    <div className={`filter-group-compact ${imageFilters.blur > 0 ? 'has-filter' : ''}`}>
+                      <label>Blur: {imageFilters.blur}px</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="10"
+                        step="0.1"
+                        value={imageFilters.blur}
+                        onChange={(e) => handleFilterChange('blur', parseFloat(e.target.value))}
+                        className="filter-slider-compact"
+                      />
                     </div>
 
-                    {/* Reset Button */}
-                    <div className="editor-actions-compact">
-                      <button 
-                        className="reset-filters-btn-compact"
-                        onClick={handleResetFilters}
-                        title="Tilbakestill alle filtere"
-                      >
-                        Tilbakestill
-                      </button>
+                    {/* Brightness */}
+                    <div className={`filter-group-compact ${imageFilters.brightness !== 100 ? 'has-filter' : ''}`}>
+                      <label>Lysstyrke: {imageFilters.brightness}%</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="200"
+                        value={imageFilters.brightness}
+                        onChange={(e) => handleFilterChange('brightness', parseInt(e.target.value))}
+                        className="filter-slider-compact"
+                      />
+                    </div>
+
+                    {/* Saturation */}
+                    <div className={`filter-group-compact ${imageFilters.saturate !== 100 ? 'has-filter' : ''}`}>
+                      <label>Metning: {imageFilters.saturate}%</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="200"
+                        value={imageFilters.saturate}
+                        onChange={(e) => handleFilterChange('saturate', parseInt(e.target.value))}
+                        className="filter-slider-compact"
+                      />
                     </div>
                   </div>
-                )}
+
+                  {/* Reset Button */}
+                  <div className="editor-actions-compact">
+                    <button 
+                      className="reset-filters-btn-compact"
+                      onClick={handleResetFilters}
+                      title="Tilbakestill alle filtere"
+                    >
+                      Tilbakestill
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
