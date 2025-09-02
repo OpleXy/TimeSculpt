@@ -172,7 +172,7 @@ Line Counts Per File:
 6358 public/backgrounds/forest.png
 6326 public/backgrounds/city.png
 5957 public/backgrounds/beach.png
-2759 src/styles/TimelineContextMenu.css
+3079 src/styles/TimelineContextMenu.css
 2301 public/backgrounds/timesculpt.png
 1698 src/styles/darkMode.css
 1634 src/styles/ui-components.css
@@ -189,6 +189,7 @@ Line Counts Per File:
 766 src/styles/event-form.css
 681 src/components/CreateEventModal.jsx
 677 src/styles/EventEditModal.css
+621 src/components/contextMenu/BackgroundSubmenu.jsx
 619 src/styles/pages/MinProfil.css
 566 src/components/TimelineEvent.jsx
 566 src/components/EventForm.jsx
@@ -203,15 +204,14 @@ Line Counts Per File:
 378 src/pages/MineTidslinjer.jsx
 371 src/components/contextMenu/IntervalsSubmenu.jsx
 370 src/components/TimelineShareModal.jsx
-362 src/components/contextMenu/BackgroundSubmenu.jsx
 354 src/components/BackgroundSelector.jsx
 353 src/services/openAiService.js
 318 src/styles/timeline-cards.css
 311 src/services/backgroundImageService.js
 299 src/styles/pages/Innstillinger.css
 285 src/services/eventLayoutService.js
-279 src/components/contextMenu/TimelineContextMenu.jsx
 276 src/styles/timeline-command-input.css
+273 src/components/contextMenu/TimelineContextMenu.jsx
 267 src/components/contextMenu/ImageEditorSubmenu.jsx
 260 src/firebase.js
 252 src/hooks/useBackgroundManager.js

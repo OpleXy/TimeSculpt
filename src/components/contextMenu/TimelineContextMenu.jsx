@@ -1,4 +1,4 @@
-// src/components/contextMenu/TimelineContextMenu.jsx
+// src/components/contextMenu/TimelineContextMenu.jsx - UTEN AUTOMATISK IMAGE EDITOR
 import React, { useRef, useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import BackgroundSubmenu from './BackgroundSubmenu';
@@ -6,7 +6,7 @@ import ThicknessSubmenu from './ThicknessSubmenu';
 import ColorSubmenu from './ColorSubmenu';
 import IntervalsSubmenu from './IntervalsSubmenu';
 import AutoLayoutSubmenu from './AutoLayoutSubmenu';
-import ImageEditorSubmenu from './ImageEditorSubmenu';
+// REMOVED: ImageEditorSubmenu import - no longer needed
 import { BackIcon, ChevronIcon, IntervalIcon, BackgroundIcon, ThicknessIcon, AutoLayoutIcon } from './MenuIcons';
 import '../../styles/TimelineContextMenu.css';
 
@@ -148,7 +148,7 @@ function TimelineContextMenu({
           {currentView === 'intervals' && 'Intervallmarkører'}
           {currentView === 'background' && 'Bakgrunn'}
           {currentView === 'autolayout' && 'Auto-Layout'}
-          {currentView === 'imageeditor' && 'Bildeeditor'}
+          {/* REMOVED: imageeditor case - no longer used */}
         </span>
       </div>
       
@@ -224,7 +224,7 @@ function TimelineContextMenu({
             currentBackgroundImage={currentBackgroundImage}
             onColorSelect={onColorSelect}
             onBackgroundImageSelect={onBackgroundImageSelect}
-            setCurrentView={setCurrentView}
+            setCurrentView={setCurrentView} // Still pass this but it won't be used for image editor
           />
         )}
 
@@ -265,13 +265,7 @@ function TimelineContextMenu({
           />
         )}
 
-        {currentView === 'imageeditor' && (
-  <ImageEditorSubmenu
-    onBackgroundImageSelect={onBackgroundImageSelect}
-    setCurrentView={setCurrentView}
-    currentBackgroundImage={currentBackgroundImage} // Add this line
-  />
-)}
+        {/* REMOVED: imageeditor view - no longer needed */}
       </div>
     </div>
   );
