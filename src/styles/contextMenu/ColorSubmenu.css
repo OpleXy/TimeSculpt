@@ -1,0 +1,40 @@
+/* Color Submenu Styles */
+
+/* Color Swatches */
+.context-menu-color-swatch {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 3px;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+/* Color mapping for specific timeline colors in dark mode */
+body.dark-mode .timeline-context-menu[data-color="#007bff"] .context-menu-thickness-swatch {
+    background-color: #3a97ff; /* Brighter blue for dark mode */
+}
+
+body.dark-mode .timeline-context-menu[data-color="#dc3545"] .context-menu-thickness-swatch {
+    background-color: #e05561; /* Brighter red for dark mode */
+}
+
+body.dark-mode .timeline-context-menu[data-color="#28a745"] .context-menu-thickness-swatch {
+    background-color: #34c653; /* Brighter green for dark mode */
+}
+
+body.dark-mode .timeline-context-menu[data-color="#fd7e14"] .context-menu-thickness-swatch {
+    background-color: #ff9642; /* Brighter orange for dark mode */
+}
+
+body.dark-mode .timeline-context-menu[data-color="#6f42c1"] .context-menu-thickness-swatch {
+    background-color: #8a5fdb; /* Brighter purple for dark mode */
+}
+
+body.dark-mode .timeline-context-menu[data-color="#20c997"] .context-menu-thickness-swatch {
+    background-color: #2ee0ad; /* Brighter teal for dark mode */
+}
+
+body.dark-mode .timeline-context-menu[data-color="#6c757d"] .context-menu-thickness-swatch {
+    background-color: #868e96; /* Brighter gray for dark mode */
+}

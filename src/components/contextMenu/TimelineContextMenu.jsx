@@ -8,7 +8,7 @@ import IntervalsSubmenu from './IntervalsSubmenu';
 import AutoLayoutSubmenu from './AutoLayoutSubmenu';
 // REMOVED: ImageEditorSubmenu import - no longer needed
 import { BackIcon, ChevronIcon, IntervalIcon, BackgroundIcon, ThicknessIcon, AutoLayoutIcon } from './MenuIcons';
-import '../../styles/TimelineContextMenu.css';
+import '../../styles/contextMenu/index.css';
 
 function TimelineContextMenu({ 
   position, 

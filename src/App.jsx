@@ -12,18 +12,14 @@ import AuthModal from './components/auth/AuthModal';
 
 import useAutoSave from './hooks/useAutoSave';
 
-import { generateTimelineEvents } from './services/aiTimelineService';
-
 // Import styles
 import './styles/base.css';
 import './styles/timeline.css';
 import './styles/ui-components.css';
 import './styles/auth.css';
 import './styles/topbar.css';
-
 import './styles/theme-toggle.css';
 import './styles/add-event-modal.css';
-
 import './styles/sidebarinfo.css';
 import './styles/event-colors.css';
 import './styles/text-to-timeline.css';
@@ -33,7 +29,7 @@ import './styles/privacy-toggle.css';
 import './styles/topbar-privacy.css';
 import './styles/layout-manager.css';
 import './styles/welcome-screen.css';
-import './styles/EventContextMenu.css';
+import './styles/contextMenu/index.css';
 
 function App() {
   const { isAuthenticated, authChanged, currentUser, logOut } = useAuth();

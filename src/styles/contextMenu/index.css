@@ -1,0 +1,13 @@
+/* Timeline Context Menu - Master CSS Import File */
+/* Import all context menu component styles */
+
+/* Base styles - Core menu structure and common elements */
+@import './BaseContextMenu.css';
+
+/* Component-specific submenu styles */
+@import './ColorSubmenu.css';
+@import './ThicknessSubmenu.css'; 
+@import './IntervalsSubmenu.css';
+@import './BackgroundSubmenu.css';
+@import './ImageEditorSubmenu.css';
+@import './AutoLayoutSubmenu.css';
