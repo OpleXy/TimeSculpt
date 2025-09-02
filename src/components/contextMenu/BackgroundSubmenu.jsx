@@ -510,7 +510,7 @@ function BackgroundSubmenu({
 
             {/* Library section second */}
             <div className="background-library-section">
-              <div className="library-section-title">Bibliotek</div>
+              <div className="library-section-title">Forslag: (generert av openAI)</div>
               <div className="background-image-gallery">
                 {predefinedImages.map((image) => (
                   <button

@@ -672,7 +672,7 @@ body.dark-mode .direction-info {
 /* Image gallery styles */
 .background-image-gallery {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   /*max-height: 250px;
   overflow-y: auto; */
@@ -1229,8 +1229,7 @@ body.dark-mode .direction-info {
   gap: 12px;
   /*max-height: 250px;
   overflow-y: auto; */
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border-color, #e1e5e9);
+
 }
 
 .background-image-option {
@@ -1448,7 +1447,7 @@ body.dark-mode .direction-info {
   }
   
   .background-image-gallery {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -1510,15 +1509,6 @@ body.dark-mode .direction-info {
 
 .background-apply-button:hover {
   background: var(--primary-hover, #0056b3);
-}
-
-/* Image gallery styles */
-.background-image-gallery {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  /*max-height: 250px;
-  overflow-y: auto; */
 }
 
 .background-image-option {
@@ -2762,11 +2752,7 @@ body.dark-mode .context-menu-action:hover {
 /* Legg til i TimelineContextMenu.css - Kompakt Image Editor CSS */
 
 /* Image Editor Section i Background Menu */
-.background-image-editor-section {
-  border-top: 1px solid var(--border-color, #e1e5e9);
-  margin-top: 16px;
-  padding-top: 16px;
-}
+
 
 .editor-section-header {
   display: flex;
