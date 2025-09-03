@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import AuthModal from '../components/auth/AuthModal';
-import Topbar from './Topbar'; // Import the Topbar component
+import Topbar from './topbar/Topbar'; // Import the Topbar component
 import '../styles/darkMode.css'; // Import dark mode styles
 
 function Layout({ children }) {

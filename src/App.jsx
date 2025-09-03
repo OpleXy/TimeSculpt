@@ -1,7 +1,7 @@
 // src/App.jsx - Updated imports section
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Topbar from './components/Topbar';
+import Topbar from './components/topbar/Topbar';
 import Timeline from './components/Timeline';
 import LayoutManager from './components/LayoutManager';
 import AddEventModal from './components/AddEventModal';
@@ -17,12 +17,16 @@ import './styles/base.css';
 import './styles/timeline.css';
 import './styles/ui-components.css';
 import './styles/auth.css';
-import './styles/topbar.css';
+import './styles/topbar/topbar.css';
+import './styles/topbar/topbar-left.css';
+import './styles/topbar/topbar-center.css';
+import './styles/topbar/topbar-right.css';
+import './styles/topbar/topbar-timeline-actions.css';
 import './styles/theme-toggle.css';
 import './styles/add-event-modal.css';
 import './styles/sidebarinfo.css';
 import './styles/event-colors.css';
-import './styles/topbar-timeline-form.css';
+
 import './styles/prompt-processing.css';
 import './styles/privacy-toggle.css';
 import './styles/topbar-privacy.css';

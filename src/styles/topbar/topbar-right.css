@@ -1,0 +1,304 @@
+/* src/styles/topbar/topbar-right.css - Right section styles */
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Support button styles */
+.topbar-right button[title="Support"] {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  padding: 0;
+  color: #777;
+  transition: all 0.2s ease;
+}
+
+.topbar-right button[title="Support"]:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #333;
+  transform: scale(1.05);
+}
+
+/* User menu styles */
+.topbar-user {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.topbar-user:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Avatar styling */
+.topbar-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  border: 1px solid var(--border-color, #e0e0e0);
+  object-fit: cover;
+}
+
+.avatar-initials {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e9ecef;
+  color: #495057;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-right: 0.5rem;
+  border: 1px solid var(--border-color, #dee2e6);
+}
+
+/* Username */
+.topbar-username {
+  font-size: 0.9rem;
+  color: var(--text-color, #333);
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0 0.5rem 0 0.25rem;
+  font-weight: 500;
+}
+
+/* Dropdown arrow */
+.dropdown-arrow {
+  transition: transform 0.2s ease;
+  color: var(--text-secondary, #666);
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* User dropdown */
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--card-background, white);
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  z-index: 200;
+  overflow: hidden;
+  border: 1px solid var(--border-color, #eaeaea);
+  margin-top: 8px;
+  animation: dropdownFadeIn 0.2s ease;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dropdown items */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-color, #333);
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  font-weight: 400;
+  margin: 0;
+}
+
+.dropdown-item svg {
+  margin-right: 10px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: var(--hover-background, #f5f5f5);
+}
+
+.dropdown-item:hover svg {
+  opacity: 1;
+}
+
+/* Divider */
+.dropdown-divider {
+  height: 1px;
+  background-color: var(--border-color, #eee);
+  margin: 0.25rem 0;
+}
+
+/* Logout button */
+.logout-btn {
+  color: #dc3545 !important;
+}
+
+.logout-btn:hover {
+  background-color: rgba(220, 53, 69, 0.1) !important;
+  color: #dc3545 !important;
+}
+
+/* Login button */
+.topbar-login-btn {
+  display: flex;
+  align-items: center;
+  background-color: var(--primary-color, #007bff);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  font-weight: 500;
+  width: auto;
+  margin: 0;
+}
+
+.topbar-login-btn:hover {
+  background-color: var(--primary-hover, #0056b3);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.topbar-login-btn svg {
+  margin-right: 0.5rem;
+}
+
+/* Dark mode styles */
+body.dark-mode .topbar-right button[title="Support"] {
+  color: #aaa;
+}
+
+body.dark-mode .topbar-right button[title="Support"]:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #eee;
+}
+
+body.dark-mode .topbar-user {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .topbar-user:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode .topbar-avatar {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .avatar-initials {
+  background-color: #444;
+  color: #f0f0f0;
+  border-color: #555;
+}
+
+body.dark-mode .topbar-username {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+body.dark-mode .dropdown-arrow {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+body.dark-mode .user-dropdown {
+  background-color: var(--card-background, #2d2d2d);
+  border-color: var(--border-color, #444);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .dropdown-item {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+body.dark-mode .dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+body.dark-mode .dropdown-divider {
+  background-color: var(--border-color, #444);
+}
+
+body.dark-mode .logout-btn {
+  color: #ff6b6b !important;
+}
+
+body.dark-mode .logout-btn:hover {
+  background-color: rgba(255, 107, 107, 0.15) !important;
+  color: #ff6b6b !important;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .topbar-right {
+    gap: 8px;
+  }
+  
+  .topbar-username {
+    max-width: 100px;
+    font-size: 0.85rem;
+  }
+  
+  .topbar-avatar,
+  .avatar-initials {
+    width: 28px;
+    height: 28px;
+    margin-right: 0.25rem;
+  }
+  
+  .topbar-login-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar-username {
+    display: none;
+  }
+  
+  .topbar-login-btn span {
+    display: none;
+  }
+  
+  .topbar-login-btn {
+    padding: 0.5rem;
+    width: 36px;
+  }
+  
+  .user-dropdown {
+    width: 180px;
+    right: -10px;
+  }
+}
