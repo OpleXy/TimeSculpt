@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import DateInput from '../DateInput';
-import logoWithText from '../../assets/logo-timesculpt.png';
+import tsLogoNoBg from '../../assets/ts_logo_no_bg.png';
 
 function TopbarLeft({ onCreateTimeline, hasUnsavedChanges, buttonHeight = '36px' }) {
   const navigate = useNavigate();
@@ -93,42 +93,16 @@ function TopbarLeft({ onCreateTimeline, hasUnsavedChanges, buttonHeight = '36px'
 
   return (
     <div className="topbar-left">
-      {/* Logo */}
-      <div 
-        className="topbar-logo" 
-        onClick={handleLogoClick}
-        style={{ 
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0 8px',
-          borderRadius: '6px',
-          cursor: 'pointer',
-          transition: 'all 0.2s ease',
-          marginRight: '15px',
-          height: buttonHeight,
-          overflow: 'hidden',
-        }}
-        onMouseOver={(e) => {
-          e.currentTarget.style.backgroundColor = 'rgba(0, 123, 255, 0.05)';
-          e.currentTarget.querySelector('img').style.transform = 'scale(1.03)';
-        }}
-        onMouseOut={(e) => {
-          e.currentTarget.style.backgroundColor = 'transparent';
-          e.currentTarget.querySelector('img').style.transform = 'scale(1)';
-        }}
-      >
-        <img 
-          src={logoWithText} 
-          alt="TimeSculpt" 
-          style={{ 
-            height: '32px',
-            width: 'auto',
-            display: 'block',
-            filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1))',
-            transition: 'transform 0.2s ease',
-            borderRadius: '4px',
-          }} 
-        />
+      {/* Logo og Workspace */}
+      <div className="logo-workspace-container" onClick={handleLogoClick}>
+        <div className="logo-container">
+          <img 
+            src={tsLogoNoBg} 
+            alt="TimeSculpt Logo" 
+            className="logo-image"
+          />
+        </div>
+        <span className="workspace-text">WORKSPACE</span>
       </div>
 
       {/* Timeline Form */}
@@ -142,7 +116,6 @@ function TopbarLeft({ onCreateTimeline, hasUnsavedChanges, buttonHeight = '36px'
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            transition: 'background-color 0.2s, color 0.2s',
             fontSize: '0.9rem',
             padding: '0 12px',
             borderRadius: '4px',

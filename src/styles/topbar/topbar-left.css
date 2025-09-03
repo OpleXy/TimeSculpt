@@ -1,23 +1,53 @@
 /* src/styles/topbar/topbar-left.css - Left section styles */
 
 .topbar-left {
-  gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
-/* Logo styles */
-.topbar-logo {
+/* Logo og Workspace container */
+.logo-workspace-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 8px;
   transition: all 0.2s ease;
 }
 
-.topbar-logo:hover {
-  transform: scale(1.02);
+.logo-workspace-container:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
-.topbar-logo img {
-  max-height: 32px;
-  width: auto;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+/* Logo container med blå bakgrunn */
+.logo-container {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+}
+
+/* Logo bilde */
+.logo-image {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+/* Workspace tekst */
+.workspace-text {
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-color, #333);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 /* Timeline form styles */
@@ -31,7 +61,6 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
   font-size: 0.9rem;
   padding: 0 12px;
   border-radius: 4px;
@@ -41,11 +70,6 @@
   height: 36px;
   width: auto;
   margin: 0;
-}
-
-.new-timeline-button:hover {
-  background-color: rgba(0, 123, 255, 0.1);
-  transform: translateY(-1px);
 }
 
 .new-timeline-button.active {
@@ -99,7 +123,6 @@
   background-color: var(--input-background, white);
   color: var(--text-color, #333);
   font-size: 0.9rem;
-  transition: border-color 0.2s;
 }
 
 .topbar-form-dropdown input[type="text"]:focus {
@@ -136,13 +159,6 @@
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.create-btn:hover:not(:disabled) {
-  background-color: var(--primary-hover, #0056b3);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .create-btn:disabled {
@@ -164,13 +180,22 @@
 }
 
 /* Dark mode styles */
+body.dark-mode .logo-workspace-container:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .logo-container {
+  background: linear-gradient(135deg, #4dabf7, #339af0);
+  box-shadow: 0 2px 4px rgba(77, 171, 247, 0.2);
+}
+
+body.dark-mode .workspace-text {
+  color: rgba(255, 255, 255, 0.9);
+}
+
 body.dark-mode .new-timeline-button {
   border-color: var(--primary-color, #007bff);
   color: var(--primary-color, #007bff);
-}
-
-body.dark-mode .new-timeline-button:hover {
-  background-color: rgba(0, 123, 255, 0.2);
 }
 
 body.dark-mode .topbar-form-dropdown {
@@ -185,12 +210,30 @@ body.dark-mode .topbar-form-dropdown::before {
   border-top-color: var(--border-color, #444);
 }
 
-body.dark-mode .create-btn:hover:not(:disabled) {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  .topbar-left {
+    gap: 10px;
+  }
+  
+  .logo-workspace-container {
+    gap: 0.5rem;
+  }
+  
+  .logo-container {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .logo-image {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .workspace-text {
+    font-size: 0.85rem;
+  }
+  
   .topbar-form-dropdown {
     width: 280px;
     padding: 1rem;
@@ -203,6 +246,10 @@ body.dark-mode .create-btn:hover:not(:disabled) {
 }
 
 @media (max-width: 480px) {
+  .workspace-text {
+    display: none;
+  }
+  
   .topbar-timeline-form {
     margin-left: 5px;
   }
