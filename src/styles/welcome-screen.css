@@ -18,7 +18,7 @@
   min-height: 100vh; /* full height */
   width: 100%;
   padding: 2rem 1rem;
-  background: url('http://localhost:5173/backgrounds/timesculpt.png') center/cover no-repeat;
+  background: url('..\..\public\backgrounds\timesculpt.png') center/cover no-repeat;
   position: relative;
 }
 

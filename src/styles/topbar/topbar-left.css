@@ -25,12 +25,11 @@
 .logo-container {
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, #007bff, #0056b3);
-  border-radius: 8px;
+  background: #007bff;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
 }
 
 /* Logo bilde */
