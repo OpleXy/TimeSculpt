@@ -451,6 +451,7 @@ function BackgroundSubmenu({
                 className="custom-color-input"
                 title="Egendefinert farge"
               />
+              <div className="custom-color-badge">🎨</div>
             </label>
 
             {/* Predefined colors */}
