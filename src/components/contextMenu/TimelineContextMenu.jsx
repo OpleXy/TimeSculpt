@@ -1,4 +1,4 @@
-// src/components/contextMenu/TimelineContextMenu.jsx - UTEN AUTOMATISK IMAGE EDITOR
+// src/components/contextMenu/TimelineContextMenu.jsx - MED BLÅ ADD EVENT KNAPP
 import React, { useRef, useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import BackgroundSubmenu from './BackgroundSubmenu';
@@ -6,8 +6,7 @@ import ThicknessSubmenu from './ThicknessSubmenu';
 import ColorSubmenu from './ColorSubmenu';
 import IntervalsSubmenu from './IntervalsSubmenu';
 import AutoLayoutSubmenu from './AutoLayoutSubmenu';
-// REMOVED: ImageEditorSubmenu import - no longer needed
-import { BackIcon, ChevronIcon, IntervalIcon, BackgroundIcon, ThicknessIcon, AutoLayoutIcon } from './MenuIcons';
+import { BackIcon, ChevronIcon, IntervalIcon, BackgroundIcon, ThicknessIcon, AutoLayoutIcon, AddEventIcon } from './MenuIcons';
 import '../../styles/contextMenu/index.css';
 
 function TimelineContextMenu({ 
@@ -30,7 +29,8 @@ function TimelineContextMenu({
   autoLayoutEnabled = true,
   onAutoLayoutToggle,
   onResetLayout,
-  onBackgroundChange
+  onBackgroundChange,
+  onAddEventClick // Function to trigger add event modal
 }) {
   const { currentUser } = useAuth();
   const menuRef = useRef(null);
@@ -148,7 +148,6 @@ function TimelineContextMenu({
           {currentView === 'intervals' && 'Intervallmarkører'}
           {currentView === 'background' && 'Bakgrunn'}
           {currentView === 'autolayout' && 'Auto-Layout'}
-          {/* REMOVED: imageeditor case - no longer used */}
         </span>
       </div>
       
@@ -156,6 +155,24 @@ function TimelineContextMenu({
         {/* Main Menu */}
         {currentView === 'main' && (
           <ul className="context-menu-list">
+            <li 
+              className="context-menu-item add-event-item"
+              onClick={() => {
+                // Close context menu and open add event modal directly
+                onClose();
+                if (onAddEventClick) {
+                  onAddEventClick();
+                }
+              }}
+            >
+              <div className="context-menu-icon-wrapper">
+                <AddEventIcon />
+              </div>
+              Legg til hendelse
+            </li>
+            
+            <div className="context-menu-divider"></div>
+            
             <li 
               className="context-menu-item"
               onClick={() => setCurrentView('background')}
@@ -224,7 +241,7 @@ function TimelineContextMenu({
             currentBackgroundImage={currentBackgroundImage}
             onColorSelect={onColorSelect}
             onBackgroundImageSelect={onBackgroundImageSelect}
-            setCurrentView={setCurrentView} // Still pass this but it won't be used for image editor
+            setCurrentView={setCurrentView}
           />
         )}
 
@@ -264,8 +281,6 @@ function TimelineContextMenu({
             onClose={onClose}
           />
         )}
-
-        {/* REMOVED: imageeditor view - no longer needed */}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-// src/App.jsx - Updated imports section
+// src/App.jsx - KOMPLETT versjon med ADD EVENT fra context menu
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Topbar from './components/topbar/Topbar';
@@ -101,10 +101,10 @@ function App() {
     },
     isPublic: false,
     backgroundImage: null,
-    backgroundFilters: null // NYTT: For å lagre filter-data
+    backgroundFilters: null // For storing filter data
   });
 
-  // OPPDATERT: Generate a simple hash for timeline data to detect actual changes (inkludert background filters)
+  // Generate a simple hash for timeline data to detect actual changes (including background filters)
   const generateDataHash = (data) => {
     const relevantData = {
       id: data.id,
@@ -126,7 +126,7 @@ function App() {
       intervalCount,
       intervalType,
       isPublic,
-      // NYTT: Include background filter data in hash
+      // Include background filter data in hash
       backgroundColor: data.backgroundColor,
       backgroundImage: data.backgroundImage,
       backgroundFilters: data.backgroundFilters
@@ -134,7 +134,7 @@ function App() {
     return JSON.stringify(relevantData);
   };
 
-  // OPPDATERT: Optimized auto-save function with deduplication (inkludert background filters)
+  // Optimized auto-save function with deduplication (including background filters)
   const autoSaveTimeline = async () => {
     // Don't save if there's no meaningful data or if it's not saved initially
     if (!timelineData || !timelineData.title || !timelineData.id || timelineData.events.length === 0) {
@@ -172,7 +172,7 @@ function App() {
         intervalType: intervalSettings.type,
         intervalSettings: intervalSettings,
         isPublic: isPublic,
-        // NYTT: Inkluder background filter data
+        // Include background filter data
         backgroundFilters: timelineData.backgroundFilters || null
       };
       
@@ -211,7 +211,7 @@ function App() {
       intervalCount,
       intervalType,
       isPublic,
-      timelineData?.backgroundFilters // NYTT: Trigger auto-save on filter changes
+      timelineData?.backgroundFilters // Trigger auto-save on filter changes
     ]
   );
 
@@ -417,7 +417,7 @@ function App() {
         },
         isPublic: false,
         backgroundImage: null,
-        backgroundFilters: null // NYTT: Reset filter data
+        backgroundFilters: null // Reset filter data
       });
       
       // Reset interval settings
@@ -543,7 +543,7 @@ function App() {
             type: intervalType
           },
           isPublic: false, // Default to private
-          backgroundFilters: null // NYTT: Reset filters for new timeline
+          backgroundFilters: null // Reset filters for new timeline
         };
         
         setTimelineData(newTimelineData);
@@ -552,8 +552,6 @@ function App() {
         setSaveError('');
         
         console.log('✅ Timeline satt med', newTimelineData.events.length, 'events');
-        
-        // IKKE kall generateTimelineEvents igjen - OpenAI har allerede generert alt!
         
       } catch (error) {
         console.error('Error processing prompt timeline:', error);
@@ -572,7 +570,7 @@ function App() {
             type: intervalType
           },
           isPublic: false,
-          backgroundFilters: null // NYTT: Reset filters
+          backgroundFilters: null // Reset filters
         };
         
         setTimelineData(fallbackTimelineData);
@@ -595,7 +593,7 @@ function App() {
           type: intervalType
         },
         isPublic: false, // Default to private
-        backgroundFilters: null // NYTT: Reset filters for new timeline
+        backgroundFilters: null // Reset filters for new timeline
       };
       
       setTimelineData(newTimelineData);
@@ -683,7 +681,7 @@ function App() {
         intervalSettings: intervalSettings,
         // Include privacy setting
         isPublic: isPublic,
-        // NYTT: Include background filter data
+        // Include background filter data
         backgroundFilters: timelineData.backgroundFilters || null
       };
       
@@ -830,21 +828,21 @@ function App() {
     setSaveError(''); // Clear any save errors
   };
 
-  // NYTT: Handle color selection for background - fjern filtre når vi bytter til helfarge
+  // Handle color selection for background - remove filters when switching to solid color
   const handleColorSelect = (color) => {
     if (color === 'none') {
       setTimelineData(prev => ({
         ...prev,
         backgroundColor: null,
         backgroundImage: null,
-        backgroundFilters: null // NYTT: Fjern filtre
+        backgroundFilters: null // Remove filters
       }));
     } else {
       setTimelineData(prev => ({
         ...prev,
         backgroundColor: color === 'none' ? null : color,
         backgroundImage: null,
-        backgroundFilters: null // NYTT: Fjern filtre når vi bytter til helfarge
+        backgroundFilters: null // Remove filters when switching to solid color
       }));
     }
     
@@ -853,7 +851,7 @@ function App() {
     setSaveError('');
   };
 
-  // OPPDATERT: Handle background image selection - støtte for filtre
+  // Handle background image selection - support for filters
   const handleBackgroundImageSelect = (imageData) => {
     if (!imageData) {
       // Clear background
@@ -889,7 +887,7 @@ function App() {
     setSaveError('');
   };
 
-  // NYTT: Spesifikk funksjon for å håndtere filtrerte bakgrunnsbilder fra editor
+  // Specific function for handling filtered background images from editor
   const handleFilteredBackgroundSelect = (filteredImageData) => {
     if (!filteredImageData || !filteredImageData.url) {
       console.error('Invalid filtered image data:', filteredImageData);
@@ -953,9 +951,6 @@ function App() {
 
   return (
     <div className={`app-container ${darkMode ? 'dark-mode' : ''}`}>
-      {/* Add the Mobile Warning Component */}
-      
-      
       <Topbar 
         timelineData={timelineData} 
         onLogin={openAuthModal}
@@ -992,7 +987,8 @@ function App() {
                 onBackgroundImageSelect={handleBackgroundImageSelect}
                 onColorSelect={handleColorSelect}
                 onStyleSelect={handleStyleSelect}
-                onFilteredBackgroundSelect={handleFilteredBackgroundSelect} // NYTT: For filtrerte bilder
+                onFilteredBackgroundSelect={handleFilteredBackgroundSelect}
+                onAddEventModalOpen={openAddEventModal} // NEW: Pass add event modal function
               />
               
               {/* Add Event Button - positioned in bottom left of timeline container */}
@@ -1000,7 +996,7 @@ function App() {
                 <button 
                   className={`add-event-floating-btn ${timelineData.events.length === 0 ? 'pulse' : ''}`}
                   onClick={openAddEventModal}
-                  title="Legg til ny hendelse"
+                  title="Legg til hendelse"
                 >
                   <svg 
                     xmlns="http://www.w3.org/2000/svg" 
@@ -1016,7 +1012,7 @@ function App() {
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                   </svg>
-                  <span>Legg til ny hendelse</span>
+                  <span>Legg til hendelse</span>
                 </button>
               )}
             </div>

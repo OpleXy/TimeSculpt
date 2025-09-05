@@ -10,14 +10,14 @@ import CreateEventModal from './CreateEventModal';
 import EditEventModal from './EditEventModal';
 import { setDocumentTitle } from '../services/documentTitleService';
 import { smartLayout, needsRelayout, resetEventLayout } from '../services/eventLayoutService';
-
 function Timeline({ 
   timelineData, 
   setTimelineData,
   showIntervals = true,
   intervalCount = 5,
   intervalType = 'even',
-  onUpdateIntervalSettings
+  onUpdateIntervalSettings,
+  onAddEventModalOpen 
 }) {
   const timelineRef = useRef(null);
   const containerRef = useRef(null);
@@ -1075,6 +1075,8 @@ function Timeline({
             autoLayoutEnabled={autoLayoutEnabled}
             onAutoLayoutToggle={handleAutoLayoutToggle}
             onResetLayout={handleResetLayout}
+            onAddEventClick={onAddEventModalOpen || (() => setShowCreateModal(true))} // LEGG TIL DENNE LINJEN
+
             />
           )}
         </div>
@@ -1185,6 +1187,8 @@ function Timeline({
             autoLayoutEnabled={autoLayoutEnabled}
             onAutoLayoutToggle={handleAutoLayoutToggle}
             onResetLayout={handleResetLayout}
+            onAddEventClick={onAddEventModalOpen || (() => setShowCreateModal(true))} // LEGG TIL DENNE LINJEN
+
           />
         )}
         

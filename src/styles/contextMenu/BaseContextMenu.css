@@ -226,3 +226,13 @@ body.dark-mode .close-item:hover {
     background-color: rgba(255, 255, 255, 0.05) !important;
     color: rgba(255, 255, 255, 0.9) !important;
 }
+
+
+.context-menu-item.add-event-item {
+  color: #007bff;
+  font-weight: 600;
+}
+
+.context-menu-item.add-event-item .context-menu-icon-wrapper {
+  color: #007bff;
+}
